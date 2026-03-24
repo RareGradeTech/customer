@@ -16,6 +16,7 @@
             --radius: 24px; 
             --radius-sm: 16px;
             --glass: rgba(255, 255, 255, 0.9);
+            --error: #ff4d4d;
         }
 
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
@@ -26,7 +27,7 @@
             color: var(--text);
             line-height: 1.6;
             min-height: 100dvh;
-            padding-bottom: 120px;
+            padding-bottom: 140px;
         }
 
         .payment-container {
@@ -41,7 +42,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Header Style from Menu */
         .header {
             display: flex;
             align-items: center;
@@ -50,21 +50,14 @@
         }
 
         .back-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
+            width: 48px; height: 48px; border-radius: 14px;
+            background: white; display: flex; align-items: center;
+            justify-content: center; cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             transition: 0.2s;
         }
-
         .back-btn:active { transform: scale(0.9); }
 
-        /* Card / Drawer Match Style */
         .card {
             background: var(--surface);
             border-radius: var(--radius);
@@ -78,157 +71,108 @@
             font-size: 1.1rem;
             font-weight: 800;
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
         }
 
-        /* Address Input */
+        /* Address Box */
         .address-wrapper {
-            background: #f1f3f5;
-            border-radius: var(--radius-sm);
-            padding: 16px;
-            transition: 0.3s;
+            background: #f1f3f5; border-radius: var(--radius-sm);
+            padding: 16px; transition: 0.3s;
         }
-
-        .address-wrapper:focus-within {
-            background: #fff;
-            box-shadow: 0 0 0 2px var(--accent);
-        }
-
+        .address-wrapper:focus-within { background: #fff; box-shadow: 0 0 0 2px var(--accent); }
         .address-input {
-            width: 100%;
-            border: none;
-            background: transparent;
-            font-family: inherit;
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--text);
-            outline: none;
+            width: 100%; border: none; background: transparent;
+            font-family: inherit; font-weight: 600; font-size: 0.95rem;
+            color: var(--text); outline: none;
         }
-
         .location-trigger {
-            font-size: 0.75rem;
-            color: var(--accent);
-            font-weight: 700;
-            margin-top: 8px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
+            font-size: 0.75rem; color: var(--accent); font-weight: 700;
+            margin-top: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
         }
 
-        /* Payment Selector */
+        /* Promo Code */
+        .promo-flex { display: flex; gap: 10px; margin-top: 10px; }
+        .promo-input {
+            flex: 1; background: #f8f9fa; border: 1px solid #eee;
+            padding: 12px 16px; border-radius: 12px; font-family: inherit;
+            font-weight: 600; text-transform: uppercase; outline: none;
+        }
+        .promo-btn {
+            background: var(--text); color: white; border: none;
+            padding: 0 20px; border-radius: 12px; font-weight: 700;
+            cursor: pointer; transition: 0.2s;
+        }
+        .promo-msg { font-size: 0.8rem; margin-top: 8px; font-weight: 600; display: none; }
+
+        /* Payment Methods */
         .method-card {
-            border: 2px solid #f1f3f5;
-            border-radius: var(--radius-sm);
-            padding: 18px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            border: 2px solid #f1f3f5; border-radius: var(--radius-sm);
+            padding: 18px; margin-bottom: 12px; cursor: pointer;
+            transition: 0.3s; display: flex; align-items: center; gap: 15px;
         }
-
-        .method-card.active {
-            border-color: var(--accent);
-            background: #f0fff4;
-        }
-
+        .method-card.active { border-color: var(--accent); background: #f0fff4; }
         .method-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: #f8f9fa;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--dim);
+            width: 44px; height: 44px; border-radius: 12px;
+            background: #f8f9fa; display: flex; align-items: center; justify-content: center;
         }
+        .active .method-icon { background: white; color: var(--accent); }
 
-        .active .method-icon {
-            background: white;
-            color: var(--accent);
-        }
-
-        /* Card Form Animation */
         .card-details {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
         }
-
-        .active .card-details {
-            max-height: 300px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px dashed #ddd;
-        }
+        .active .card-details { max-height: 400px; margin-top: 20px; padding-top: 20px; border-top: 1px dashed #ddd; }
 
         .input-field {
-            background: #f8f9fa;
-            border: 1px solid #eee;
-            padding: 14px;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            outline: none;
-            width: 100%;
+            background: #f8f9fa; border: 1px solid #eee; padding: 14px;
+            border-radius: 12px; font-family: inherit; font-size: 0.9rem; outline: none; width: 100%;
         }
 
-        .input-field:focus { border-color: var(--accent); background: white; }
+        /* Save Card Toggle */
+        .save-card-opt {
+            grid-column: span 2; display: flex; align-items: center; 
+            justify-content: space-between; margin-top: 10px; padding: 5px 0;
+        }
+        .switch {
+            position: relative; display: inline-block; width: 44px; height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .4s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px;
+            left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         /* Bottom Action Bar */
         .action-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 24px;
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(0,0,0,0.05);
-            z-index: 100;
+            position: fixed; bottom: 0; left: 0; right: 0;
+            padding: 24px; background: var(--glass);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0,0,0,0.05); z-index: 100;
         }
-
         .pay-btn {
-            width: 100%;
-            max-width: 460px;
-            margin: 0 auto;
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 20px;
-            border-radius: var(--radius-sm);
-            font-weight: 800;
-            font-size: 1.1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            box-shadow: 0 12px 24px rgba(6, 193, 103, 0.25);
-            transition: 0.3s;
+            width: 100%; max-width: 460px; margin: 0 auto;
+            background: var(--accent); color: white; border: none;
+            padding: 20px; border-radius: var(--radius-sm);
+            font-weight: 800; font-size: 1.1rem; display: flex;
+            justify-content: space-between; align-items: center;
+            cursor: pointer; box-shadow: 0 12px 24px rgba(6, 193, 103, 0.25);
         }
 
-        .pay-btn:active { transform: scale(0.97); }
-
-        /* Overlay */
         #loadingOverlay {
             position: fixed; inset:0; background: white; z-index: 1000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
         }
-
         .spinner {
             width: 56px; height: 56px; border: 5px solid #f3f3f3;
             border-top: 5px solid var(--accent); border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -242,7 +186,7 @@
     <div id="successUI" style="display:none; text-align: center;">
         <i data-lucide="check-circle" style="width:80px; height:80px; color:var(--accent);"></i>
         <h2 style="margin-top:20px; font-weight:800;">Order Placed!</h2>
-        <p style="color:var(--dim);">Getting your meal ready...</p>
+        <p style="color:var(--dim);">Check your "Orders" for updates.</p>
     </div>
 </div>
 
@@ -257,27 +201,40 @@
     <div class="card">
         <div class="section-title"><i data-lucide="map-pin" size="18"></i> Delivery Address</div>
         <div class="address-wrapper">
-            <input type="text" id="addressInput" class="address-input" placeholder="Enter delivery address...">
+            <input type="text" id="addressInput" class="address-input" placeholder="Detecting location...">
             <div class="location-trigger" onclick="autoLocate()">
-                <i data-lucide="navigation" size="12"></i> Use current location
+                <i data-lucide="navigation" size="12"></i> Get current location
             </div>
         </div>
     </div>
 
     <div class="card">
-        <div class="section-title"><i data-lucide="shopping-cart" size="18"></i> Order Summary</div>
+        <div class="section-title"><i data-lucide="tag" size="18"></i> Promo Code</div>
+        <div class="promo-flex">
+            <input type="text" id="promoInput" class="promo-input" placeholder="VYNIX20">
+            <button class="promo-btn" onclick="applyPromo()">Apply</button>
+        </div>
+        <div id="promoMsg" class="promo-msg"></div>
+    </div>
+
+    <div class="card">
+        <div class="section-title"><i data-lucide="shopping-cart" size="18"></i> Summary</div>
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
             <span style="color:var(--dim);">Subtotal</span>
             <span style="font-weight:600;">R 185.00</span>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-            <span style="color:var(--dim);">Delivery Fee</span>
+            <span style="color:var(--dim);">Delivery</span>
             <span style="font-weight:600;">R 15.00</span>
+        </div>
+        <div id="discountRow" style="display:none; justify-content:space-between; margin-bottom:10px; color: var(--accent);">
+            <span>Discount (20%)</span>
+            <span id="discountVal">- R 0.00</span>
         </div>
         <div style="height:1px; background:#f1f3f5; margin:15px 0;"></div>
         <div style="display:flex; justify-content:space-between;">
             <span style="font-weight:800; font-size:1.2rem;">Total</span>
-            <span style="font-weight:800; font-size:1.2rem; color:var(--accent);">R 200.00</span>
+            <span style="font-weight:800; font-size:1.2rem; color:var(--accent);" id="totalDisplay">R 200.00</span>
         </div>
     </div>
 
@@ -286,10 +243,7 @@
         
         <div class="method-card active" id="cod" onclick="setMethod('cod')">
             <div class="method-icon"><i data-lucide="banknote"></i></div>
-            <div style="flex:1;">
-                <p style="font-weight:700;">Cash on Delivery</p>
-                <p style="font-size:0.8rem; color:var(--dim);">Pay at your door</p>
-            </div>
+            <div style="flex:1;"><p style="font-weight:700;">Cash on Delivery</p></div>
             <i data-lucide="check-circle-2" class="status-icon" style="color:var(--accent)"></i>
         </div>
 
@@ -299,8 +253,15 @@
                 <p style="font-weight:700;">Credit / Debit Card</p>
                 <div class="card-details" onclick="event.stopPropagation()">
                     <input type="text" placeholder="Card Number" class="input-field" style="grid-column: span 2;" id="cardNum" maxlength="19">
-                    <input type="text" placeholder="MM/YY" class="input-field" maxlength="5">
+                    <input type="text" placeholder="MM/YY" class="input-field" id="cardExpiry" maxlength="5">
                     <input type="password" placeholder="CVV" class="input-field" maxlength="3">
+                    <div class="save-card-opt">
+                        <span style="font-size:0.85rem; font-weight:600; color:var(--dim);">Save card for later</span>
+                        <label class="switch">
+                            <input type="checkbox" id="saveCardToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
             <i data-lucide="circle" class="status-icon" style="color:#eee"></i>
@@ -311,94 +272,101 @@
 <div class="action-bar">
     <button class="pay-btn" onclick="processPayment()">
         <span>Place Order</span>
-        <span>R 200.00</span>
+        <span id="btnTotal">R 200.00</span>
     </button>
 </div>
 
 <script>
     let currentMethod = 'cod';
+    let subtotal = 185.00;
+    let delivery = 15.00;
+    let discount = 0;
 
     function init() {
         lucide.createIcons();
         autoLocate();
+        loadSavedCard();
     }
 
-    // 1. Fully Functional Geolocation
     async function autoLocate() {
         const addrInput = document.getElementById('addressInput');
-        addrInput.value = "Detecting location...";
-        
+        addrInput.value = "Locating...";
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(async (pos) => {
                 const { latitude, longitude } = pos.coords;
                 try {
                     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
                     const data = await res.json();
-                    addrInput.value = data.address.road || data.display_name.split(',')[0] + ", " + data.address.suburb;
-                } catch (e) {
-                    addrInput.value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-                }
-            }, () => {
-                addrInput.value = "";
-                addrInput.placeholder = "Enter address manually";
-            });
+                    addrInput.value = data.address.road || data.display_name.split(',')[0];
+                } catch (e) { addrInput.value = "Pretoria, GP"; }
+            }, () => { addrInput.value = ""; addrInput.placeholder = "Type address here..."; });
         }
     }
 
-    // 2. Payment Method Switcher
+    function applyPromo() {
+        const input = document.getElementById('promoInput').value.toUpperCase();
+        const msg = document.getElementById('promoMsg');
+        if(input === 'VYNIX20') {
+            discount = subtotal * 0.20;
+            msg.innerText = "✓ Promo applied!"; msg.style.color = "var(--accent)";
+            document.getElementById('discountRow').style.display = "flex";
+            document.getElementById('discountVal').innerText = `- R ${discount.toFixed(2)}`;
+        } else {
+            discount = 0; msg.innerText = "✕ Invalid code"; msg.style.color = "var(--error)";
+            document.getElementById('discountRow').style.display = "none";
+        }
+        msg.style.display = "block";
+        updateTotals();
+    }
+
+    function updateTotals() {
+        const final = (subtotal + delivery) - discount;
+        document.getElementById('totalDisplay').innerText = `R ${final.toFixed(2)}`;
+        document.getElementById('btnTotal').innerText = `R ${final.toFixed(2)}`;
+    }
+
     function setMethod(id) {
         currentMethod = id;
         document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        
-        // Update Icons
-        document.querySelectorAll('.status-icon').forEach(icon => {
-            icon.setAttribute('data-lucide', 'circle');
-            icon.style.color = '#eee';
-        });
-        const activeIcon = document.querySelector(`#${id} .status-icon`);
-        activeIcon.setAttribute('data-lucide', 'check-circle-2');
-        activeIcon.style.color = 'var(--accent)';
-        
+        document.querySelectorAll('.status-icon').forEach(i => { i.setAttribute('data-lucide', 'circle'); i.style.color = '#eee'; });
+        const icon = document.querySelector(`#${id} .status-icon`);
+        icon.setAttribute('data-lucide', 'check-circle-2'); icon.style.color = 'var(--accent)';
         lucide.createIcons();
     }
 
-    // 3. Card Input Masking
+    // Card Input Formatting
     document.getElementById('cardNum').addEventListener('input', (e) => {
         let v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-        let matches = v.match(/\d{4,16}/g);
-        let match = matches && matches[0] || '';
-        let parts = [];
-        for (let i=0, len=match.length; i<len; i+=4) parts.push(match.substring(i, i+4));
-        e.target.value = parts.length ? parts.join(' ') : v;
+        let parts = []; for (let i=0; i<v.length; i+=4) parts.push(v.substring(i, i+4));
+        e.target.value = parts.join(' ');
     });
 
-    // 4. Fully Functional Payment
-    function processPayment() {
-        const overlay = document.getElementById('loadingOverlay');
-        const loader = document.getElementById('loaderUI');
-        const success = document.getElementById('successUI');
+    function loadSavedCard() {
+        const saved = JSON.parse(localStorage.getItem('vynix_card'));
+        if(saved) {
+            document.getElementById('cardNum').value = saved.num;
+            document.getElementById('cardExpiry').value = saved.exp;
+        }
+    }
 
-        // Simple Card Validation
+    function processPayment() {
         if(currentMethod === 'card') {
             const num = document.getElementById('cardNum').value;
-            if(num.length < 19) {
-                alert("Please enter a valid card number");
-                return;
+            if(num.length < 19) { alert("Check card details"); return; }
+            if(document.getElementById('saveCardToggle').checked) {
+                localStorage.setItem('vynix_card', JSON.stringify({
+                    num: num,
+                    exp: document.getElementById('cardExpiry').value
+                }));
             }
         }
-
-        overlay.style.display = 'flex';
-        
-        // Simulate Network Delay
+        document.getElementById('loadingOverlay').style.display = 'flex';
         setTimeout(() => {
-            loader.style.display = 'none';
-            success.style.display = 'block';
+            document.getElementById('loaderUI').style.display = 'none';
+            document.getElementById('successUI').style.display = 'block';
             lucide.createIcons();
-            
-            setTimeout(() => {
-                window.location.href = 'menu.html'; // Go back to menu
-            }, 3000);
+            setTimeout(() => { window.location.href = 'menu.html'; }, 3000);
         }, 2000);
     }
 
