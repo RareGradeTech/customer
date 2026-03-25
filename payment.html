@@ -65,6 +65,12 @@
             margin-bottom: 20px;
             box-shadow: 0 8px 32px rgba(0,0,0,0.04);
             border: 1px solid rgba(0,0,0,0.03);
+            animation: cardPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes cardPop {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         .section-title {
@@ -102,7 +108,8 @@
             padding: 0 20px; border-radius: 12px; font-weight: 700;
             cursor: pointer; transition: 0.2s;
         }
-        .promo-msg { font-size: 0.8rem; margin-top: 8px; font-weight: 600; display: none; }
+        .promo-btn:active { transform: scale(0.95); }
+        .promo-msg { font-size: 0.8rem; margin-top: 8px; font-weight: 600; display: none; animation: fadeIn 0.3s; }
 
         /* Payment Methods */
         .method-card {
@@ -148,6 +155,31 @@
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
 
+        /* Items List */
+        .items-list {
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f3f5;
+            animation: itemFadeIn 0.4s ease forwards;
+        }
+        @keyframes itemFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .item-img {
+            width: 48px; height: 48px; border-radius: 10px; object-fit: cover;
+            flex-shrink: 0;
+        }
+        .item-info { flex: 1; }
+        .item-name { font-weight: 700; font-size: 0.95rem; }
+        .item-qty-price { font-size: 0.85rem; color: var(--dim); }
+
         /* Bottom Action Bar */
         .action-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
@@ -162,6 +194,11 @@
             font-weight: 800; font-size: 1.1rem; display: flex;
             justify-content: space-between; align-items: center;
             cursor: pointer; box-shadow: 0 12px 24px rgba(6, 193, 103, 0.25);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pay-btn:active {
+            transform: scale(0.96);
+            box-shadow: 0 8px 16px rgba(6, 193, 103, 0.3);
         }
 
         #loadingOverlay {
@@ -179,7 +216,9 @@
             margin-top: 20px; background: #f1f3f5; color: var(--text);
             border: none; padding: 12px 24px; border-radius: 12px;
             font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;
+            transition: 0.2s;
         }
+        .receipt-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -190,7 +229,7 @@
         <h2 style="margin-top:20px; font-weight:800;">Processing...</h2>
     </div>
     <div id="successUI" style="display:none; text-align: center; padding: 20px;">
-        <i data-lucide="check-circle" style="width:80px; height:80px; color:var(--accent);"></i>
+        <i data-lucide="check-circle" style="width:80px; height:80px; color:var(--accent); animation: successPop 0.6s cubic-bezier(0.34,1.56,0.64,1);"></i>
         <h2 style="margin-top:20px; font-weight:800;">Order Placed!</h2>
         <p style="color:var(--dim); max-width: 250px;">Your driver will be notified once the kitchen confirms.</p>
         
@@ -198,7 +237,7 @@
             <i data-lucide="download" size="18"></i> Download Receipt
         </button>
 
-        <p onclick="window.location.href='menu.html'" style="margin-top:30px; color:var(--accent); font-weight:700; cursor:pointer;">Back to Menu</p>
+        <p onclick="window.location.href='index (4).html'" style="margin-top:30px; color:var(--accent); font-weight:700; cursor:pointer;">Back to Menu</p>
     </div>
 </div>
 
@@ -229,24 +268,30 @@
         <div id="promoMsg" class="promo-msg"></div>
     </div>
 
+    <!-- REAL CART ITEMS SECTION (enhanced) -->
+    <div class="card" id="itemsCard" style="display:none;">
+        <div class="section-title"><i data-lucide="shopping-bag" size="18"></i> Your Items</div>
+        <div id="itemsList" class="items-list"></div>
+    </div>
+
     <div class="card">
         <div class="section-title"><i data-lucide="shopping-cart" size="18"></i> Summary</div>
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
             <span style="color:var(--dim);">Subtotal</span>
-            <span style="font-weight:600;">R 185.00</span>
+            <span style="font-weight:600;" id="subtotalDisplay">R 0.00</span>
         </div>
         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
             <span style="color:var(--dim);">Delivery</span>
-            <span style="font-weight:600;">R 15.00</span>
+            <span style="font-weight:600;" id="deliveryDisplay">R 0.00</span>
         </div>
         <div id="discountRow" style="display:none; justify-content:space-between; margin-bottom:10px; color: var(--accent);">
-            <span>Discount (20%)</span>
+            <span>Discount</span>
             <span id="discountVal">- R 0.00</span>
         </div>
         <div style="height:1px; background:#f1f3f5; margin:15px 0;"></div>
         <div style="display:flex; justify-content:space-between;">
             <span style="font-weight:800; font-size:1.2rem;">Total</span>
-            <span style="font-weight:800; font-size:1.2rem; color:var(--accent);" id="totalDisplay">R 200.00</span>
+            <span style="font-weight:800; font-size:1.2rem; color:var(--accent);" id="totalDisplay">R 0.00</span>
         </div>
     </div>
 
@@ -284,20 +329,72 @@
 <div class="action-bar">
     <button class="pay-btn" onclick="processPayment()">
         <span>Place Order</span>
-        <span id="btnTotal">R 200.00</span>
+        <span id="btnTotal">R 0.00</span>
     </button>
 </div>
 
 <script>
     let currentMethod = 'cod';
-    let subtotal = 185.00;
-    let delivery = 15.00;
+    let subtotal = 0;
+    let delivery = 0;
     let discount = 0;
+    let cartItems = []; // real items from cart
 
     function init() {
         lucide.createIcons();
+        loadCartFromStorage();
         autoLocate();
         loadSavedCard();
+    }
+
+    function loadCartFromStorage() {
+        const saved = localStorage.getItem('vynixCartForPayment');
+        const itemsCard = document.getElementById('itemsCard');
+        
+        if (saved) {
+            const data = JSON.parse(saved);
+            subtotal = parseFloat(data.subtotal) || 0;
+            delivery = parseFloat(data.delivery) || 0;
+            discount = parseFloat(data.discount) || 0;
+            cartItems = data.items || [];
+            
+            // show items card only if we have real data
+            if (cartItems.length > 0) {
+                itemsCard.style.display = 'block';
+                renderOrderItems();
+            }
+        } else {
+            // fallback to zero (no mock numbers)
+            subtotal = 0;
+            delivery = 0;
+            discount = 0;
+            cartItems = [];
+        }
+        
+        updateTotals();
+    }
+
+    function renderOrderItems() {
+        const container = document.getElementById('itemsList');
+        container.innerHTML = '';
+        
+        cartItems.forEach((item, index) => {
+            const rowHTML = `
+            <div class="item-row" style="animation-delay: ${index * 80}ms;">
+                ${item.imageURL ? 
+                    `<img src="${item.imageURL}" class="item-img" alt="${item.name}">` : 
+                    `<div style="width:48px;height:48px;background:#f1f3f5;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="image" style="width:24px;height:24px;color:#ccc;"></i></div>`
+                }
+                <div class="item-info">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-qty-price">×${item.quantity} • R ${(item.price * item.quantity).toFixed(2)}</div>
+                </div>
+                <div style="font-weight:700; font-size:0.95rem; color:var(--accent);">R ${(item.price * item.quantity).toFixed(2)}</div>
+            </div>`;
+            container.innerHTML += rowHTML;
+        });
+        
+        lucide.createIcons();
     }
 
     async function autoLocate() {
@@ -333,6 +430,8 @@
 
     function updateTotals() {
         const final = (subtotal + delivery) - discount;
+        document.getElementById('subtotalDisplay').innerText = `R ${subtotal.toFixed(2)}`;
+        document.getElementById('deliveryDisplay').innerText = `R ${delivery.toFixed(2)}`;
         document.getElementById('totalDisplay').innerText = `R ${final.toFixed(2)}`;
         document.getElementById('btnTotal').innerText = `R ${final.toFixed(2)}`;
     }
@@ -408,6 +507,8 @@ Thank you for eating with Vynix!
             document.getElementById('loaderUI').style.display = 'none';
             document.getElementById('successUI').style.display = 'block';
             lucide.createIcons();
+            // clear payment cart data after success
+            localStorage.removeItem('vynixCartForPayment');
         }, 2000);
     }
 
