@@ -1284,13 +1284,6 @@ transition: var(--transition);
 #desktopAccountBtn { display: flex; }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   ── FLOATING CART BAR — FIXED ─────────────────────────────────
-   BUG FIX 1: On desktop the sidebar is always visible (position:fixed,
-   280px wide). The bar must start at left:var(--sidebar-width) so it
-   isn't hidden underneath the sidebar.
-   BUG FIX 2: cart-badge uses display:inline-flex (correct for <span>).
-   ══════════════════════════════════════════════════════════════ */
 .floating-cart-bar {
   position: fixed !important;
   bottom: 0 !important;
@@ -1310,7 +1303,6 @@ transition: var(--transition);
   opacity: 1 !important;
   pointer-events: auto !important;
 }
-/* Mobile: sit above bottom nav */
 @media (max-width: 767px) {
   .floating-cart-bar {
     bottom: 64px !important;
@@ -1318,7 +1310,6 @@ transition: var(--transition);
     left: 0 !important;
   }
 }
-/* Desktop: offset left so bar clears the fixed sidebar */
 @media (min-width: 768px) {
   .floating-cart-bar {
     left: var(--sidebar-width) !important;
@@ -1798,8 +1789,6 @@ const body=document.getElementById('cartBody'),countEl=document.getElementById('
 const checkoutBtn=document.getElementById('checkoutBtn'),summaryEl=document.getElementById('cartSummary');
 const cartFooter=document.getElementById('cartFooter'),bar=document.getElementById('floatingCartBar');
 const totalItems=getTotalItems(),totalPrice=getTotalPrice(),vendorCount=Object.keys(cartGroups).length;
-
-// ── FIX 2: use inline-flex so badge displays correctly as a <span> ──
 if(countEl){
   if(totalItems>0){
     countEl.style.display='inline-flex';
@@ -1808,7 +1797,6 @@ if(countEl){
     countEl.style.display='none';
   }
 }
-
 checkoutBtn.disabled=totalItems===0;
 if(totalItems>0){
 bar.classList.add('visible');
@@ -1925,6 +1913,8 @@ ${pt>0?`<div style="padding:2px 0;"><div class="co-eta-badge"><i data-lucide="cl
 `;
 footer.innerHTML=`<button class="co-confirm-btn" onclick="preparePaymentAndRedirect()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
 }
+
+// ── KEY FIX: redirect to payment.html ─────────────────────
 window.preparePaymentAndRedirect = () => {
   const data = {
     subtotal: Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0),
@@ -1933,8 +1923,9 @@ window.preparePaymentAndRedirect = () => {
     items: getAllCartItems()
   };
   localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
-  window.location.href = 'payment (3).html';
+  window.location.href = 'payment.html';
 };
+
 window.coGoNext = ()=>{
 coAnimDir='forward';
 coStep=1;
