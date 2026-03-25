@@ -6,6 +6,9 @@
     <title>Vynix Eats | Payment</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Mapbox Geocoder CSS -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.css" rel="stylesheet">
+    <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" rel="stylesheet">
     <style>
         :root {
             --bg: #f8f9fa; 
@@ -80,10 +83,11 @@
             display: flex; align-items: center; gap: 10px;
         }
 
-        /* Address Box */
+        /* Address Box with Mapbox */
         .address-wrapper {
             background: #f1f3f5; border-radius: var(--radius-sm);
             padding: 16px; transition: 0.3s;
+            position: relative;
         }
         .address-wrapper:focus-within { background: #fff; box-shadow: 0 0 0 2px var(--accent); }
         .address-input {
@@ -94,6 +98,79 @@
         .location-trigger {
             font-size: 0.75rem; color: var(--accent); font-weight: 700;
             margin-top: 8px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+        }
+        
+        /* Mapbox Geocoder Custom Styling */
+        .mapboxgl-ctrl-geocoder {
+            width: 100% !important;
+            max-width: 100% !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            border: none !important;
+        }
+        .mapboxgl-ctrl-geocoder--input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+            outline: none;
+            padding: 0 !important;
+            height: auto !important;
+        }
+        .mapboxgl-ctrl-geocoder--input:focus {
+            outline: none;
+        }
+        .mapboxgl-ctrl-geocoder--input::placeholder {
+            color: var(--dim);
+        }
+        .mapboxgl-ctrl-geocoder--icon {
+            display: none !important;
+        }
+        .mapboxgl-ctrl-geocoder--button {
+            display: none !important;
+        }
+        .suggestions-wrapper {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            margin-top: 8px;
+        }
+        .mapboxgl-ctrl-geocoder--suggestions {
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+            border-radius: var(--radius-sm) !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important;
+            border: 1px solid rgba(0,0,0,0.08) !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            overflow: hidden;
+        }
+        .mapboxgl-ctrl-geocoder--suggestion {
+            padding: 12px 16px !important;
+            border-bottom: 1px solid #f1f3f5 !important;
+            font-size: 0.9rem !important;
+        }
+        .mapboxgl-ctrl-geocoder--suggestion:last-child {
+            border-bottom: none !important;
+        }
+        .mapboxgl-ctrl-geocoder--suggestion:hover {
+            background: #f8f9fa !important;
+        }
+        .mapboxgl-ctrl-geocoder--suggestion-title {
+            font-weight: 700 !important;
+            color: var(--text) !important;
+        }
+        .mapboxgl-ctrl-geocoder--suggestion-address {
+            font-size: 0.8rem !important;
+            color: var(--dim) !important;
+        }
+        .mapboxgl-ctrl-geocoder--suggestion-active {
+            background: var(--accent-light) !important;
         }
 
         /* Promo Code */
@@ -219,6 +296,37 @@
             transition: 0.2s;
         }
         .receipt-btn:active { transform: scale(0.95); }
+        
+        /* Selected Address Display */
+        .selected-address-display {
+            margin-top: 12px;
+            padding: 12px;
+            background: var(--accent-light);
+            border-radius: 12px;
+            border: 1.5px solid rgba(6, 193, 103, 0.2);
+            display: none;
+        }
+        .selected-address-display.active {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .selected-address-display i {
+            color: var(--accent);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .selected-address-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.4;
+        }
+        .selected-address-coords {
+            font-size: 0.7rem;
+            color: var(--dim);
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -252,9 +360,17 @@
     <div class="card">
         <div class="section-title"><i data-lucide="map-pin" size="18"></i> Delivery Address</div>
         <div class="address-wrapper">
-            <input type="text" id="addressInput" class="address-input" placeholder="Detecting location...">
-            <div class="location-trigger" onclick="autoLocate()">
-                <i data-lucide="navigation" size="12"></i> Get current location
+            <div id="geocoder-container"></div>
+            <div class="location-trigger" onclick="useCurrentLocation()">
+                <i data-lucide="navigation" size="12"></i> Use current location
+            </div>
+        </div>
+        <!-- Selected Address Display -->
+        <div class="selected-address-display" id="selectedAddressDisplay">
+            <i data-lucide="map-pin" size="16"></i>
+            <div>
+                <div class="selected-address-text" id="selectedAddressText"></div>
+                <div class="selected-address-coords" id="selectedAddressCoords"></div>
             </div>
         </div>
     </div>
@@ -333,18 +449,160 @@
     </button>
 </div>
 
+<!-- Mapbox Scripts -->
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+
 <script>
+    // Mapbox Access Token
+    const MAPBOX_TOKEN = 'pk.eyJ1IjoidnluaXgiLCJhaSI6ImNsN3Y2dGJnajA4ZTYzN3F2a2Z6Z3R0d2QifQ.0-placeholder';
+    
     let currentMethod = 'cod';
     let subtotal = 0;
     let delivery = 0;
     let discount = 0;
-    let cartItems = []; // real items from cart
+    let cartItems = [];
+    
+    // Selected delivery address data
+    let selectedAddress = {
+        fullAddress: '',
+        placeName: '',
+        coordinates: null,
+        context: null
+    };
 
     function init() {
         lucide.createIcons();
         loadCartFromStorage();
-        autoLocate();
+        initMapboxGeocoder();
         loadSavedCard();
+        
+        // Try to load saved address from localStorage
+        const savedAddr = localStorage.getItem('vynixDeliveryAddress');
+        if (savedAddr) {
+            try {
+                const parsed = JSON.parse(savedAddr);
+                selectedAddress = parsed;
+                updateSelectedAddressDisplay();
+            } catch(e) {}
+        }
+    }
+
+    // Initialize Mapbox Geocoder
+    function initMapboxGeocoder() {
+        mapboxgl.accessToken = MAPBOX_TOKEN;
+        
+        const geocoder = new MapboxGeocoder({
+            accessToken: mapboxgl.accessToken,
+            types: 'address,place,locality,neighborhood',
+            countries: 'za', // South Africa - adjust as needed
+            placeholder: 'Search for delivery address...',
+            limit: 5,
+            autocomplete: true,
+            fuzzyMatch: true,
+            routing: false,
+            proximity: 'ip'
+        });
+        
+        geocoder.addTo('#geocoder-container');
+        
+        // Handle result selection
+        geocoder.on('result', (e) => {
+            const result = e.result;
+            selectedAddress = {
+                fullAddress: result.place_name,
+                placeName: result.text,
+                coordinates: result.center, // [lng, lat]
+                context: result.context || [],
+                mapboxId: result.id,
+                featureType: result.place_type?.[0] || 'address'
+            };
+            
+            updateSelectedAddressDisplay();
+            
+            // Save to localStorage
+            localStorage.setItem('vynixDeliveryAddress', JSON.stringify(selectedAddress));
+            
+            console.log('Selected address:', selectedAddress);
+        });
+        
+        // Handle clear
+        geocoder.on('clear', () => {
+            selectedAddress = {
+                fullAddress: '',
+                placeName: '',
+                coordinates: null,
+                context: null
+            };
+            updateSelectedAddressDisplay();
+            localStorage.removeItem('vynixDeliveryAddress');
+        });
+    }
+
+    // Update selected address display
+    function updateSelectedAddressDisplay() {
+        const display = document.getElementById('selectedAddressDisplay');
+        const text = document.getElementById('selectedAddressText');
+        const coords = document.getElementById('selectedAddressCoords');
+        
+        if (selectedAddress.fullAddress) {
+            display.classList.add('active');
+            text.textContent = selectedAddress.fullAddress;
+            
+            if (selectedAddress.coordinates) {
+                coords.textContent = `📍 ${selectedAddress.coordinates[1].toFixed(6)}, ${selectedAddress.coordinates[0].toFixed(6)}`;
+            }
+            
+            lucide.createIcons();
+        } else {
+            display.classList.remove('active');
+        }
+    }
+
+    // Use current location
+    function useCurrentLocation() {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser");
+            return;
+        }
+        
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            
+            // Reverse geocode to get address
+            try {
+                const response = await fetch(
+                    `https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=${MAPBOX_TOKEN}&limit=1`
+                );
+                const data = await response.json();
+                
+                if (data.features && data.features.length > 0) {
+                    const feature = data.features[0];
+                    selectedAddress = {
+                        fullAddress: feature.properties.full_address || feature.properties.name,
+                        placeName: feature.properties.name,
+                        coordinates: [longitude, latitude],
+                        context: feature.properties.context || [],
+                        mapboxId: feature.id,
+                        featureType: feature.properties.feature_type || 'address'
+                    };
+                    
+                    // Update geocoder input
+                    const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder--input');
+                    if (geocoderInput) {
+                        geocoderInput.value = selectedAddress.fullAddress;
+                    }
+                    
+                    updateSelectedAddressDisplay();
+                    localStorage.setItem('vynixDeliveryAddress', JSON.stringify(selectedAddress));
+                }
+            } catch (error) {
+                console.error('Reverse geocoding error:', error);
+                alert("Could not get address from your location");
+            }
+        }, () => {
+            alert("Unable to retrieve your location");
+        });
     }
 
     function loadCartFromStorage() {
@@ -358,13 +616,11 @@
             discount = parseFloat(data.discount) || 0;
             cartItems = data.items || [];
             
-            // show items card only if we have real data
             if (cartItems.length > 0) {
                 itemsCard.style.display = 'block';
                 renderOrderItems();
             }
         } else {
-            // fallback to zero (no mock numbers)
             subtotal = 0;
             delivery = 0;
             discount = 0;
@@ -395,21 +651,6 @@
         });
         
         lucide.createIcons();
-    }
-
-    async function autoLocate() {
-        const addrInput = document.getElementById('addressInput');
-        addrInput.value = "Locating...";
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(async (pos) => {
-                const { latitude, longitude } = pos.coords;
-                try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                    const data = await res.json();
-                    addrInput.value = data.address.road || data.display_name.split(',')[0];
-                } catch (e) { addrInput.value = "Current Location Detected"; }
-            }, () => { addrInput.value = ""; addrInput.placeholder = "Enter address manually"; });
-        }
     }
 
     function applyPromo() {
@@ -463,7 +704,9 @@
     function downloadReceipt() {
         const date = new Date().toLocaleString();
         const total = document.getElementById('totalDisplay').innerText;
-        const address = document.getElementById('addressInput').value;
+        const address = selectedAddress.fullAddress || 'Not specified';
+        const coords = selectedAddress.coordinates ? 
+            `${selectedAddress.coordinates[1].toFixed(6)}, ${selectedAddress.coordinates[0].toFixed(6)}` : '';
         const method = currentMethod === 'cod' ? 'Cash on Delivery' : 'Credit Card';
         
         const receiptText = `
@@ -472,7 +715,8 @@ VYNIX EATS - ORDER RECEIPT
 Date: ${date}
 Order ID: #VY-${Math.floor(1000 + Math.random() * 9000)}
 --------------------------
-Address: ${address}
+Delivery Address: ${address}
+${coords ? `Coordinates: ${coords}` : ''}
 Payment: ${method}
 --------------------------
 Subtotal: R ${subtotal.toFixed(2)}
@@ -493,6 +737,12 @@ Thank you for eating with Vynix!
     }
 
     function processPayment() {
+        // Validate address is selected
+        if (!selectedAddress.fullAddress) {
+            alert("Please enter a delivery address");
+            return;
+        }
+        
         if(currentMethod === 'card') {
             const num = document.getElementById('cardNum').value;
             if(num.length < 19) { alert("Invalid card number"); return; }
@@ -502,13 +752,31 @@ Thank you for eating with Vynix!
                 }));
             }
         }
+        
+        // Prepare order data with full address information
+        const orderData = {
+            items: cartItems,
+            subtotal: subtotal,
+            delivery: delivery,
+            discount: discount,
+            total: (subtotal + delivery) - discount,
+            paymentMethod: currentMethod,
+            deliveryAddress: selectedAddress.fullAddress,
+            deliveryCoordinates: selectedAddress.coordinates,
+            deliveryAddressData: selectedAddress,
+            timestamp: Date.now()
+        };
+        
+        // Store for vendor/admin dashboard access
+        localStorage.setItem('vynixPendingOrder', JSON.stringify(orderData));
+        
         document.getElementById('loadingOverlay').style.display = 'flex';
         setTimeout(() => {
             document.getElementById('loaderUI').style.display = 'none';
             document.getElementById('successUI').style.display = 'block';
             lucide.createIcons();
-            // clear payment cart data after success
             localStorage.removeItem('vynixCartForPayment');
+            localStorage.removeItem('vynixDeliveryAddress');
         }, 2000);
     }
 
