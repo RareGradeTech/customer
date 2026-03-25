@@ -1496,7 +1496,7 @@ transition: var(--transition);
 </div>
 <div class="cart-footer" id="cartFooter" style="display:none;">
 <div id="cartSummary"></div>
-<button class="checkout-btn" id="checkoutBtn" disabled onclick="window.location.href='payment.html'">Place Order</button>
+<button class="checkout-btn" id="checkoutBtn" disabled onclick="openCheckoutDrawer()">Place Order</button>
 </div>
 <!-- CHECKOUT DRAWER (nested) -->
 <div class="checkout-drawer" id="checkoutDrawer">
@@ -1923,7 +1923,7 @@ ${vc>1?`<div style="background:#fff8e1;border:1px solid #ffe082;border-radius:va
 <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="receipt"></i></div><span class="co-card-label">Price Breakdown</span></div><div class="co-card-body"><div class="co-price-row"><span>Subtotal</span><span>R${ts.toFixed(2)}</span></div><div class="co-price-row"><span>Delivery fee${vc>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div><div class="co-price-row total"><span>Total</span><span>R${total.toFixed(2)}</span></div></div></div>
 ${pt>0?`<div style="padding:2px 0;"><div class="co-eta-badge"><i data-lucide="clock"></i> Estimated prep: ~${pt} min</div></div>`:''}
 `;
-footer.innerHTML=`<button class="co-confirm-btn" onclick="coGoNext()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
+footer.innerHTML=`<button class="co-confirm-btn" onclick="window.location.href='payment.html'"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
 }
 window.coGoNext = ()=>{
 coAnimDir='forward';
