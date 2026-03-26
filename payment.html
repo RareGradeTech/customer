@@ -292,6 +292,8 @@
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes successPop { 0%{transform:scale(0);opacity:0;} 60%{transform:scale(1.2);} 100%{transform:scale(1);opacity:1;} }
+        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
         .receipt-btn {
             margin-top: 20px; background: #f1f3f5; color: var(--text);
             border: none; padding: 12px 24px; border-radius: 12px;
@@ -352,14 +354,24 @@
         <h2 style="margin-top:20px; font-weight:800;">Processing...</h2>
     </div>
     <div id="successUI" style="display:none; text-align: center; padding: 20px;">
-        <i data-lucide="check-circle" style="width:80px; height:80px; color:var(--accent); animation: successPop 0.6s cubic-bezier(0.34,1.56,0.64,1);"></i>
-        <h2 style="margin-top:20px; font-weight:800;">Order Placed!</h2>
-        <p style="color:var(--dim); max-width: 250px;">Your driver will be notified once the kitchen confirms.</p>
-       
-        <button class="receipt-btn" onclick="downloadReceipt()">
-            <i data-lucide="download" size="18"></i> Download Receipt
-        </button>
-        <p onclick="clearCartAndRedirectToMenu()" style="margin-top:30px; color:var(--accent); font-weight:700; cursor:pointer;">Back to Menu</p>
+        <div style="width:90px;height:90px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto;">
+            <i data-lucide="check-circle" style="width:54px; height:54px; color:var(--accent); animation: successPop 0.6s cubic-bezier(0.34,1.56,0.64,1);"></i>
+        </div>
+        <h2 style="margin-top:20px; font-weight:800; font-size:1.5rem;">Order Placed! 🎉</h2>
+        <p style="color:var(--dim); max-width: 260px; margin: 8px auto 0;">Your driver will be notified once the kitchen confirms.</p>
+
+        <!-- Redirect countdown -->
+        <div style="margin-top:22px; background:#f1f3f5; border-radius:14px; padding:14px 20px; display:inline-flex; align-items:center; gap:10px;">
+            <i data-lucide="loader-2" style="width:18px;height:18px;color:var(--accent);animation:spin 1s linear infinite;"></i>
+            <span style="font-size:0.88rem;font-weight:600;color:var(--dim);">Redirecting to your orders in <span id="redirectCountdown" style="color:var(--accent);font-weight:800;">3</span>s…</span>
+        </div>
+
+        <div style="margin-top:18px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+            <button class="receipt-btn" onclick="downloadReceipt()">
+                <i data-lucide="download" size="18"></i> Download Receipt
+            </button>
+            <p onclick="clearCartAndRedirectToMenu()" style="margin-top:8px; color:var(--accent); font-weight:700; cursor:pointer; font-size:0.9rem;">Go to Orders Now →</p>
+        </div>
     </div>
 </div>
 <div class="payment-container">
@@ -785,7 +797,10 @@ Thank you for eating with Vynix!
                 }));
             }
         }
+
+        const orderId = 'VY-' + Math.floor(1000 + Math.random() * 9000);
         const orderData = {
+            id: orderId,
             items: cartItems,
             subtotal: subtotal,
             delivery: delivery,
@@ -795,23 +810,52 @@ Thank you for eating with Vynix!
             deliveryAddress: selectedAddress.fullAddress,
             deliveryCoordinates: selectedAddress.coordinates,
             deliveryAddressData: selectedAddress,
-            timestamp: Date.now()
+            timestamp: Date.now(),
+            status: 'pending'
         };
-        localStorage.setItem('vynixPendingOrder', JSON.stringify(orderData));
+
+        // Save completed order to order history
+        const existingOrders = JSON.parse(localStorage.getItem('vynixOrderHistory') || '[]');
+        existingOrders.unshift(orderData);
+        localStorage.setItem('vynixOrderHistory', JSON.stringify(existingOrders));
+
+        // Signal to index.html to open orders tab on next load
+        localStorage.setItem('vynixOpenOrdersTab', '1');
+
+        // Show processing overlay
         document.getElementById('loadingOverlay').style.display = 'flex';
+
         setTimeout(() => {
+            // Show success state
             document.getElementById('loaderUI').style.display = 'none';
             document.getElementById('successUI').style.display = 'block';
             lucide.createIcons();
+
+            // Clear cart & address data immediately
             localStorage.removeItem('vynixCartForPayment');
             localStorage.removeItem('vynixDeliveryAddress');
+            localStorage.removeItem('vynixPendingOrder');
+
+            // Start countdown and auto-redirect
+            let count = 3;
+            const countEl = document.getElementById('redirectCountdown');
+            const countdownInterval = setInterval(() => {
+                count--;
+                if (countEl) countEl.textContent = count;
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                    window.location.href = 'index.html';
+                }
+            }, 1000);
         }, 2000);
     }
-    // Redirects to the specific vendor menu page and clears cart
+
+    // Redirects to home and clears cart (manual button)
     function clearCartAndRedirectToMenu() {
         localStorage.removeItem('vynixCartForPayment');
         localStorage.removeItem('vynixDeliveryAddress');
         localStorage.removeItem('vynixPendingOrder');
+        localStorage.setItem('vynixOpenOrdersTab', '1');
         window.location.href = 'index.html';
     }
     window.onload = init;
