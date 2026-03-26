@@ -1380,7 +1380,7 @@ function coReview(){
       </div>
     </div>
     <div><div class="co-eta"><i data-lucide="clock"></i> Estimated delivery: 25–40 min</div></div>`;
-  footer.innerHTML=`<button class="co-confirm" onclick="coNext()"><i data-lucide="arrow-right"></i> Continue to Delivery</button>`;
+  footer.innerHTML=`<button class="co-confirm" onclick="window.location.href='payment.html'"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
 }
 window.coNext=function(){ coDir='forward'; coStep=1; renderCoStep(); lucide.createIcons(); };
 function coPayment(){
