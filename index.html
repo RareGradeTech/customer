@@ -2038,6 +2038,56 @@ loadVendors();
 loadDeliveryFeeConfig();
 updateCartUI();
 if(navigator.geolocation)setTimeout(()=>detectCurrentLocation(),1000);
+
+// ── POST-PAYMENT REDIRECT: open Orders tab if coming from successful payment ──
+(function checkPostPaymentRedirect() {
+    if (localStorage.getItem('vynixOpenOrdersTab') === '1') {
+        localStorage.removeItem('vynixOpenOrdersTab');
+
+        const openOrdersTab = () => {
+            const isMobile = window.innerWidth < 768;
+
+            if (isMobile) {
+                // Mobile: switch bottom nav to Orders tab
+                const homeView    = document.getElementById('homeView');
+                const ordersView  = document.getElementById('ordersView');
+                const foodFilters = document.getElementById('foodFilters');
+
+                for (let i = 0; i < 4; i++) {
+                    const el = document.getElementById('bnav' + i);
+                    if (el) el.classList.toggle('active', i === 1);
+                }
+                if (homeView)    homeView.style.display    = 'none';
+                if (ordersView)  ordersView.style.display  = 'block';
+                if (foodFilters) foodFilters.style.display = 'none';
+                renderOrders(allUserOrders, 'mobileOrdersList');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                // Desktop: open the sidebar orders modal
+                if (typeof openSidebarOrders === 'function') {
+                    openSidebarOrders();
+                }
+            }
+
+            // Show a welcome-back toast
+            showToast('\u{1F389} Order placed! Track your order below.');
+        };
+
+        // If user is already loaded open immediately; otherwise poll up to 4s
+        if (typeof currentUser !== 'undefined' && currentUser) {
+            setTimeout(openOrdersTab, 800);
+        } else {
+            let waited = 0;
+            const pollUser = setInterval(() => {
+                waited += 300;
+                if ((typeof currentUser !== 'undefined' && currentUser) || waited >= 4000) {
+                    clearInterval(pollUser);
+                    openOrdersTab();
+                }
+            }, 300);
+        }
+    }
+})();
 </script>
 </body>
 </html>
