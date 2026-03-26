@@ -9,6 +9,10 @@
     <!-- Mapbox Geocoder CSS -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.css" rel="stylesheet">
     <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" rel="stylesheet">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
     <style>
         :root {
             --bg: #f8f9fa;
@@ -238,16 +242,48 @@
         }
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
-        /* Items List */
-        .items-list {
-            max-height: 280px;
-            overflow-y: auto;
+        /* Items List (grouped by vendor) */
+        .vendor-group {
+            border: 1px solid #f1f3f5;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            background: var(--surface);
+        }
+        .vendor-header {
+            padding: 14px;
+            background: #fafbfc;
+            border-bottom: 1px solid #f1f3f5;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .vendor-header-img {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: #f1f3f5;
+        }
+        .vendor-header-info {
+            flex: 1;
+        }
+        .vendor-name {
+            font-weight: 800;
+            font-size: 1rem;
+        }
+        .vendor-meta {
+            font-size: 0.75rem;
+            color: var(--dim);
+        }
+        .vendor-items {
+            padding: 8px 0;
         }
         .item-row {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px 0;
+            padding: 12px 14px;
             border-bottom: 1px solid #f1f3f5;
             animation: itemFadeIn 0.4s ease forwards;
         }
@@ -415,7 +451,7 @@
         </div>
         <div id="promoMsg" class="promo-msg"></div>
     </div>
-    <!-- REAL CART ITEMS SECTION (enhanced) -->
+    <!-- REAL CART ITEMS SECTION (grouped by vendor) -->
     <div class="card" id="itemsCard" style="display:none;">
         <div class="section-title"><i data-lucide="shopping-bag" size="18"></i> Your Items</div>
         <div id="itemsList" class="items-list"></div>
@@ -479,15 +515,30 @@
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
 <script>
-    // Mapbox Access Token - matched from index.html
+    // Firebase configuration (same as index.html)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
+        authDomain: "test-17881.firebaseapp.com",
+        projectId: "test-17881",
+        storageBucket: "test-17881.firebasestorage.app",
+        messagingSenderId: "1057428047643",
+        appId: "1:1057428047643:web:f3801c0d933225a5cd35be"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database(app);
+    const auth = firebase.auth(app);
+   
+    // Mapbox Access Token
     const MAPBOX_TOKEN = 'pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw';
    
     let currentMethod = 'cod';
     let subtotal = 0;
     let delivery = 0;
     let discount = 0;
-    let cartItems = [];
+    let cartGroups = {};          // will hold vendor groups
+    let cartItems = [];           // flattened for compatibility
     let geocoder = null;
+    let currentUser = null;
    
     // Selected delivery address data
     let selectedAddress = {
@@ -496,11 +547,21 @@
         coordinates: null,
         context: null
     };
+   
     function init() {
         lucide.createIcons();
-        loadCartFromStorage();
+        loadCartFromStorage();    // loads cartGroups and updates totals/display
         initMapboxGeocoder();
         loadSavedCard();
+      
+        // Listen for auth state
+        auth.onAuthStateChanged(user => {
+            currentUser = user;
+            if (!user) {
+                // Not signed in – we'll show a warning later when placing order
+                console.log("Not signed in. Orders will not be saved to Firebase.");
+            }
+        });
       
         const savedAddr = localStorage.getItem('vynixDeliveryAddress');
         if (savedAddr) {
@@ -519,6 +580,7 @@
             autoDetectCurrentLocation();
         }
     }
+   
     function initMapboxGeocoder() {
         mapboxgl.accessToken = MAPBOX_TOKEN;
       
@@ -556,6 +618,7 @@
             localStorage.removeItem('vynixDeliveryAddress');
         });
     }
+   
     function autoDetectCurrentLocation() {
         if (!navigator.geolocation) return;
         const detectingState = document.getElementById('detectingState');
@@ -594,6 +657,7 @@
             if (currentLocBtn) currentLocBtn.classList.remove('loading');
         }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     }
+   
     function useCurrentLocation() {
         if (!navigator.geolocation) {
             alert("Geolocation is not supported by your browser");
@@ -640,6 +704,7 @@
             alert(errorMsg);
         }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     }
+   
     function clearAddress() {
         selectedAddress = { fullAddress: '', placeName: '', coordinates: null, context: null };
         if (geocoder) geocoder.clear();
@@ -648,6 +713,7 @@
         updateSelectedAddressDisplay();
         localStorage.removeItem('vynixDeliveryAddress');
     }
+   
     function updateSelectedAddressDisplay() {
         const display = document.getElementById('selectedAddressDisplay');
         const text = document.getElementById('selectedAddressText');
@@ -663,6 +729,7 @@
             display.classList.remove('active');
         }
     }
+   
     function showToast(message) {
         const toast = document.createElement('div');
         toast.style.cssText = `position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--text);color:white;padding:12px 24px;border-radius:12px;font-weight:600;font-size:0.9rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:slideUp 0.3s ease;`;
@@ -674,25 +741,101 @@
             setTimeout(() => toast.remove(), 300);
         }, 2500);
     }
+   
     function loadCartFromStorage() {
-        const saved = localStorage.getItem('vynixCartForPayment');
+        const saved = localStorage.getItem('vynixCartGroupsForPayment');
         const itemsCard = document.getElementById('itemsCard');
         if (saved) {
-            const data = JSON.parse(saved);
-            subtotal = parseFloat(data.subtotal) || 0;
-            delivery = parseFloat(data.delivery) || 0;
-            discount = parseFloat(data.discount) || 0;
-            cartItems = data.items || [];
-            if (cartItems.length > 0) {
-                itemsCard.style.display = 'block';
-                renderOrderItems();
+            try {
+                cartGroups = JSON.parse(saved);
+                // Flatten items for compatibility with existing summary logic
+                cartItems = [];
+                subtotal = 0;
+                delivery = 0;
+                for (const vid in cartGroups) {
+                    const group = cartGroups[vid];
+                    const groupSub = (group.items || []).reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                    subtotal += groupSub;
+                    delivery += parseFloat(group.deliveryFee || 0);
+                    cartItems.push(...group.items);
+                }
+                if (Object.keys(cartGroups).length > 0) {
+                    itemsCard.style.display = 'block';
+                    renderOrderItems();
+                }
+            } catch(e) {
+                console.error('Failed to parse cart groups', e);
+                cartGroups = {};
+                cartItems = [];
+                subtotal = 0;
+                delivery = 0;
             }
         } else {
-            subtotal = 0; delivery = 0; discount = 0; cartItems = [];
+            // Fallback to old flat structure (backwards compatibility)
+            const flat = localStorage.getItem('vynixCartForPayment');
+            if (flat) {
+                const data = JSON.parse(flat);
+                subtotal = parseFloat(data.subtotal) || 0;
+                delivery = parseFloat(data.delivery) || 0;
+                discount = parseFloat(data.discount) || 0;
+                cartItems = data.items || [];
+                if (cartItems.length > 0) {
+                    itemsCard.style.display = 'block';
+                    renderOrderItemsLegacy();
+                }
+            } else {
+                subtotal = 0; delivery = 0; discount = 0; cartItems = [];
+            }
         }
         updateTotals();
     }
+   
     function renderOrderItems() {
+        const container = document.getElementById('itemsList');
+        container.innerHTML = '';
+        for (const vid in cartGroups) {
+            const group = cartGroups[vid];
+            const vendorName = group.vendorName || 'Restaurant';
+            const vendorImage = group.vendorImage || '';
+            const items = group.items || [];
+            const groupSub = items.reduce((s, i) => s + i.price * i.quantity, 0);
+            const groupFee = parseFloat(group.deliveryFee || 0);
+            const groupTotal = groupSub + groupFee;
+           
+            let itemsHtml = '';
+            items.forEach((item, idx) => {
+                itemsHtml += `
+                <div class="item-row" style="animation-delay: ${idx * 80}ms;">
+                    ${item.imageURL ? `<img src="${item.imageURL}" class="item-img" alt="${item.name}">` : `<div style="width:48px;height:48px;background:#f1f3f5;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i data-lucide="image" style="width:24px;height:24px;color:#ccc;"></i></div>`}
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-qty-price">×${item.quantity} • R ${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                    <div style="font-weight:700; font-size:0.95rem; color:var(--accent);">R ${(item.price * item.quantity).toFixed(2)}</div>
+                </div>`;
+            });
+           
+            const vendorHtml = `
+            <div class="vendor-group">
+                <div class="vendor-header">
+                    ${vendorImage ? `<img class="vendor-header-img" src="${vendorImage}" alt="${vendorName}">` : `<div class="vendor-header-img" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="store" style="width:22px;height:22px;color:var(--dim);"></i></div>`}
+                    <div class="vendor-header-info">
+                        <div class="vendor-name">${vendorName}</div>
+                        <div class="vendor-meta">${items.length} item(s) • Subtotal R${groupSub.toFixed(2)} + R${groupFee.toFixed(2)} delivery</div>
+                    </div>
+                    <div style="font-weight:800;">R${groupTotal.toFixed(2)}</div>
+                </div>
+                <div class="vendor-items">
+                    ${itemsHtml}
+                </div>
+            </div>`;
+            container.innerHTML += vendorHtml;
+        }
+        lucide.createIcons();
+    }
+   
+    // Fallback legacy render (no vendor grouping)
+    function renderOrderItemsLegacy() {
         const container = document.getElementById('itemsList');
         container.innerHTML = '';
         cartItems.forEach((item, index) => {
@@ -709,6 +852,7 @@
         });
         lucide.createIcons();
     }
+   
     function applyPromo() {
         const input = document.getElementById('promoInput').value.toUpperCase();
         const msg = document.getElementById('promoMsg');
@@ -724,6 +868,7 @@
         msg.style.display = "block";
         updateTotals();
     }
+   
     function updateTotals() {
         const final = (subtotal + delivery) - discount;
         document.getElementById('subtotalDisplay').innerText = `R ${subtotal.toFixed(2)}`;
@@ -731,6 +876,7 @@
         document.getElementById('totalDisplay').innerText = `R ${final.toFixed(2)}`;
         document.getElementById('btnTotal').innerText = `R ${final.toFixed(2)}`;
     }
+   
     function setMethod(id) {
         currentMethod = id;
         document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
@@ -740,11 +886,13 @@
         icon.setAttribute('data-lucide', 'check-circle-2'); icon.style.color = 'var(--accent)';
         lucide.createIcons();
     }
+   
     document.getElementById('cardNum').addEventListener('input', (e) => {
         let v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
         let parts = []; for (let i=0; i<v.length; i+=4) parts.push(v.substring(i, i+4));
         e.target.value = parts.join(' ');
     });
+   
     function loadSavedCard() {
         const saved = JSON.parse(localStorage.getItem('vynix_card'));
         if(saved) {
@@ -752,13 +900,14 @@
             document.getElementById('cardExpiry').value = saved.exp;
         }
     }
+   
     function downloadReceipt() {
         const date = new Date().toLocaleString();
         const total = document.getElementById('totalDisplay').innerText;
         const address = selectedAddress.fullAddress || 'Not specified';
         const coords = selectedAddress.coordinates ? `${selectedAddress.coordinates[1].toFixed(6)}, ${selectedAddress.coordinates[0].toFixed(6)}` : '';
         const method = currentMethod === 'cod' ? 'Cash on Delivery' : 'Credit Card';
-        const receiptText = `
+        let receiptText = `
 VYNIX EATS - ORDER RECEIPT
 --------------------------
 Date: ${date}
@@ -783,11 +932,26 @@ Thank you for eating with Vynix!
         element.click();
         document.body.removeChild(element);
     }
-    function processPayment() {
+   
+    // Helper to generate a random order number
+    function generateOrderNumber() {
+        const ts = Date.now().toString(36).toUpperCase();
+        const rand = Math.random().toString(36).substring(2, 5).toUpperCase();
+        return `VYX-${ts}-${rand}`;
+    }
+   
+    async function processPayment() {
         if (!selectedAddress.fullAddress) {
             alert("Please enter a delivery address");
             return;
         }
+       
+        if (!currentUser) {
+            alert("Please sign in to place your order. You will be redirected to the main page.");
+            window.location.href = 'index.html';
+            return;
+        }
+       
         if(currentMethod === 'card') {
             const num = document.getElementById('cardNum').value;
             if(num.length < 19) { alert("Invalid card number"); return; }
@@ -797,45 +961,81 @@ Thank you for eating with Vynix!
                 }));
             }
         }
-
-        const orderId = 'VY-' + Math.floor(1000 + Math.random() * 9000);
-        const orderData = {
-            id: orderId,
-            items: cartItems,
-            subtotal: subtotal,
-            delivery: delivery,
-            discount: discount,
-            total: (subtotal + delivery) - discount,
-            paymentMethod: currentMethod,
-            deliveryAddress: selectedAddress.fullAddress,
-            deliveryCoordinates: selectedAddress.coordinates,
-            deliveryAddressData: selectedAddress,
-            timestamp: Date.now(),
-            status: 'pending'
-        };
-
-        // Save completed order to order history
-        const existingOrders = JSON.parse(localStorage.getItem('vynixOrderHistory') || '[]');
-        existingOrders.unshift(orderData);
-        localStorage.setItem('vynixOrderHistory', JSON.stringify(existingOrders));
-
-        // Signal to index.html to open orders tab on next load
-        localStorage.setItem('vynixOpenOrdersTab', '1');
-
-        // Show processing overlay
+       
+        // Show loading overlay
         document.getElementById('loadingOverlay').style.display = 'flex';
-
-        setTimeout(() => {
-            // Show success state
-            document.getElementById('loaderUI').style.display = 'none';
-            document.getElementById('successUI').style.display = 'block';
-            lucide.createIcons();
-
-            // Clear cart & address data immediately
+       
+        try {
+            // Create an order per vendor group
+            const ordersPromises = [];
+            const orderNumbers = [];
+            for (const [vendorId, group] of Object.entries(cartGroups)) {
+                const sub = (group.items || []).reduce((s, i) => s + i.price * i.quantity, 0);
+                const fee = parseFloat(group.deliveryFee || 0);
+                const total = sub + fee;
+                const orderNumber = generateOrderNumber();
+                orderNumbers.push(orderNumber);
+                const orderRef = firebase.database().ref('orders').push();
+                const orderData = {
+                    userId: currentUser.uid,
+                    vendorId: vendorId,
+                    vendorKey: vendorId,
+                    vendorName: group.vendorName || 'Restaurant',
+                    vendorImage: group.vendorImage || '',
+                    customerName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Customer',
+                    userEmail: currentUser.email || '',
+                    orderNumber: orderNumber,
+                    items: group.items,
+                    subtotal: sub,
+                    deliveryFee: fee,
+                    total: total,
+                    paymentMethod: currentMethod,
+                    deliveryAddress: selectedAddress.fullAddress,
+                    deliveryLat: selectedAddress.coordinates ? selectedAddress.coordinates[1] : null,
+                    deliveryLng: selectedAddress.coordinates ? selectedAddress.coordinates[0] : null,
+                    status: 'pending',
+                    createdAt: Date.now(),
+                    updatedAt: Date.now(),
+                    estimatedPrepTime: Math.ceil((group.items || []).reduce((s, i) => s + (i.prepTime || 0), 0) / (group.items.length || 1))
+                };
+                ordersPromises.push(orderRef.set(orderData));
+            }
+            await Promise.all(ordersPromises);
+           
+            // Save order history to localStorage for receipt/backup
+            const combinedOrderId = 'VY-' + Math.floor(1000 + Math.random() * 9000);
+            const orderDataCombined = {
+                id: combinedOrderId,
+                items: cartItems,
+                subtotal: subtotal,
+                delivery: delivery,
+                discount: discount,
+                total: (subtotal + delivery) - discount,
+                paymentMethod: currentMethod,
+                deliveryAddress: selectedAddress.fullAddress,
+                deliveryCoordinates: selectedAddress.coordinates,
+                deliveryAddressData: selectedAddress,
+                timestamp: Date.now(),
+                status: 'pending'
+            };
+            const existingOrders = JSON.parse(localStorage.getItem('vynixOrderHistory') || '[]');
+            existingOrders.unshift(orderDataCombined);
+            localStorage.setItem('vynixOrderHistory', JSON.stringify(existingOrders));
+           
+            // Signal to index.html to open orders tab on next load
+            localStorage.setItem('vynixOpenOrdersTab', '1');
+           
+            // Clear cart data
+            localStorage.removeItem('vynixCartGroupsForPayment');
             localStorage.removeItem('vynixCartForPayment');
             localStorage.removeItem('vynixDeliveryAddress');
             localStorage.removeItem('vynixPendingOrder');
-
+           
+            // Show success UI
+            document.getElementById('loaderUI').style.display = 'none';
+            document.getElementById('successUI').style.display = 'block';
+            lucide.createIcons();
+           
             // Start countdown and auto-redirect
             let count = 3;
             const countEl = document.getElementById('redirectCountdown');
@@ -847,17 +1047,23 @@ Thank you for eating with Vynix!
                     window.location.href = 'index.html';
                 }
             }, 1000);
-        }, 2000);
+        } catch (error) {
+            console.error('Order placement failed:', error);
+            alert('Something went wrong. Please try again.');
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
     }
-
+   
     // Redirects to home and clears cart (manual button)
     function clearCartAndRedirectToMenu() {
+        localStorage.removeItem('vynixCartGroupsForPayment');
         localStorage.removeItem('vynixCartForPayment');
         localStorage.removeItem('vynixDeliveryAddress');
         localStorage.removeItem('vynixPendingOrder');
         localStorage.setItem('vynixOpenOrdersTab', '1');
         window.location.href = 'index.html';
     }
+   
     window.onload = init;
 </script>
 </body>
