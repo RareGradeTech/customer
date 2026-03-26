@@ -794,9 +794,9 @@ pointer-events: none;visibility: hidden;
 <div class="restaurants-grid" id="restaurantsGrid"></div>
 </div>
 </div>
-<div id="ordersView" style="display:none;">
-<h2 class="section-title" style="margin-bottom:20px;">Your Orders</h2>
-<div id="mobileOrdersList"></div>
+<div id="ordersView" style="display:none; padding-bottom: 80px;">
+  <h2 class="section-title" style="margin-bottom:20px;">Your Orders</h2>
+  <div id="mobileOrdersList"></div>
 </div>
 </main>
 </div>
@@ -1735,8 +1735,10 @@ window.reorderItems = async(orderId,vendorId,event)=>{
 };
 
 // ── FIX 1: subscribeToOrders — realtime listener that updates ALL views including the open modal ──
+// ── ORDERS SUBSCRIPTION - FIXED TO SHOW ALL ORDERS ──
 function subscribeToOrders(){
-  if(!currentUserId)return;
+  if(!currentUserId) return;
+
   onValue(ref(db,'orders'), snap => {
     const orders = [];
     snap.forEach(child => {
@@ -1745,13 +1747,16 @@ function subscribeToOrders(){
         orders.push({ id: child.key, ...o });
       }
     });
+
+    // Sort newest first
     orders.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+
     allUserOrders = orders;
 
-    // Always update the mobile orders list view
-    renderOrders(orders.slice(0, 20), 'mobileOrdersList');
+    // Always render FULL list in mobile Orders tab
+    renderOrders(orders, 'mobileOrdersList');
 
-    // ── FIX 1: If orders modal is open on the orders tab, update it live ──
+    // Update sidebar modal if it's currently open on Orders tab
     const modal = document.getElementById('sidebarDataModal');
     const ordersPane = document.getElementById('sidebarPane-orders');
     if(modal && modal.classList.contains('active') && ordersPane && ordersPane.classList.contains('active')){
@@ -1972,36 +1977,55 @@ document.addEventListener('DOMContentLoaded',()=>{
 window.bottomNavClick = function(idx) {
   for(let i=0;i<4;i++){
     const el=document.getElementById(`bnav${i}`);
-    if(el)el.classList.toggle('active',i===idx);
+    if(el) el.classList.toggle('active', i===idx);
   }
-  const homeView=document.getElementById('homeView');
-  const ordersView=document.getElementById('ordersView');
-  const mobileSearchBar=document.getElementById('mobileSearchBar');
-  const foodFilters=document.getElementById('foodFilters');
-  mobileSearchBar.style.display='none';
-  if(idx===0){
-    homeView.style.display='block';ordersView.style.display='none';
-    if(currentStoreType==='restaurant') foodFilters.style.display='block';
-    window.scrollTo({top:0,behavior:'smooth'});
-  } else if(idx===1){
+
+  const homeView = document.getElementById('homeView');
+  const ordersView = document.getElementById('ordersView');
+  const mobileSearchBar = document.getElementById('mobileSearchBar');
+  const foodFilters = document.getElementById('foodFilters');
+
+  mobileSearchBar.style.display = 'none';
+
+  if(idx === 0){ // Home
+    homeView.style.display = 'block';
+    ordersView.style.display = 'none';
+    if(currentStoreType==='restaurant') foodFilters.style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  } 
+  else if(idx === 1){ // Orders Tab - FIXED
     if(!currentUser){
-      showToast("Sign in to view your orders");handleProfileClick();
-      for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el)el.classList.toggle('active',i===0);}
+      showToast("Sign in to view your orders");
+      handleProfileClick();
+      // Reset to home
+      for(let i=0;i<4;i++){
+        const el=document.getElementById(`bnav${i}`);
+        if(el) el.classList.toggle('active', i===0);
+      }
       return;
     }
-    foodFilters.style.display='none';homeView.style.display='none';ordersView.style.display='block';
-    renderOrders(allUserOrders.slice(0, 20), 'mobileOrdersList');
-    window.scrollTo({top:0,behavior:'smooth'});
-  } else if(idx===2){
-    homeView.style.display='block';ordersView.style.display='none';
-    if(currentStoreType==='restaurant') foodFilters.style.display='block';
-    mobileSearchBar.style.display='block';
-    const mobileInput=document.getElementById('mobileSearchInput');
-    if(mobileInput){mobileInput.value=searchTerm;setTimeout(()=>mobileInput.focus(),80);}
-  } else if(idx===3){
-    if(currentStoreType==='restaurant') foodFilters.style.display='block';
+
+    foodFilters.style.display = 'none';
+    homeView.style.display = 'none';
+    ordersView.style.display = 'block';
+
+    // Show ALL orders (no limit)
+    renderOrders(allUserOrders, 'mobileOrdersList');
+    window.scrollTo({top:0, behavior:'smooth'});
+  } 
+  else if(idx === 2){ // Search
+    homeView.style.display = 'block';
+    ordersView.style.display = 'none';
+    if(currentStoreType==='restaurant') foodFilters.style.display = 'block';
+    mobileSearchBar.style.display = 'block';
+    const mobileInput = document.getElementById('mobileSearchInput');
+    if(mobileInput){
+      mobileInput.value = searchTerm;
+      setTimeout(()=>mobileInput.focus(), 80);
+    }
+  } 
+  else if(idx === 3){ // Profile
     handleProfileClick();
-    for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el)el.classList.toggle('active',i===idx);}
   }
 };
 
