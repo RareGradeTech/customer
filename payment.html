@@ -345,9 +345,38 @@
         .detecting-location i {
             animation: spin 1s linear infinite;
         }
+        /* Firebase sync indicator */
+        .sync-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(6, 193, 103, 0.3);
+        }
+        .sync-indicator.show {
+            display: flex;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
+<div id="syncIndicator" class="sync-indicator">
+    <i data-lucide="check-circle" size="14"></i>
+    <span>Saved to cloud</span>
+</div>
 <div id="loadingOverlay">
     <div id="loaderUI">
         <div class="spinner"></div>
@@ -478,8 +507,28 @@
 <!-- Mapbox Scripts -->
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-    // Mapbox Access Token - matched from index.html
+    // ============================================
+    // FIREBASE CONFIGURATION
+    // ============================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
+        authDomain: "test-17881.firebaseapp.com",
+        projectId: "test-17881",
+        storageBucket: "test-17881.firebasestorage.app",
+        messagingSenderId: "1057428047643",
+        appId: "1:1057428047643:web:f3801c0d933225a5cd35be",
+        databaseURL: "https://test-17881-default-rtdb.firebaseio.com"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Mapbox Access Token
     const MAPBOX_TOKEN = 'pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw';
    
     let currentMethod = 'cod';
@@ -488,6 +537,7 @@
     let discount = 0;
     let cartItems = [];
     let geocoder = null;
+    let userId = null;
    
     // Selected delivery address data
     let selectedAddress = {
@@ -496,29 +546,142 @@
         coordinates: null,
         context: null
     };
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
     function init() {
         lucide.createIcons();
+        
+        // Get or create anonymous user ID
+        userId = localStorage.getItem('vynixUserId');
+        if (!userId) {
+            userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('vynixUserId', userId);
+        }
+        
         loadCartFromStorage();
         initMapboxGeocoder();
         loadSavedCard();
+        loadSavedLocationFromFirebase();
       
-        const savedAddr = localStorage.getItem('vynixDeliveryAddress');
-        if (savedAddr) {
-            try {
-                const parsed = JSON.parse(savedAddr);
-                selectedAddress = parsed;
-                updateSelectedAddressDisplay();
-                if (geocoder && selectedAddress.fullAddress) {
-                    const input = document.querySelector('.mapboxgl-ctrl-geocoder--input');
-                    if (input) input.value = selectedAddress.fullAddress;
-                }
-            } catch(e) {
-                console.error('Error parsing saved address:', e);
-            }
-        } else {
+        if (!selectedAddress.fullAddress) {
             autoDetectCurrentLocation();
         }
     }
+
+    // ============================================
+    // FIREBASE: SAVE LOCATION TO REALTIME DATABASE
+    // ============================================
+    function saveLocationToFirebase() {
+        if (!selectedAddress.fullAddress || !userId) return Promise.resolve();
+        
+        const locationData = {
+            fullAddress: selectedAddress.fullAddress,
+            placeName: selectedAddress.placeName,
+            coordinates: selectedAddress.coordinates,
+            context: selectedAddress.context || [],
+            mapboxId: selectedAddress.mapboxId || '',
+            featureType: selectedAddress.featureType || 'address',
+            updatedAt: firebase.database.ServerValue.TIMESTAMP
+        };
+        
+        // Save to user's current location and location history
+        const updates = {};
+        updates[`users/${userId}/currentLocation`] = locationData;
+        
+        // Also save to savedLocations with timestamp as key for history
+        const locationKey = selectedAddress.mapboxId || Date.now().toString();
+        updates[`users/${userId}/savedLocations/${locationKey}`] = locationData;
+        
+        return database.ref().update(updates)
+            .then(() => {
+                console.log('✓ Location saved to Firebase');
+                showSyncIndicator();
+                return true;
+            })
+            .catch(err => {
+                console.error('✗ Error saving location:', err);
+                return false;
+            });
+    }
+
+    // ============================================
+    // FIREBASE: LOAD SAVED LOCATION FROM DATABASE
+    // ============================================
+    function loadSavedLocationFromFirebase() {
+        if (!userId) return;
+        
+        database.ref(`users/${userId}/currentLocation`).once('value')
+            .then(snapshot => {
+                const data = snapshot.val();
+                if (data) {
+                    selectedAddress = {
+                        fullAddress: data.fullAddress,
+                        placeName: data.placeName,
+                        coordinates: data.coordinates,
+                        context: data.context || [],
+                        mapboxId: data.mapboxId,
+                        featureType: data.featureType
+                    };
+                    updateSelectedAddressDisplay();
+                    if (geocoder && selectedAddress.fullAddress) {
+                        const input = document.querySelector('.mapboxgl-ctrl-geocoder--input');
+                        if (input) input.value = selectedAddress.fullAddress;
+                    }
+                    console.log('✓ Location loaded from Firebase');
+                }
+            })
+            .catch(err => console.error('✗ Error loading location:', err));
+    }
+
+    // ============================================
+    // FIREBASE: SAVE ORDER TO REALTIME DATABASE
+    // ============================================
+    function saveOrderToFirebase(orderData) {
+        const orderRef = database.ref(`orders/${orderData.id}`);
+        const userOrderRef = database.ref(`users/${userId}/orders/${orderData.id}`);
+        
+        // Add Firebase server timestamp
+        orderData.serverTimestamp = firebase.database.ServerValue.TIMESTAMP;
+        orderData.userId = userId;
+        
+        return Promise.all([
+            orderRef.set(orderData),
+            userOrderRef.set({
+                id: orderData.id,
+                total: orderData.total,
+                status: orderData.status,
+                timestamp: orderData.timestamp,
+                serverTimestamp: firebase.database.ServerValue.TIMESTAMP,
+                itemCount: orderData.items ? orderData.items.length : 0,
+                deliveryAddress: orderData.deliveryAddress
+            })
+        ]).then(() => {
+            console.log('✓ Order saved to Firebase:', orderData.id);
+            showSyncIndicator();
+            return true;
+        }).catch(err => {
+            console.error('✗ Error saving order:', err);
+            throw err;
+        });
+    }
+
+    // ============================================
+    // UI: SYNC INDICATOR
+    // ============================================
+    function showSyncIndicator() {
+        const indicator = document.getElementById('syncIndicator');
+        indicator.classList.add('show');
+        lucide.createIcons();
+        setTimeout(() => {
+            indicator.classList.remove('show');
+        }, 2000);
+    }
+
+    // ============================================
+    // MAPBOX GEOCODER
+    // ============================================
     function initMapboxGeocoder() {
         mapboxgl.accessToken = MAPBOX_TOKEN;
       
@@ -547,15 +710,25 @@
                 featureType: result.place_type?.[0] || 'address'
             };
             updateSelectedAddressDisplay();
-            localStorage.setItem('vynixDeliveryAddress', JSON.stringify(selectedAddress));
+            
+            // Save to Firebase
+            saveLocationToFirebase();
         });
       
         geocoder.on('clear', () => {
             selectedAddress = { fullAddress: '', placeName: '', coordinates: null, context: null };
             updateSelectedAddressDisplay();
-            localStorage.removeItem('vynixDeliveryAddress');
+            
+            // Remove from Firebase
+            if (userId) {
+                database.ref(`users/${userId}/currentLocation`).remove();
+            }
         });
     }
+
+    // ============================================
+    // LOCATION: AUTO DETECT
+    // ============================================
     function autoDetectCurrentLocation() {
         if (!navigator.geolocation) return;
         const detectingState = document.getElementById('detectingState');
@@ -581,7 +754,9 @@
                     const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder--input');
                     if (geocoderInput) geocoderInput.value = selectedAddress.fullAddress;
                     updateSelectedAddressDisplay();
-                    localStorage.setItem('vynixDeliveryAddress', JSON.stringify(selectedAddress));
+                    
+                    // Save to Firebase
+                    await saveLocationToFirebase();
                 }
             } catch (error) {
                 console.error('Reverse geocoding error:', error);
@@ -594,6 +769,10 @@
             if (currentLocBtn) currentLocBtn.classList.remove('loading');
         }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     }
+
+    // ============================================
+    // LOCATION: USE CURRENT LOCATION
+    // ============================================
     function useCurrentLocation() {
         if (!navigator.geolocation) {
             alert("Geolocation is not supported by your browser");
@@ -622,8 +801,10 @@
                     const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder--input');
                     if (geocoderInput) geocoderInput.value = selectedAddress.fullAddress;
                     updateSelectedAddressDisplay();
-                    localStorage.setItem('vynixDeliveryAddress', JSON.stringify(selectedAddress));
-                    showToast('Location updated!');
+                    
+                    // Save to Firebase
+                    await saveLocationToFirebase();
+                    showToast('Location updated & saved to cloud!');
                 }
             } catch (error) {
                 console.error('Reverse geocoding error:', error);
@@ -640,14 +821,26 @@
             alert(errorMsg);
         }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     }
+
+    // ============================================
+    // LOCATION: CLEAR ADDRESS
+    // ============================================
     function clearAddress() {
         selectedAddress = { fullAddress: '', placeName: '', coordinates: null, context: null };
         if (geocoder) geocoder.clear();
         const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder--input');
         if (geocoderInput) geocoderInput.value = '';
         updateSelectedAddressDisplay();
-        localStorage.removeItem('vynixDeliveryAddress');
+        
+        // Remove from Firebase
+        if (userId) {
+            database.ref(`users/${userId}/currentLocation`).remove();
+        }
     }
+
+    // ============================================
+    // UI: UPDATE ADDRESS DISPLAY
+    // ============================================
     function updateSelectedAddressDisplay() {
         const display = document.getElementById('selectedAddressDisplay');
         const text = document.getElementById('selectedAddressText');
@@ -663,6 +856,10 @@
             display.classList.remove('active');
         }
     }
+
+    // ============================================
+    // UI: TOAST NOTIFICATION
+    // ============================================
     function showToast(message) {
         const toast = document.createElement('div');
         toast.style.cssText = `position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--text);color:white;padding:12px 24px;border-radius:12px;font-weight:600;font-size:0.9rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.3);animation:slideUp 0.3s ease;`;
@@ -674,6 +871,10 @@
             setTimeout(() => toast.remove(), 300);
         }, 2500);
     }
+
+    // ============================================
+    // CART: LOAD FROM STORAGE
+    // ============================================
     function loadCartFromStorage() {
         const saved = localStorage.getItem('vynixCartForPayment');
         const itemsCard = document.getElementById('itemsCard');
@@ -692,6 +893,10 @@
         }
         updateTotals();
     }
+
+    // ============================================
+    // CART: RENDER ITEMS
+    // ============================================
     function renderOrderItems() {
         const container = document.getElementById('itemsList');
         container.innerHTML = '';
@@ -709,6 +914,10 @@
         });
         lucide.createIcons();
     }
+
+    // ============================================
+    // PROMO: APPLY CODE
+    // ============================================
     function applyPromo() {
         const input = document.getElementById('promoInput').value.toUpperCase();
         const msg = document.getElementById('promoMsg');
@@ -724,6 +933,10 @@
         msg.style.display = "block";
         updateTotals();
     }
+
+    // ============================================
+    // UI: UPDATE TOTALS
+    // ============================================
     function updateTotals() {
         const final = (subtotal + delivery) - discount;
         document.getElementById('subtotalDisplay').innerText = `R ${subtotal.toFixed(2)}`;
@@ -731,6 +944,10 @@
         document.getElementById('totalDisplay').innerText = `R ${final.toFixed(2)}`;
         document.getElementById('btnTotal').innerText = `R ${final.toFixed(2)}`;
     }
+
+    // ============================================
+    // PAYMENT: SET METHOD
+    // ============================================
     function setMethod(id) {
         currentMethod = id;
         document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
@@ -740,11 +957,19 @@
         icon.setAttribute('data-lucide', 'check-circle-2'); icon.style.color = 'var(--accent)';
         lucide.createIcons();
     }
+
+    // ============================================
+    // CARD: FORMAT INPUT
+    // ============================================
     document.getElementById('cardNum').addEventListener('input', (e) => {
         let v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
         let parts = []; for (let i=0; i<v.length; i+=4) parts.push(v.substring(i, i+4));
         e.target.value = parts.join(' ');
     });
+
+    // ============================================
+    // CARD: LOAD SAVED
+    // ============================================
     function loadSavedCard() {
         const saved = JSON.parse(localStorage.getItem('vynix_card'));
         if(saved) {
@@ -752,6 +977,10 @@
             document.getElementById('cardExpiry').value = saved.exp;
         }
     }
+
+    // ============================================
+    // RECEIPT: DOWNLOAD
+    // ============================================
     function downloadReceipt() {
         const date = new Date().toLocaleString();
         const total = document.getElementById('totalDisplay').innerText;
@@ -783,11 +1012,19 @@ Thank you for eating with Vynix!
         element.click();
         document.body.removeChild(element);
     }
-    function processPayment() {
+
+    // ============================================
+    // PAYMENT: PROCESS ORDER (WITH FIREBASE)
+    // ============================================
+    async function processPayment() {
         if (!selectedAddress.fullAddress) {
             alert("Please enter a delivery address");
             return;
         }
+        
+        // Save location to Firebase first
+        await saveLocationToFirebase();
+        
         if(currentMethod === 'card') {
             const num = document.getElementById('cardNum').value;
             if(num.length < 19) { alert("Invalid card number"); return; }
@@ -799,6 +1036,8 @@ Thank you for eating with Vynix!
         }
 
         const orderId = 'VY-' + Math.floor(1000 + Math.random() * 9000);
+        const timestamp = Date.now();
+        
         const orderData = {
             id: orderId,
             items: cartItems,
@@ -810,33 +1049,34 @@ Thank you for eating with Vynix!
             deliveryAddress: selectedAddress.fullAddress,
             deliveryCoordinates: selectedAddress.coordinates,
             deliveryAddressData: selectedAddress,
-            timestamp: Date.now(),
+            timestamp: timestamp,
             status: 'pending'
         };
-
-        // Save completed order to order history
-        const existingOrders = JSON.parse(localStorage.getItem('vynixOrderHistory') || '[]');
-        existingOrders.unshift(orderData);
-        localStorage.setItem('vynixOrderHistory', JSON.stringify(existingOrders));
-
-        // Signal to index.html to open orders tab on next load
-        localStorage.setItem('vynixOpenOrdersTab', '1');
 
         // Show processing overlay
         document.getElementById('loadingOverlay').style.display = 'flex';
 
-        setTimeout(() => {
-            // Show success state
+        try {
+            // Save to Firebase Realtime Database
+            await saveOrderToFirebase(orderData);
+            
+            // Also save to localStorage for backup/offline
+            const existingOrders = JSON.parse(localStorage.getItem('vynixOrderHistory') || '[]');
+            existingOrders.unshift(orderData);
+            localStorage.setItem('vynixOrderHistory', JSON.stringify(existingOrders));
+            localStorage.setItem('vynixOpenOrdersTab', '1');
+
+            // Show success
             document.getElementById('loaderUI').style.display = 'none';
             document.getElementById('successUI').style.display = 'block';
             lucide.createIcons();
 
-            // Clear cart & address data immediately
+            // Clear cart & address data
             localStorage.removeItem('vynixCartForPayment');
             localStorage.removeItem('vynixDeliveryAddress');
             localStorage.removeItem('vynixPendingOrder');
 
-            // Start countdown and auto-redirect
+            // Start countdown
             let count = 3;
             const countEl = document.getElementById('redirectCountdown');
             const countdownInterval = setInterval(() => {
@@ -847,10 +1087,17 @@ Thank you for eating with Vynix!
                     window.location.href = 'index.html';
                 }
             }, 1000);
-        }, 2000);
+            
+        } catch (error) {
+            console.error('Order processing failed:', error);
+            alert('There was an error placing your order. Please try again.');
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
     }
 
-    // Redirects to home and clears cart (manual button)
+    // ============================================
+    // NAVIGATION: CLEAR & REDIRECT
+    // ============================================
     function clearCartAndRedirectToMenu() {
         localStorage.removeItem('vynixCartForPayment');
         localStorage.removeItem('vynixDeliveryAddress');
@@ -858,6 +1105,8 @@ Thank you for eating with Vynix!
         localStorage.setItem('vynixOpenOrdersTab', '1');
         window.location.href = 'index.html';
     }
+
+    // Start
     window.onload = init;
 </script>
 </body>
