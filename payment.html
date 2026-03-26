@@ -370,38 +370,7 @@
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Vendor selector */
-        .vendor-selector {
-            background: var(--accent-light);
-            border: 1.5px solid var(--accent);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 16px;
-        }
-        .vendor-selector label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            display: block;
-            margin-bottom: 6px;
-        }
-        .vendor-selector select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1.5px solid var(--accent);
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text);
-            background: white;
-            outline: none;
-            cursor: pointer;
-        }
     </style>
-<base target="_blank">
 </head>
 <body>
 <div id="syncIndicator" class="sync-indicator">
@@ -441,15 +410,6 @@
         </div>
         <h1 style="font-weight:800; font-size:1.5rem;">Checkout</h1>
     </div>
-    
-    <!-- Vendor Selector -->
-    <div class="card vendor-selector" id="vendorSelectorCard">
-        <label><i data-lucide="store" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Select Restaurant/Store</label>
-        <select id="vendorSelect" onchange="selectVendor(this.value)">
-            <option value="">Loading vendors...</option>
-        </select>
-    </div>
-    
     <div class="card">
         <div class="section-title"><i data-lucide="map-pin" size="18"></i> Delivery Address</div>
         <div class="address-wrapper">
@@ -583,9 +543,6 @@
     let userId = null;
     let currentOrderId = null;
     let currentOrderData = null;
-    let selectedVendorKey = null;
-    let selectedVendorData = null;
-    let availableVendors = {};
    
     // Selected delivery address data
     let selectedAddress = {
@@ -608,9 +565,6 @@
             localStorage.setItem('vynixUserId', userId);
         }
         
-        // Load available vendors
-        loadVendors();
-        
         loadCartFromStorage();
         initMapboxGeocoder();
         loadSavedCard();
@@ -618,84 +572,6 @@
       
         if (!selectedAddress.fullAddress) {
             autoDetectCurrentLocation();
-        }
-    }
-
-    // ============================================
-    // LOAD VENDORS FROM FIREBASE
-    // ============================================
-    function loadVendors() {
-        const vendorSelect = document.getElementById('vendorSelect');
-        
-        database.ref('vendors').once('value')
-            .then(snapshot => {
-                const vendors = snapshot.val();
-                availableVendors = {};
-                
-                if (vendors) {
-                    Object.entries(vendors).forEach(([key, vendor]) => {
-                        // Only show active vendors
-                        if (vendor.status === 'active' || !vendor.status) {
-                            availableVendors[key] = {
-                                ...vendor,
-                                key: key
-                            };
-                        }
-                    });
-                }
-                
-                // Populate dropdown
-                let options = '<option value="">Select a restaurant/store...</option>';
-                Object.entries(availableVendors).forEach(([key, vendor]) => {
-                    const storeType = vendor.storeType || 'restaurant';
-                    const emoji = getStoreEmoji(storeType);
-                    options += `<option value="${key}">${emoji} ${vendor.name || 'Unnamed Store'} (${vendor.vendorID || key.slice(-6)})</option>`;
-                });
-                
-                vendorSelect.innerHTML = options;
-                
-                // Check if cart has vendor info from previous page
-                const savedCart = localStorage.getItem('vynixCartForPayment');
-                if (savedCart) {
-                    const cartData = JSON.parse(savedCart);
-                    if (cartData.vendorKey && availableVendors[cartData.vendorKey]) {
-                        vendorSelect.value = cartData.vendorKey;
-                        selectVendor(cartData.vendorKey);
-                    }
-                }
-            })
-            .catch(err => {
-                console.error('Error loading vendors:', err);
-                vendorSelect.innerHTML = '<option value="">Error loading vendors</option>';
-            });
-    }
-
-    function getStoreEmoji(storeType) {
-        const emojis = {
-            restaurant: '🍽️',
-            grocery: '🛒',
-            alcohol: '🍷',
-            health: '💊',
-            pets: '🐾',
-            electronics: '📱'
-        };
-        return emojis[storeType] || '🏪';
-    }
-
-    function selectVendor(vendorKey) {
-        selectedVendorKey = vendorKey;
-        selectedVendorData = availableVendors[vendorKey] || null;
-        
-        if (selectedVendorData) {
-            console.log('Selected vendor:', selectedVendorData.name, 'Key:', vendorKey);
-            // Save to cart data
-            const savedCart = localStorage.getItem('vynixCartForPayment');
-            if (savedCart) {
-                const cartData = JSON.parse(savedCart);
-                cartData.vendorKey = vendorKey;
-                cartData.vendorName = selectedVendorData.name;
-                localStorage.setItem('vynixCartForPayment', JSON.stringify(cartData));
-            }
         }
     }
 
@@ -768,14 +644,10 @@
         const orderRef = database.ref(`orders/${orderData.id}`);
         const userOrderRef = database.ref(`users/${userId}/orders/${orderData.id}`);
         
-        // Also save to vendor's orders node for the vendor portal
-        const vendorOrderRef = selectedVendorKey ? 
-            database.ref(`vendors/${selectedVendorKey}/orders/${orderData.id}`) : null;
-        
         orderData.serverTimestamp = firebase.database.ServerValue.TIMESTAMP;
         orderData.userId = userId;
         
-        const promises = [
+        return Promise.all([
             orderRef.set(orderData),
             userOrderRef.set({
                 id: orderData.id,
@@ -784,45 +656,16 @@
                 timestamp: orderData.timestamp,
                 serverTimestamp: firebase.database.ServerValue.TIMESTAMP,
                 itemCount: orderData.items ? orderData.items.length : 0,
-                deliveryAddress: orderData.deliveryAddress,
-                vendorKey: orderData.vendorKey,
-                vendorName: orderData.vendorName
+                deliveryAddress: orderData.deliveryAddress
             })
-        ];
-        
-        // Save to vendor's orders if vendor selected
-        if (vendorOrderRef && selectedVendorKey) {
-            promises.push(vendorOrderRef.set({
-                id: orderData.id,
-                total: orderData.total,
-                status: orderData.status,
-                timestamp: orderData.timestamp,
-                serverTimestamp: firebase.database.ServerValue.TIMESTAMP,
-                itemCount: orderData.items ? orderData.items.length : 0,
-                deliveryAddress: orderData.deliveryAddress,
-                customerName: orderData.customerName || 'Customer',
-                customerPhone: orderData.customerPhone || '',
-                customerEmail: orderData.customerEmail || '',
-                items: orderData.items,
-                paymentMethod: orderData.paymentMethod,
-                subtotal: orderData.subtotal,
-                delivery: orderData.delivery,
-                discount: orderData.discount
-            }));
-        }
-        
-        return Promise.all(promises)
-            .then(() => {
-                console.log('✓ Order saved to Firebase:', orderData.id);
-                if (selectedVendorKey) {
-                    console.log('✓ Order also saved to vendor:', selectedVendorKey);
-                }
-                showSyncIndicator();
-                return true;
-            }).catch(err => {
-                console.error('✗ Error saving order:', err);
-                throw err;
-            });
+        ]).then(() => {
+            console.log('✓ Order saved to Firebase:', orderData.id);
+            showSyncIndicator();
+            return true;
+        }).catch(err => {
+            console.error('✗ Error saving order:', err);
+            throw err;
+        });
     }
 
     // ============================================
@@ -1032,14 +875,6 @@
             delivery = parseFloat(data.delivery) || 0;
             discount = parseFloat(data.discount) || 0;
             cartItems = data.items || [];
-            
-            // Load vendor info if exists
-            if (data.vendorKey && availableVendors[data.vendorKey]) {
-                selectedVendorKey = data.vendorKey;
-                selectedVendorData = availableVendors[data.vendorKey];
-                document.getElementById('vendorSelect').value = data.vendorKey;
-            }
-            
             if (cartItems.length > 0) {
                 itemsCard.style.display = 'block';
                 renderOrderItems();
@@ -1165,7 +1000,6 @@
             `${selectedAddress.coordinates[1].toFixed(6)}, ${selectedAddress.coordinates[0].toFixed(6)}` : '';
         const method = currentMethod === 'cod' ? 'Cash on Delivery' : 'Credit Card';
         const finalTotal = (subtotal + delivery) - discount;
-        const vendorName = selectedVendorData ? selectedVendorData.name : 'Vynix Eats';
 
         let yPos = 20;
 
@@ -1195,7 +1029,7 @@
 
         // Order Info Box
         doc.setFillColor(...lightGray);
-        doc.roundedRect(15, yPos - 5, 180, 30, 3, 3, 'F');
+        doc.roundedRect(15, yPos - 5, 180, 25, 3, 3, 'F');
         
         doc.setFontSize(10);
         doc.setTextColor(...grayText);
@@ -1203,9 +1037,7 @@
         doc.text(`Order ID: #${orderId}`, 20, yPos + 5);
         doc.text(`Date: ${date}`, 20, yPos + 12);
         doc.text(`Payment: ${method}`, 110, yPos + 5);
-        doc.text(`Vendor: ${vendorName}`, 110, yPos + 12);
-        doc.text(`Customer ID: ${userId.slice(0, 12)}...`, 20, yPos + 19);
-        yPos += 35;
+        yPos += 30;
 
         // Delivery Address Section
         doc.setFont('helvetica', 'bold');
@@ -1336,12 +1168,6 @@
             return;
         }
         
-        if (!selectedVendorKey) {
-            alert("Please select a restaurant/store");
-            document.getElementById('vendorSelect').focus();
-            return;
-        }
-        
         await saveLocationToFirebase();
         
         if(currentMethod === 'card') {
@@ -1357,12 +1183,8 @@
         currentOrderId = 'VY-' + Math.floor(1000 + Math.random() * 9000);
         const timestamp = Date.now();
         
-        // Generate order number
-        const orderNumber = 'VYN-' + Math.floor(100000 + Math.random() * 900000);
-        
         currentOrderData = {
             id: currentOrderId,
-            orderNumber: orderNumber,
             items: cartItems,
             subtotal: subtotal,
             delivery: delivery,
@@ -1373,17 +1195,7 @@
             deliveryCoordinates: selectedAddress.coordinates,
             deliveryAddressData: selectedAddress,
             timestamp: timestamp,
-            createdAt: timestamp,
-            status: 'pending',
-            // Vendor information - CRITICAL for vendor portal
-            vendorKey: selectedVendorKey,
-            vendorName: selectedVendorData ? selectedVendorData.name : 'Unknown Vendor',
-            vendorID: selectedVendorData ? selectedVendorData.vendorID : null,
-            // Customer information
-            customerName: 'Customer', // Can be extended with user profile
-            customerPhone: '',
-            customerEmail: '',
-            customerId: userId
+            status: 'pending'
         };
 
         document.getElementById('loadingOverlay').style.display = 'flex';
