@@ -490,7 +490,6 @@
         initMapboxGeocoder();
         loadSavedCard();
       
-        // Try to load saved address from localStorage first
         const savedAddr = localStorage.getItem('vynixDeliveryAddress');
         if (savedAddr) {
             try {
@@ -808,12 +807,12 @@ Thank you for eating with Vynix!
             localStorage.removeItem('vynixDeliveryAddress');
         }, 2000);
     }
-    // NEW FUNCTION - clears cart and redirects to menu.html
+    // Redirects to the specific vendor menu page and clears cart
     function clearCartAndRedirectToMenu() {
         localStorage.removeItem('vynixCartForPayment');
         localStorage.removeItem('vynixDeliveryAddress');
         localStorage.removeItem('vynixPendingOrder');
-        window.location.href = 'menu.html';
+        window.location.href = 'menu.html?vendor=-OoZ0CWrKrq2UKC4aHTR';
     }
     window.onload = init;
 </script>
