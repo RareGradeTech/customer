@@ -637,36 +637,62 @@
             .catch(err => console.error('✗ Error loading location:', err));
     }
 
-    // ============================================
-    // FIREBASE: SAVE ORDER TO REALTIME DATABASE
-    // ============================================
-    function saveOrderToFirebase(orderData) {
-        const orderRef = database.ref(`orders/${orderData.id}`);
-        const userOrderRef = database.ref(`users/${userId}/orders/${orderData.id}`);
-        
-        orderData.serverTimestamp = firebase.database.ServerValue.TIMESTAMP;
-        orderData.userId = userId;
-        
-        return Promise.all([
-            orderRef.set(orderData),
-            userOrderRef.set({
-                id: orderData.id,
-                total: orderData.total,
-                status: orderData.status,
-                timestamp: orderData.timestamp,
-                serverTimestamp: firebase.database.ServerValue.TIMESTAMP,
-                itemCount: orderData.items ? orderData.items.length : 0,
-                deliveryAddress: orderData.deliveryAddress
-            })
-        ]).then(() => {
-            console.log('✓ Order saved to Firebase:', orderData.id);
-            showSyncIndicator();
-            return true;
-        }).catch(err => {
-            console.error('✗ Error saving order:', err);
-            throw err;
-        });
-    }
+   // ============================================
+// FIREBASE: SAVE ORDER TO REALTIME DATABASE
+// ============================================
+function saveOrderToFirebase(orderData) {
+    // Save to the global 'orders' node for the vendor, and the user's private history
+    const orderRef = database.ref(`orders/${orderData.id}`);
+    const userOrderRef = database.ref(`users/${userId}/orders/${orderData.id}`);
+    
+    return Promise.all([
+        orderRef.set(orderData),
+        userOrderRef.set({
+            id: orderData.id,
+            total: orderData.total,
+            status: orderData.status,
+            vendorKey: orderData.vendorKey, // Added for cross-referencing
+            timestamp: orderData.timestamp,
+            serverTimestamp: firebase.database.ServerValue.TIMESTAMP,
+            itemCount: orderData.items ? orderData.items.length : 0,
+            deliveryAddress: orderData.deliveryAddress
+        })
+    ]).then(() => {
+        console.log('✓ Order synced with Vendor Portal:', orderData.id);
+        showSyncIndicator();
+        return true;
+    }).catch(err => {
+        console.error('✗ Error saving order:', err);
+        throw err;
+    });
+}
+
+// ... inside processPayment() ...
+
+currentOrderId = 'VY-' + Math.floor(1000 + Math.random() * 9000);
+const timestamp = Date.now();
+
+// Extract vendorKey from the first item in the cart
+// This matches: db.ref('orders').orderByChild('vendorKey').equalTo(VENDOR_KEY)
+const vendorKey = cartItems.length > 0 ? cartItems[0].vendorKey : 'default_vendor';
+
+currentOrderData = {
+    id: currentOrderId,
+    vendorKey: vendorKey, // CRITICAL: Required for Vendor Portal to see the order
+    items: cartItems,
+    subtotal: subtotal,
+    delivery: delivery,
+    discount: discount,
+    total: (subtotal + delivery) - discount,
+    paymentMethod: currentMethod,
+    deliveryAddress: selectedAddress.fullAddress,
+    deliveryCoordinates: selectedAddress.coordinates,
+    deliveryAddressData: selectedAddress,
+    timestamp: timestamp,
+    updatedAt: timestamp, // Used by vendor for analytics
+    status: 'pending',    // Initial status for vendor workflow
+    userId: userId
+};
 
     // ============================================
     // UI: SYNC INDICATOR
