@@ -438,7 +438,6 @@
         @media (min-width: 540px) { .menu-list { grid-template-columns: repeat(3, 1fr); } }
         @media (min-width: 900px) { .menu-list { grid-template-columns: repeat(4, 1fr); } }
         @media (min-width: 1200px) { .menu-list { grid-template-columns: repeat(5, 1fr); } }
-
         /* ── BOTTOM NAV (MOBILE ONLY) ─────────────────────────── */
         .bottom-nav {
             position: fixed;
@@ -1367,10 +1366,17 @@ window.selectPayment = id => {
     lucide.createIcons();
 };
 window.coGoNext = () => {
-    coAnimDir='forward';
-    coStep=1;
-    renderCoStep();
-    lucide.createIcons();
+    const group = allGroups[vendorId];
+    if (group) {
+        const orderData = {
+            items: group.items || [],
+            subtotal: (group.items || []).reduce((s, i) => s + i.price * i.quantity, 0),
+            delivery: parseFloat(group.deliveryFee || 0),
+            discount: 0
+        };
+        localStorage.setItem('vynixCartForPayment', JSON.stringify(orderData));
+    }
+    window.location.href = 'payment.html';
 };
 function renderCoSuccess() {
     const body=document.getElementById('coBody'), footer=document.getElementById('coFooter');
