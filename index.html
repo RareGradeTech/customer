@@ -1361,32 +1361,60 @@ function renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, snaps
   footer.innerHTML=`<button class="co-track-btn" onclick="dismissCheckout()">Done</button>`;
 }
 
-// ── FIX 2 (cont): dismissCheckout closes everything and immediately shows Orders tab
+// ── dismissCheckout: close all layers, reset all state, return app to clean home ──
 window.dismissCheckout = ()=>{
+  // 1. Close every drawer / overlay layer
   document.getElementById('checkoutDrawer').classList.remove('open');
   document.getElementById('cartDrawer').classList.remove('open');
   document.getElementById('cartOverlay').classList.remove('open');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
 
+  // 2. Reset checkout wizard state completely
+  coStep = 0;
+  selectedPayment = 'cash';
+  coDeliveryAddress = null;
+  coAnimDir = 'forward';
+
+  // 3. Wipe the checkout drawer body/footer so it is blank next time it opens
+  const coBody = document.getElementById('coBody');
+  const coFooter = document.getElementById('coFooter');
+  if(coBody) coBody.innerHTML = '';
+  if(coFooter) coFooter.innerHTML = '';
+
+  // 4. Cart is already cleared by handleCheckout; ensure UI reflects empty state
+  cartGroups = {};
+  expandedGroups.clear();
+  updateCartUI();
+
+  // 5. Reset search/filter so the home screen feels fresh
+  searchTerm = '';
+  currentFilter = 'all';
+  const si = document.getElementById('searchInput');
+  const mi = document.getElementById('mobileSearchInput');
+  if(si) si.value = '';
+  if(mi) mi.value = '';
+  buildCategoryFilters();
+  applyFilters();
+
+  // 6. Switch to Orders tab so the customer can track their order immediately
   const isMobile = window.innerWidth < 768;
   if(isMobile){
-    // Switch bottom nav to Orders tab
-    for(let i=0;i<4;i++){
-      const el=document.getElementById('bnav'+i);
-      if(el) el.classList.toggle('active', i===1);
+    for(let i = 0; i < 4; i++){
+      const el = document.getElementById('bnav' + i);
+      if(el) el.classList.toggle('active', i === 1);
     }
-    const homeView=document.getElementById('homeView');
-    const ordersView=document.getElementById('ordersView');
-    const foodFilters=document.getElementById('foodFilters');
-    if(homeView) homeView.style.display='none';
-    if(ordersView) ordersView.style.display='block';
-    if(foodFilters) foodFilters.style.display='none';
-    // Render orders immediately from current allUserOrders; realtime listener will update if needed
+    const homeView       = document.getElementById('homeView');
+    const ordersView     = document.getElementById('ordersView');
+    const foodFilters    = document.getElementById('foodFilters');
+    const mobileSearchBar= document.getElementById('mobileSearchBar');
+    if(homeView)        homeView.style.display        = 'none';
+    if(ordersView)      ordersView.style.display      = 'block';
+    if(foodFilters)     foodFilters.style.display     = 'none';
+    if(mobileSearchBar) mobileSearchBar.style.display = 'none';
     renderOrders(allUserOrders, 'mobileOrdersList');
-    window.scrollTo({top:0, behavior:'smooth'});
-    showToast('🎉 Order placed! Tracking below.');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('\u{1F389} Order placed! Track it below.');
   } else {
-    // Desktop: open sidebar orders modal
     if(typeof openSidebarOrders === 'function') openSidebarOrders();
   }
 };
