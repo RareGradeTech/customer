@@ -1404,28 +1404,8 @@ function renderCoSuccess() {
     footer.innerHTML=`<button class="co-track-btn" onclick="dismissCheckout()">Done</button>`;
 }
 window.dismissCheckout = () => {
-    // Close checkout drawer
     document.getElementById('checkoutDrawer').classList.remove('open');
-    // Close cart drawer and overlay
-    const cartDrawer = document.getElementById('cartDrawer');
-    const cartOverlay = document.getElementById('cartOverlay');
-    if (cartDrawer) cartDrawer.classList.remove('open');
-    if (cartOverlay) cartOverlay.classList.remove('open');
-    // Reset search input
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) searchInput.value = '';
-    // Reset category filter to 'All'
-    activeCategory = 'All';
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.trim() === 'All');
-    });
-    // Re-render menu in its default state
-    renderMenuItems(getFilteredItems(), false);
-    // Scroll back to top of the page
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Hide search section if visible
-    const searchSection = document.getElementById('searchSection');
-    if (searchSection) searchSection.style.display = '';
+    toggleCart();
 };
 window.handleCheckout = async () => {
     if (!currentUser) { showToast("Please sign in to place an order"); return; }
