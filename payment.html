@@ -422,6 +422,9 @@
                 <div class="location-trigger" id="currentLocBtn" onclick="useCurrentLocation()">
                     <i data-lucide="navigation" size="12"></i> Use current location
                 </div>
+                <div class="location-trigger" onclick="useThisAddress()">
+                    <i data-lucide="check-circle" size="12"></i> Use this address
+                </div>
                 <div class="location-trigger" onclick="clearAddress()">
                     <i data-lucide="x" size="12"></i> Clear
                 </div>
@@ -830,6 +833,22 @@
             if (error.code === error.PERMISSION_DENIED) errorMsg = "Location permission denied. Please enable location services.";
             alert(errorMsg);
         }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+    }
+
+    // ============================================
+    // LOCATION: USE THIS ADDRESS (manual / typed address)
+    // ============================================
+    function useThisAddress() {
+        const input = document.querySelector('.mapboxgl-ctrl-geocoder--input');
+        if (!input || !input.value.trim()) {
+            alert("Please enter or search for a delivery address first");
+            return;
+        }
+        selectedAddress.fullAddress = input.value.trim();
+        selectedAddress.placeName = input.value.trim().split(',')[0] || input.value.trim();
+        updateSelectedAddressDisplay();
+        saveLocationToFirebase();
+        showToast('Delivery address confirmed!');
     }
 
     // ============================================
