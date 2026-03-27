@@ -1099,11 +1099,15 @@ async function saveCart(){
   catch(e){console.error(e);}
 }
 
+// Flag to prevent the Firebase listener from repopulating the cart right after clearCart
+let cartJustCleared = false;
+
 // ── FIX 2: clearCart now also resets local state and UI immediately ──────────
 async function clearCart(){
   // Reset local state first so UI updates instantly
   cartGroups = {};
   expandedGroups.clear();
+  cartJustCleared = true;  // block the onValue listener from restoring items
   updateCartUI();
   // Then wipe Firebase
   if(!currentUserId)return;
@@ -1138,6 +1142,8 @@ function subscribeToCart(){
   if(!currentUserId)return;
   onValue(ref(db,`carts/${currentUserId}`),async snap=>{
     if(isConverting)return;
+    // If the cart was just cleared, ignore the next listener fire to prevent re-population
+    if(cartJustCleared){ cartJustCleared=false; return; }
     if(!snap.exists()){cartGroups={};updateCartUI();return;}
     const d=snap.val();
     if(d.groups){
@@ -2129,26 +2135,28 @@ if(navigator.geolocation)setTimeout(()=>detectCurrentLocation(),1000);
 (function checkPostPaymentRedirect() {
     if (localStorage.getItem('vynixOpenOrdersTab') !== '1') return;
 
-    // ── Clear cart immediately on return from payment ──────────────────────
-    // Reset local cart state and close the drawer right away so the UI is
-    // fresh regardless of whether the Firebase wipe has finished yet.
+    // ── Immediately reset cart state and close the drawer ─────────────────
     cartGroups = {};
     expandedGroups.clear();
+    cartJustCleared = true; // prevent subscribeToCart's onValue from repopulating
     updateCartUI();
-    // Close cart drawer in case it was open
-    const cartDrawer = document.getElementById('cartDrawer');
-    const cartOverlay = document.getElementById('cartOverlay');
-    if (cartDrawer) cartDrawer.classList.remove('open');
-    if (cartOverlay) cartOverlay.classList.remove('open');
+    // Close the cart drawer & overlay in case they were open
+    const _cd = document.getElementById('cartDrawer');
+    const _co = document.getElementById('cartOverlay');
+    if (_cd) _cd.classList.remove('open');
+    if (_co) _co.classList.remove('open');
     document.body.style.overflow = '';
-    // Also wipe Firebase cart (fire-and-forget)
-    if (typeof clearCart === 'function') clearCart();
 
     if (window.innerWidth >= 768) {
         // Desktop path only — clear flag here; mobile path cleared by subscribeToOrders
         localStorage.removeItem('vynixOpenOrdersTab');
         const tryOpen = () => {
             if (typeof currentUser !== 'undefined' && currentUser) {
+                // Also clear Firebase cart now that we have the userId
+                if (currentUserId) {
+                    set(ref(db, `carts/${currentUserId}`), { groups: {}, updatedAt: Date.now() })
+                        .catch(e => console.warn('Post-payment cart wipe failed:', e));
+                }
                 if (typeof openSidebarOrders === 'function') openSidebarOrders();
                 showToast('\u{1F389} Order placed! Track your order below.');
             } else {
@@ -2156,8 +2164,19 @@ if(navigator.geolocation)setTimeout(()=>detectCurrentLocation(),1000);
             }
         };
         setTimeout(tryOpen, 500);
+    } else {
+        // Mobile: wipe Firebase cart as soon as auth resolves
+        const wipeMobileCart = () => {
+            if (typeof currentUserId !== 'undefined' && currentUserId) {
+                set(ref(db, `carts/${currentUserId}`), { groups: {}, updatedAt: Date.now() })
+                    .catch(e => console.warn('Post-payment cart wipe failed:', e));
+            } else {
+                setTimeout(wipeMobileCart, 400);
+            }
+        };
+        setTimeout(wipeMobileCart, 300);
     }
-    // Mobile: flag intentionally left for subscribeToOrders() realtime callback to handle
+    // Mobile: vynixOpenOrdersTab flag left for subscribeToOrders() realtime callback to handle
 })();
 </script>
 </body>
