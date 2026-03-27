@@ -1372,7 +1372,9 @@ window.coGoNext = () => {
             items: group.items || [],
             subtotal: (group.items || []).reduce((s, i) => s + i.price * i.quantity, 0),
             delivery: parseFloat(group.deliveryFee || 0),
-            discount: 0
+            discount: 0,
+            vendorKey: vendorId,
+            vendorName: group.vendorName || ''
         };
         localStorage.setItem('vynixCartForPayment', JSON.stringify(orderData));
     }
