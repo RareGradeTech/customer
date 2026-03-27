@@ -643,25 +643,28 @@
     // FIREBASE: SAVE ORDER TO REALTIME DATABASE
     // ============================================
     function saveOrderToFirebase(orderData) {
-        const orderRef = database.ref(`orders/${orderData.id}`);
-        const userOrderRef = database.ref(`users/${userId}/orders/${orderData.id}`);
-        
         orderData.serverTimestamp = firebase.database.ServerValue.TIMESTAMP;
         orderData.userId = userId;
-        
-        return Promise.all([
-            orderRef.set(orderData),
-            userOrderRef.set({
+
+        // Use push() so Firebase generates the node key — this is required for
+        // orderByChild('vendorKey') queries in the vendor dashboard to work.
+        const newOrderRef = database.ref('orders').push();
+        const firebaseKey = newOrderRef.key;
+
+        return newOrderRef.set(orderData).then(() => {
+            // Also write a lightweight reference under the user's order history
+            return database.ref(`users/${userId}/orders/${firebaseKey}`).set({
                 id: orderData.id,
+                firebaseKey: firebaseKey,
                 total: orderData.total,
                 status: orderData.status,
                 timestamp: orderData.timestamp,
                 serverTimestamp: firebase.database.ServerValue.TIMESTAMP,
                 itemCount: orderData.items ? orderData.items.length : 0,
                 deliveryAddress: orderData.deliveryAddress
-            })
-        ]).then(() => {
-            console.log('✓ Order saved to Firebase:', orderData.id);
+            });
+        }).then(() => {
+            console.log('✓ Order saved to Firebase:', orderData.id, '| key:', firebaseKey);
             showSyncIndicator();
             return true;
         }).catch(err => {
