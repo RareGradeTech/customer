@@ -6,7 +6,6 @@
     <title>Vynix Eats | Payment</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Mapbox Geocoder CSS -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.css" rel="stylesheet">
     <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" rel="stylesheet">
     <style>
@@ -158,11 +157,12 @@
         /* Location triggers */
         .location-triggers {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             margin-top: 12px;
+            flex-wrap: wrap;
         }
         .location-trigger {
-            font-size: 0.75rem; color: var(--accent); font-weight: 700;
+            font-size: 0.72rem; color: var(--accent); font-weight: 700;
             cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
             padding: 6px 10px;
             background: var(--accent-light);
@@ -389,7 +389,6 @@
         <h2 style="margin-top:20px; font-weight:800; font-size:1.5rem;">Order Placed! 🎉</h2>
         <p style="color:var(--dim); max-width: 260px; margin: 8px auto 0;">Your driver will be notified once the kitchen confirms.</p>
 
-        <!-- Redirect countdown -->
         <div style="margin-top:22px; background:#f1f3f5; border-radius:14px; padding:14px 20px; display:inline-flex; align-items:center; gap:10px;">
             <i data-lucide="loader-2" style="width:18px;height:18px;color:var(--accent);animation:spin 1s linear infinite;"></i>
             <span style="font-size:0.88rem;font-weight:600;color:var(--dim);">Redirecting to your orders in <span id="redirectCountdown" style="color:var(--accent);font-weight:800;">3</span>s…</span>
@@ -422,12 +421,14 @@
                 <div class="location-trigger" id="currentLocBtn" onclick="useCurrentLocation()">
                     <i data-lucide="navigation" size="12"></i> Use current location
                 </div>
+                <div class="location-trigger" id="manualAddressBtn" onclick="confirmManualAddress()">
+                    <i data-lucide="check" size="12"></i> Use this address
+                </div>
                 <div class="location-trigger" onclick="clearAddress()">
                     <i data-lucide="x" size="12"></i> Clear
                 </div>
             </div>
         </div>
-        <!-- Selected Address Display -->
         <div class="selected-address-display" id="selectedAddressDisplay">
             <i data-lucide="map-pin" size="16"></i>
             <div>
@@ -444,7 +445,6 @@
         </div>
         <div id="promoMsg" class="promo-msg"></div>
     </div>
-    <!-- REAL CART ITEMS SECTION (enhanced) -->
     <div class="card" id="itemsCard" style="display:none;">
         <div class="section-title"><i data-lucide="shopping-bag" size="18"></i> Your Items</div>
         <div id="itemsList" class="items-list"></div>
@@ -504,14 +504,11 @@
         <span id="btnTotal">R 0.00</span>
     </button>
 </div>
-<!-- Mapbox Scripts -->
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-<!-- jsPDF and AutoTable for PDF Receipts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
@@ -598,7 +595,7 @@
         const locationData = {
             fullAddress: selectedAddress.fullAddress,
             placeName: selectedAddress.placeName,
-            coordinates: selectedAddress.coordinates,
+            coordinates: selectedAddress.coordinates || null,
             context: selectedAddress.context || [],
             mapboxId: selectedAddress.mapboxId || '',
             featureType: selectedAddress.featureType || 'address',
@@ -658,13 +655,10 @@
         orderData.serverTimestamp = firebase.database.ServerValue.TIMESTAMP;
         orderData.userId = userId;
 
-        // Use push() so Firebase generates the node key — this is required for
-        // orderByChild('vendorKey') queries in the vendor dashboard to work.
         const newOrderRef = database.ref('orders').push();
         const firebaseKey = newOrderRef.key;
 
         return newOrderRef.set(orderData).then(() => {
-            // Also write a lightweight reference under the user's order history
             return database.ref(`users/${userId}/orders/${firebaseKey}`).set({
                 id: orderData.id,
                 firebaseKey: firebaseKey,
@@ -738,6 +732,29 @@
                 database.ref(`users/${userId}/currentLocation`).remove();
             }
         });
+    }
+
+    // ============================================
+    // LOCATION: MANUAL ADDRESS CONFIRMATION
+    // ============================================
+    function confirmManualAddress() {
+        const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder--input');
+        const manualText = geocoderInput ? geocoderInput.value.trim() : '';
+        
+        if (!manualText) {
+            alert("Please enter an address first.");
+            return;
+        }
+
+        // Update selected address with manual input
+        // Note: Coordinates will be null unless geocoding was triggered, 
+        // but the system will use the string.
+        selectedAddress.fullAddress = manualText;
+        selectedAddress.placeName = manualText.split(',')[0];
+        
+        updateSelectedAddressDisplay();
+        saveLocationToFirebase();
+        showToast('Address set for delivery!');
     }
 
     // ============================================
@@ -858,6 +875,8 @@
             text.textContent = selectedAddress.fullAddress;
             if (selectedAddress.coordinates) {
                 coords.textContent = `📍 ${selectedAddress.coordinates[1].toFixed(6)}, ${selectedAddress.coordinates[0].toFixed(6)}`;
+            } else {
+                coords.textContent = "📍 Manual address entry";
             }
             lucide.createIcons();
         } else {
@@ -999,57 +1018,42 @@
             format: 'a4'
         });
 
-        // Vynix Eats Brand Colors
-        const brandGreen = [6, 193, 103]; // #06C167
-        const darkText = [26, 29, 35];    // #1a1d23
-        const grayText = [108, 117, 125]; // #6c757d
-        const lightGray = [241, 243, 245]; // #f1f3f5
+        const brandGreen = [6, 193, 103]; 
+        const darkText = [26, 29, 35];    
+        const grayText = [108, 117, 125]; 
+        const lightGray = [241, 243, 245]; 
 
         const orderId = currentOrderId || 'VY-' + Math.floor(1000 + Math.random() * 9000);
         const date = new Date().toLocaleString('en-ZA', { 
-            weekday: 'short', 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+            weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
         });
         const address = selectedAddress.fullAddress || 'Not specified';
         const coords = selectedAddress.coordinates ? 
-            `${selectedAddress.coordinates[1].toFixed(6)}, ${selectedAddress.coordinates[0].toFixed(6)}` : '';
+            `${selectedAddress.coordinates[1].toFixed(6)}, ${selectedAddress.coordinates[0].toFixed(6)}` : 'Manual Entry';
         const method = currentMethod === 'cod' ? 'Cash on Delivery' : 'Credit Card';
         const finalTotal = (subtotal + delivery) - discount;
 
         let yPos = 20;
-
-        // Header Background
         doc.setFillColor(...brandGreen);
         doc.rect(0, 0, 210, 40, 'F');
-
-        // Logo Text
         doc.setTextColor(255, 255, 255);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(28);
         doc.text('VYNIX EATS', 105, 25, { align: 'center' });
-
-        // Tagline
         doc.setFontSize(10);
         doc.setFont('helvetica', 'italic');
         doc.text('Delicious food delivered to your door', 105, 32, { align: 'center' });
 
         yPos = 50;
-
-        // Receipt Title
         doc.setTextColor(...darkText);
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(20);
         doc.text('ORDER RECEIPT', 20, yPos);
         yPos += 10;
 
-        // Order Info Box
         doc.setFillColor(...lightGray);
         doc.roundedRect(15, yPos - 5, 180, 25, 3, 3, 'F');
-        
         doc.setFontSize(10);
         doc.setTextColor(...grayText);
         doc.setFont('helvetica', 'normal');
@@ -1058,35 +1062,24 @@
         doc.text(`Payment: ${method}`, 110, yPos + 5);
         yPos += 30;
 
-        // Delivery Address Section
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(12);
         doc.setTextColor(...brandGreen);
         doc.text('DELIVERY ADDRESS', 20, yPos);
         yPos += 8;
-
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.setTextColor(...darkText);
-        
-        // Wrap address text
         const splitAddress = doc.splitTextToSize(address, 170);
         doc.text(splitAddress, 20, yPos);
         yPos += splitAddress.length * 5 + 5;
+        doc.setTextColor(...grayText);
+        doc.setFontSize(8);
+        doc.text(`GPS: ${coords}`, 20, yPos);
+        yPos += 10;
 
-        if (coords) {
-            doc.setTextColor(...grayText);
-            doc.setFontSize(8);
-            doc.text(`GPS: ${coords}`, 20, yPos);
-            yPos += 10;
-        }
-
-        // Items Table using AutoTable
         const tableBody = cartItems.map(item => [
-            item.name,
-            `×${item.quantity}`,
-            `R ${item.price.toFixed(2)}`,
-            `R ${(item.price * item.quantity).toFixed(2)}`
+            item.name, `×${item.quantity}`, `R ${item.price.toFixed(2)}`, `R ${(item.price * item.quantity).toFixed(2)}`
         ]);
 
         doc.autoTable({
@@ -1094,94 +1087,59 @@
             head: [['Item', 'Qty', 'Unit Price', 'Total']],
             body: tableBody,
             theme: 'striped',
-            headStyles: {
-                fillColor: brandGreen,
-                textColor: 255,
-                fontStyle: 'bold',
-                fontSize: 10
-            },
-            bodyStyles: {
-                fontSize: 10,
-                textColor: darkText
-            },
-            alternateRowStyles: {
-                fillColor: [250, 250, 250]
-            },
-            columnStyles: {
-                0: { cellWidth: 80, fontStyle: 'bold' },
-                1: { cellWidth: 20, halign: 'center' },
-                2: { cellWidth: 35, halign: 'right' },
-                3: { cellWidth: 35, halign: 'right' }
-            },
-            margin: { left: 15, right: 15 },
-            styles: {
-                cellPadding: 4,
-                font: 'helvetica'
-            }
+            headStyles: { fillColor: brandGreen, textColor: 255, fontStyle: 'bold', fontSize: 10 },
+            bodyStyles: { fontSize: 10, textColor: darkText },
+            columnStyles: { 0: { cellWidth: 80 }, 1: { halign: 'center' }, 2: { halign: 'right' }, 3: { halign: 'right' } }
         });
 
-        // Get final Y position after table
         let finalY = doc.lastAutoTable.finalY + 10;
-
-        // Summary Box
         doc.setFillColor(...lightGray);
         doc.roundedRect(120, finalY, 75, 40, 3, 3, 'F');
-
         doc.setFontSize(10);
         doc.setTextColor(...grayText);
-        doc.setFont('helvetica', 'normal');
-        
         let summaryX = 125;
         let summaryY = finalY + 8;
-        
         doc.text('Subtotal:', summaryX, summaryY);
         doc.text(`R ${subtotal.toFixed(2)}`, 185, summaryY, { align: 'right' });
         summaryY += 7;
-        
         doc.text('Delivery:', summaryX, summaryY);
         doc.text(`R ${delivery.toFixed(2)}`, 185, summaryY, { align: 'right' });
         summaryY += 7;
-        
         if (discount > 0) {
             doc.setTextColor(...brandGreen);
             doc.text('Discount:', summaryX, summaryY);
             doc.text(`-R ${discount.toFixed(2)}`, 185, summaryY, { align: 'right' });
             summaryY += 7;
-            doc.setTextColor(...grayText);
         }
-
-        // Total Line
         doc.setDrawColor(200, 200, 200);
         doc.line(125, summaryY, 190, summaryY);
         summaryY += 6;
-
         doc.setFont('helvetica', 'bold');
         doc.setFontSize(14);
         doc.setTextColor(...brandGreen);
         doc.text('TOTAL:', summaryX, summaryY + 5);
         doc.text(`R ${finalTotal.toFixed(2)}`, 185, summaryY + 5, { align: 'right' });
 
-        // Footer
         const pageHeight = doc.internal.pageSize.height;
         doc.setFillColor(...brandGreen);
         doc.rect(0, pageHeight - 25, 210, 25, 'F');
-
         doc.setTextColor(255, 255, 255);
-        doc.setFont('helvetica', 'normal');
         doc.setFontSize(10);
         doc.text('Thank you for eating with Vynix!', 105, pageHeight - 15, { align: 'center' });
-        
-        doc.setFontSize(8);
-        doc.text('For support: support@vynixeats.com | www.vynixeats.com', 105, pageHeight - 8, { align: 'center' });
-
-        // Save PDF
-        doc.save(`VynixEats_Receipt_${orderId}_${Date.now()}.pdf`);
+        doc.save(`VynixEats_Receipt_${orderId}.pdf`);
     }
 
     // ============================================
     // PAYMENT: PROCESS ORDER (WITH FIREBASE)
     // ============================================
     async function processPayment() {
+        // Ensure manual text is captured if they didn't click "Use this address"
+        const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder--input');
+        if (geocoderInput && geocoderInput.value.trim() !== '' && !selectedAddress.fullAddress) {
+            selectedAddress.fullAddress = geocoderInput.value.trim();
+            selectedAddress.placeName = geocoderInput.value.trim().split(',')[0];
+        }
+
         if (!selectedAddress.fullAddress) {
             alert("Please enter a delivery address");
             return;
@@ -1212,7 +1170,7 @@
             total: (subtotal + delivery) - discount,
             paymentMethod: currentMethod,
             deliveryAddress: selectedAddress.fullAddress,
-            deliveryCoordinates: selectedAddress.coordinates,
+            deliveryCoordinates: selectedAddress.coordinates || null,
             deliveryAddressData: selectedAddress,
             timestamp: timestamp,
             createdAt: timestamp,
@@ -1270,7 +1228,6 @@
         window.location.href = 'index.html';
     }
 
-    // Start
     window.onload = init;
 </script>
 </body>
