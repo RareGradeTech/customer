@@ -1067,6 +1067,7 @@ async function processPayment() {
         localStorage.removeItem('vynixCartForPayment');
         localStorage.removeItem('vynixDeliveryAddress');
         localStorage.removeItem('vynixPendingOrder');
+        localStorage.removeItem('vynixCart');
 
         let count = 3;
         const countEl = document.getElementById('redirectCountdown');
@@ -1207,6 +1208,7 @@ function clearCartAndRedirectToMenu() {
     localStorage.removeItem('vynixCartForPayment');
     localStorage.removeItem('vynixDeliveryAddress');
     localStorage.removeItem('vynixPendingOrder');
+    localStorage.removeItem('vynixCart');
     localStorage.setItem('vynixOpenOrdersTab', '1');
     window.location.href = 'index.html';
 }
