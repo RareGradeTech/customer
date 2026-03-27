@@ -543,6 +543,8 @@
     let userId = null;
     let currentOrderId = null;
     let currentOrderData = null;
+    let vendorKey = null;
+    let vendorName = null;
    
     // Selected delivery address data
     let selectedAddress = {
@@ -875,6 +877,8 @@
             delivery = parseFloat(data.delivery) || 0;
             discount = parseFloat(data.discount) || 0;
             cartItems = data.items || [];
+            vendorKey = data.vendorKey || null;
+            vendorName = data.vendorName || null;
             if (cartItems.length > 0) {
                 itemsCard.style.display = 'block';
                 renderOrderItems();
@@ -1185,6 +1189,7 @@
         
         currentOrderData = {
             id: currentOrderId,
+            orderNumber: currentOrderId,
             items: cartItems,
             subtotal: subtotal,
             delivery: delivery,
@@ -1195,7 +1200,10 @@
             deliveryCoordinates: selectedAddress.coordinates,
             deliveryAddressData: selectedAddress,
             timestamp: timestamp,
-            status: 'pending'
+            createdAt: timestamp,
+            status: 'pending',
+            vendorKey: vendorKey || '',
+            vendorName: vendorName || ''
         };
 
         document.getElementById('loadingOverlay').style.display = 'flex';
