@@ -2128,6 +2128,22 @@ if(navigator.geolocation)setTimeout(()=>detectCurrentLocation(),1000);
 // Desktop: open the sidebar orders modal as soon as auth resolves.
 (function checkPostPaymentRedirect() {
     if (localStorage.getItem('vynixOpenOrdersTab') !== '1') return;
+
+    // ── Clear cart immediately on return from payment ──────────────────────
+    // Reset local cart state and close the drawer right away so the UI is
+    // fresh regardless of whether the Firebase wipe has finished yet.
+    cartGroups = {};
+    expandedGroups.clear();
+    updateCartUI();
+    // Close cart drawer in case it was open
+    const cartDrawer = document.getElementById('cartDrawer');
+    const cartOverlay = document.getElementById('cartOverlay');
+    if (cartDrawer) cartDrawer.classList.remove('open');
+    if (cartOverlay) cartOverlay.classList.remove('open');
+    document.body.style.overflow = '';
+    // Also wipe Firebase cart (fire-and-forget)
+    if (typeof clearCart === 'function') clearCart();
+
     if (window.innerWidth >= 768) {
         // Desktop path only — clear flag here; mobile path cleared by subscribeToOrders
         localStorage.removeItem('vynixOpenOrdersTab');
