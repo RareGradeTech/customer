@@ -1809,11 +1809,15 @@ window.reorderItems = async(orderId,vendorId,event)=>{
 function subscribeToOrders(){
   if(!currentUserId) return;
 
+  // Also track any legacy anonymous userId that may have been used before auth resolved
+  const legacyId = localStorage.getItem('vynixUserId');
+
   onValue(ref(db,'orders'), snap => {
     const orders = [];
     snap.forEach(child => {
       const o = child.val();
-      if(o.userId === currentUserId){
+      // Match by Firebase Auth uid OR by any stored vynixUserId (covers orders placed via payment.html)
+      if(o.userId === currentUserId || (legacyId && o.userId === legacyId)){
         orders.push({ id: child.key, ...o });
       }
     });
