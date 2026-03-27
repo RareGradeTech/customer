@@ -602,7 +602,8 @@ let selectedAddress = {
 // ============================================
 auth.onAuthStateChanged(user => {
     currentUser = user;
-    if (user && !localStorage.getItem('vynixUserId')) {
+    if (user) {
+        // Always sync userId to the authenticated uid so orders are stored under the right user
         userId = user.uid;
         localStorage.setItem('vynixUserId', userId);
     }
@@ -1002,6 +1003,11 @@ function loadSavedCard() {
 // PLACE ORDER
 // ============================================
 async function processPayment() {
+    // Always prefer the Firebase Auth uid so orders appear under the correct user in index.html
+    if (currentUser && currentUser.uid) {
+        userId = currentUser.uid;
+        localStorage.setItem('vynixUserId', userId);
+    }
     // Read address from confirmed state OR the editor input
     const editorInput = document.getElementById('manualAddressInput').value.trim();
     const editorActive = document.getElementById('addressEditor').classList.contains('active');
