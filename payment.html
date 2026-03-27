@@ -510,6 +510,7 @@
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <!-- jsPDF and AutoTable for PDF Receipts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -530,6 +531,7 @@
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
+    const auth = firebase.auth();
 
     // Mapbox Access Token
     const MAPBOX_TOKEN = 'pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw';
@@ -541,10 +543,20 @@
     let cartItems = [];
     let geocoder = null;
     let userId = null;
+    let currentUser = null;
     let currentOrderId = null;
     let currentOrderData = null;
     let vendorKey = null;
     let vendorName = null;
+
+    // Track signed-in user for customerName/customerEmail on orders
+    auth.onAuthStateChanged(user => {
+        currentUser = user;
+        if (user && !localStorage.getItem('vynixUserId')) {
+            userId = user.uid;
+            localStorage.setItem('vynixUserId', userId);
+        }
+    });
    
     // Selected delivery address data
     let selectedAddress = {
@@ -1206,7 +1218,9 @@
             createdAt: timestamp,
             status: 'pending',
             vendorKey: vendorKey || '',
-            vendorName: vendorName || ''
+            vendorName: vendorName || '',
+            customerName: (currentUser && (currentUser.displayName || currentUser.email?.split('@')[0])) || 'Customer',
+            customerEmail: (currentUser && currentUser.email) || ''
         };
 
         document.getElementById('loadingOverlay').style.display = 'flex';
