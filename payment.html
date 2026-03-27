@@ -584,6 +584,9 @@
         loadSavedCard();
         loadSavedLocationFromFirebase();
       
+        if (!selectedAddress.fullAddress) {
+            autoDetectCurrentLocation();
+        }
     }
 
     // ============================================
@@ -1179,13 +1182,6 @@
     // PAYMENT: PROCESS ORDER (WITH FIREBASE)
     // ============================================
     async function processPayment() {
-        // Safety fallback: if user selected a location via geocoder search but selectedAddress was not fully updated
-        const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder--input');
-        if (!selectedAddress.fullAddress && geocoderInput && geocoderInput.value.trim()) {
-            selectedAddress.fullAddress = geocoderInput.value.trim();
-            selectedAddress.placeName = geocoderInput.value.trim();
-        }
-
         if (!selectedAddress.fullAddress) {
             alert("Please enter a delivery address");
             return;
