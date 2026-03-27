@@ -1067,7 +1067,10 @@ async function processPayment() {
         localStorage.removeItem('vynixCartForPayment');
         localStorage.removeItem('vynixDeliveryAddress');
         localStorage.removeItem('vynixPendingOrder');
-        localStorage.removeItem('vynixCart');
+
+        // Wipe the Firebase cart so index.html's live listener sees an empty cart
+        try { database.ref(`carts/${userId}`).set({ groups: {}, updatedAt: Date.now() }); }
+        catch(e) { console.warn('Cart wipe failed:', e); }
 
         let count = 3;
         const countEl = document.getElementById('redirectCountdown');
@@ -1208,8 +1211,10 @@ function clearCartAndRedirectToMenu() {
     localStorage.removeItem('vynixCartForPayment');
     localStorage.removeItem('vynixDeliveryAddress');
     localStorage.removeItem('vynixPendingOrder');
-    localStorage.removeItem('vynixCart');
     localStorage.setItem('vynixOpenOrdersTab', '1');
+    // Wipe Firebase cart before navigating away
+    try { database.ref(`carts/${userId}`).set({ groups: {}, updatedAt: Date.now() }); }
+    catch(e) { console.warn('Cart wipe failed:', e); }
     window.location.href = 'index.html';
 }
 
