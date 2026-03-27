@@ -6,6 +6,7 @@
     <title>Vynix Eats | Payment</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Mapbox Geocoder CSS -->
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.css" rel="stylesheet">
     <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" rel="stylesheet">
     <style>
@@ -388,6 +389,7 @@
         <h2 style="margin-top:20px; font-weight:800; font-size:1.5rem;">Order Placed! 🎉</h2>
         <p style="color:var(--dim); max-width: 260px; margin: 8px auto 0;">Your driver will be notified once the kitchen confirms.</p>
 
+        <!-- Redirect countdown -->
         <div style="margin-top:22px; background:#f1f3f5; border-radius:14px; padding:14px 20px; display:inline-flex; align-items:center; gap:10px;">
             <i data-lucide="loader-2" style="width:18px;height:18px;color:var(--accent);animation:spin 1s linear infinite;"></i>
             <span style="font-size:0.88rem;font-weight:600;color:var(--dim);">Redirecting to your orders in <span id="redirectCountdown" style="color:var(--accent);font-weight:800;">3</span>s…</span>
@@ -425,6 +427,7 @@
                 </div>
             </div>
         </div>
+        <!-- Selected Address Display -->
         <div class="selected-address-display" id="selectedAddressDisplay">
             <i data-lucide="map-pin" size="16"></i>
             <div>
@@ -441,6 +444,7 @@
         </div>
         <div id="promoMsg" class="promo-msg"></div>
     </div>
+    <!-- REAL CART ITEMS SECTION (enhanced) -->
     <div class="card" id="itemsCard" style="display:none;">
         <div class="section-title"><i data-lucide="shopping-bag" size="18"></i> Your Items</div>
         <div id="itemsList" class="items-list"></div>
@@ -500,11 +504,14 @@
         <span id="btnTotal">R 0.00</span>
     </button>
 </div>
+<!-- Mapbox Scripts -->
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
 <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<!-- jsPDF and AutoTable for PDF Receipts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
@@ -541,16 +548,6 @@
     let currentOrderData = null;
     let vendorKey = null;
     let vendorName = null;
-    
-    // Flag to prevent auto-detect from overwriting manual address entry
-    let manualAddressEntry = false;
-
-    // Listen for manual typing in the Mapbox input
-    document.addEventListener('input', (e) => {
-        if (e.target && e.target.classList && e.target.classList.contains('mapboxgl-ctrl-geocoder--input')) {
-            manualAddressEntry = true;
-        }
-    });
 
     // Track signed-in user for customerName/customerEmail on orders
     auth.onAuthStateChanged(user => {
@@ -572,7 +569,7 @@
     // ============================================
     // INITIALIZATION
     // ============================================
-    async function init() {
+    function init() {
         lucide.createIcons();
         
         // Get or create anonymous user ID
@@ -585,9 +582,7 @@
         loadCartFromStorage();
         initMapboxGeocoder();
         loadSavedCard();
-        
-        // Wait for Firebase to load saved location to avoid auto-detecting unnecessarily
-        await loadSavedLocationFromFirebase();
+        loadSavedLocationFromFirebase();
       
         if (!selectedAddress.fullAddress) {
             autoDetectCurrentLocation();
@@ -631,12 +626,12 @@
     // FIREBASE: LOAD SAVED LOCATION FROM DATABASE
     // ============================================
     function loadSavedLocationFromFirebase() {
-        if (!userId) return Promise.resolve();
+        if (!userId) return;
         
-        return database.ref(`users/${userId}/currentLocation`).once('value')
+        database.ref(`users/${userId}/currentLocation`).once('value')
             .then(snapshot => {
                 const data = snapshot.val();
-                if (data && data.fullAddress) {
+                if (data) {
                     selectedAddress = {
                         fullAddress: data.fullAddress,
                         placeName: data.placeName,
@@ -647,10 +642,8 @@
                     };
                     updateSelectedAddressDisplay();
                     if (geocoder && selectedAddress.fullAddress) {
-                        setTimeout(() => {
-                            const input = document.querySelector('.mapboxgl-ctrl-geocoder--input');
-                            if (input) input.value = selectedAddress.fullAddress;
-                        }, 100);
+                        const input = document.querySelector('.mapboxgl-ctrl-geocoder--input');
+                        if (input) input.value = selectedAddress.fullAddress;
                     }
                     console.log('✓ Location loaded from Firebase');
                 }
@@ -725,7 +718,6 @@
         geocoder.addTo('#geocoder-container');
       
         geocoder.on('result', (e) => {
-            manualAddressEntry = true;
             const result = e.result;
             selectedAddress = {
                 fullAddress: result.place_name,
@@ -740,7 +732,6 @@
         });
       
         geocoder.on('clear', () => {
-            manualAddressEntry = true;
             selectedAddress = { fullAddress: '', placeName: '', coordinates: null, context: null };
             updateSelectedAddressDisplay();
             if (userId) {
@@ -765,9 +756,6 @@
                 const response = await fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${longitude}&latitude=${latitude}&access_token=${MAPBOX_TOKEN}&limit=1`);
                 const data = await response.json();
                 if (data.features && data.features.length > 0) {
-                    if (manualAddressEntry) {
-                        return; // User has started typing/modifying address manually. Abort overwrite.
-                    }
                     const feature = data.features[0];
                     selectedAddress = {
                         fullAddress: feature.properties.full_address || feature.properties.name,
@@ -802,7 +790,6 @@
             alert("Geolocation is not supported by your browser");
             return;
         }
-        manualAddressEntry = false; // Allow overwrite since user explicitly asked for current location
         const currentLocBtn = document.getElementById('currentLocBtn');
         const detectingState = document.getElementById('detectingState');
         if (currentLocBtn) currentLocBtn.classList.add('loading');
@@ -849,7 +836,6 @@
     // LOCATION: CLEAR ADDRESS
     // ============================================
     function clearAddress() {
-        manualAddressEntry = true;
         selectedAddress = { fullAddress: '', placeName: '', coordinates: null, context: null };
         if (geocoder) geocoder.clear();
         const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder--input');
@@ -1196,13 +1182,6 @@
     // PAYMENT: PROCESS ORDER (WITH FIREBASE)
     // ============================================
     async function processPayment() {
-        // Fallback: Check input string if the user typed an address but didn't select from Mapbox dropdown
-        const geocoderInput = document.querySelector('.mapboxgl-ctrl-geocoder--input');
-        if (!selectedAddress.fullAddress && geocoderInput && geocoderInput.value.trim() !== '') {
-            selectedAddress.fullAddress = geocoderInput.value.trim();
-            selectedAddress.placeName = geocoderInput.value.trim();
-        }
-
         if (!selectedAddress.fullAddress) {
             alert("Please enter a delivery address");
             return;
