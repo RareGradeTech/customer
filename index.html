@@ -1361,12 +1361,34 @@ function renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, snaps
   footer.innerHTML=`<button class="co-track-btn" onclick="dismissCheckout()">Done</button>`;
 }
 
-// ── FIX 2 (cont): dismissCheckout closes everything cleanly after cart is already cleared
+// ── FIX 2 (cont): dismissCheckout closes everything and immediately shows Orders tab
 window.dismissCheckout = ()=>{
   document.getElementById('checkoutDrawer').classList.remove('open');
   document.getElementById('cartDrawer').classList.remove('open');
   document.getElementById('cartOverlay').classList.remove('open');
   document.body.style.overflow='';
+
+  const isMobile = window.innerWidth < 768;
+  if(isMobile){
+    // Switch bottom nav to Orders tab
+    for(let i=0;i<4;i++){
+      const el=document.getElementById('bnav'+i);
+      if(el) el.classList.toggle('active', i===1);
+    }
+    const homeView=document.getElementById('homeView');
+    const ordersView=document.getElementById('ordersView');
+    const foodFilters=document.getElementById('foodFilters');
+    if(homeView) homeView.style.display='none';
+    if(ordersView) ordersView.style.display='block';
+    if(foodFilters) foodFilters.style.display='none';
+    // Render orders immediately from current allUserOrders; realtime listener will update if needed
+    renderOrders(allUserOrders, 'mobileOrdersList');
+    window.scrollTo({top:0, behavior:'smooth'});
+    showToast('🎉 Order placed! Tracking below.');
+  } else {
+    // Desktop: open sidebar orders modal
+    if(typeof openSidebarOrders === 'function') openSidebarOrders();
+  }
 };
 
 // ── FIX 2: handleCheckout — snapshot cart, clear immediately, then show success
@@ -1411,6 +1433,21 @@ window.handleCheckout = async()=>{
       });
     });
     await Promise.all(promises);
+
+    // ── Optimistically prepend new orders so Orders tab renders instantly ──
+    // The realtime listener will reconcile with true Firebase data shortly after
+    const snapshottedGroups = JSON.parse(JSON.stringify(cartGroups));
+    const optimisticOrders = Object.entries(snapshottedGroups).map(([gVid, group]) => {
+      const sub = (group.items||[]).reduce((s,i)=>s+i.price*i.quantity,0);
+      const fee = parseFloat(group.deliveryFee||0);
+      return { id: "_pending_"+gVid, orderNumber: firstOrderId, userId: currentUserId,
+        vendorId: gVid, vendorName: group.vendorName||"", vendorImage: group.vendorImage||"",
+        items: group.items, subtotal: sub, deliveryFee: fee, total: sub+fee,
+        paymentMethod: selectedPayment, deliveryAddress: coDeliveryAddress||"",
+        status: "pending", createdAt: Date.now() };
+    });
+    allUserOrders = [...optimisticOrders, ...allUserOrders];
+    renderOrders(allUserOrders, "mobileOrdersList");
 
     // ── CLEAR CART immediately after orders are placed ──────────────────
     await clearCart(); // resets cartGroups, expandedGroups, updates UI, clears Firebase
@@ -1734,8 +1771,7 @@ window.reorderItems = async(orderId,vendorId,event)=>{
   }catch(e){console.error(e);showToast("Reorder failed");}
 };
 
-// ── FIX 1: subscribeToOrders — realtime listener that updates ALL views including the open modal ──
-// ── ORDERS SUBSCRIPTION - FIXED TO SHOW ALL ORDERS ──
+// ── ORDERS SUBSCRIPTION — realtime, always up to date ──
 function subscribeToOrders(){
   if(!currentUserId) return;
 
@@ -1751,9 +1787,10 @@ function subscribeToOrders(){
     // Sort newest first
     orders.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
 
+    const prevCount = allUserOrders.length;
     allUserOrders = orders;
 
-    // Always render FULL list in mobile Orders tab
+    // Always keep mobile Orders tab list fresh
     renderOrders(orders, 'mobileOrdersList');
 
     // Update sidebar modal if it's currently open on Orders tab
@@ -1761,6 +1798,24 @@ function subscribeToOrders(){
     const ordersPane = document.getElementById('sidebarPane-orders');
     if(modal && modal.classList.contains('active') && ordersPane && ordersPane.classList.contains('active')){
       renderOrders(orders, 'sidebarOrdersList');
+    }
+
+    // If a brand-new order just arrived (post-payment redirect), auto-switch to Orders tab on mobile
+    const openFlag = localStorage.getItem('vynixOpenOrdersTab');
+    if(openFlag === '1' && orders.length > prevCount && window.innerWidth < 768){
+      localStorage.removeItem('vynixOpenOrdersTab');
+      for(let i=0;i<4;i++){
+        const el=document.getElementById('bnav'+i);
+        if(el) el.classList.toggle('active', i===1);
+      }
+      const homeView=document.getElementById('homeView');
+      const ordersView=document.getElementById('ordersView');
+      const foodFilters=document.getElementById('foodFilters');
+      if(homeView) homeView.style.display='none';
+      if(ordersView) ordersView.style.display='block';
+      if(foodFilters) foodFilters.style.display='none';
+      window.scrollTo({top:0, behavior:'smooth'});
+      showToast('\u{1F389} Order placed! Tracking below.');
     }
   });
 }
@@ -2040,53 +2095,25 @@ updateCartUI();
 if(navigator.geolocation)setTimeout(()=>detectCurrentLocation(),1000);
 
 // ── POST-PAYMENT REDIRECT: open Orders tab if coming from successful payment ──
+// Mobile: the flag is left in localStorage for subscribeToOrders() to consume when
+//         the realtime data fires — guaranteeing the new order is already in the list.
+// Desktop: open the sidebar orders modal as soon as auth resolves.
 (function checkPostPaymentRedirect() {
-    if (localStorage.getItem('vynixOpenOrdersTab') === '1') {
+    if (localStorage.getItem('vynixOpenOrdersTab') !== '1') return;
+    if (window.innerWidth >= 768) {
+        // Desktop path only — clear flag here; mobile path cleared by subscribeToOrders
         localStorage.removeItem('vynixOpenOrdersTab');
-
-        const openOrdersTab = () => {
-            const isMobile = window.innerWidth < 768;
-
-            if (isMobile) {
-                // Mobile: switch bottom nav to Orders tab
-                const homeView    = document.getElementById('homeView');
-                const ordersView  = document.getElementById('ordersView');
-                const foodFilters = document.getElementById('foodFilters');
-
-                for (let i = 0; i < 4; i++) {
-                    const el = document.getElementById('bnav' + i);
-                    if (el) el.classList.toggle('active', i === 1);
-                }
-                if (homeView)    homeView.style.display    = 'none';
-                if (ordersView)  ordersView.style.display  = 'block';
-                if (foodFilters) foodFilters.style.display = 'none';
-                renderOrders(allUserOrders, 'mobileOrdersList');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+        const tryOpen = () => {
+            if (typeof currentUser !== 'undefined' && currentUser) {
+                if (typeof openSidebarOrders === 'function') openSidebarOrders();
+                showToast('\u{1F389} Order placed! Track your order below.');
             } else {
-                // Desktop: open the sidebar orders modal
-                if (typeof openSidebarOrders === 'function') {
-                    openSidebarOrders();
-                }
+                setTimeout(tryOpen, 400);
             }
-
-            // Show a welcome-back toast
-            showToast('\u{1F389} Order placed! Track your order below.');
         };
-
-        // If user is already loaded open immediately; otherwise poll up to 4s
-        if (typeof currentUser !== 'undefined' && currentUser) {
-            setTimeout(openOrdersTab, 800);
-        } else {
-            let waited = 0;
-            const pollUser = setInterval(() => {
-                waited += 300;
-                if ((typeof currentUser !== 'undefined' && currentUser) || waited >= 4000) {
-                    clearInterval(pollUser);
-                    openOrdersTab();
-                }
-            }, 300);
-        }
+        setTimeout(tryOpen, 500);
     }
+    // Mobile: flag intentionally left for subscribeToOrders() realtime callback to handle
 })();
 </script>
 </body>
