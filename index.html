@@ -1038,8 +1038,9 @@ function renderPromos() {
   scroll.innerHTML = `<div class="promo-marquee" id="promoMarquee"></div>`;
   const marquee = document.getElementById('promoMarquee');
   let html = '';
-  Object.values(promosCache).forEach(p => {
-    html += `<div class="promo-card ${p.colorClass||'promo-green'}" onclick="showToast('Promo applied!')">
+  Object.keys(promosCache).forEach(key => {
+    const p = promosCache[key];
+    html += `<div class="promo-card ${p.colorClass||'promo-green'}" onclick="applyPromo('${key}')">
       <img class="promo-card-bg" src="${p.img||'https://via.placeholder.com/300x120?text=Promo'}" alt="${p.title}" loading="lazy">
       <div class="promo-card-overlay">
         <span class="promo-card-badge">${p.badge||''}</span>
@@ -1063,6 +1064,7 @@ let expandedOrders=new Set();
 let allUserOrders = [];
 // Track whether the orders modal is currently open so realtime updates re-render it
 let ordersModalOpen = false;
+let appliedPromo = null; // NEW: tracks the promo clicked from home page
 // ── TOAST ──────────────────────────────────────────────────
 let toastTimer;
 window.showToast = (msg) => {
@@ -1078,6 +1080,13 @@ function showLocToast(msg) {
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 3200);
 }
+// ── NEW: Apply promo from home page promo cards ─────────────────────
+window.applyPromo = function(promoKey) {
+  const promo = promosCache[promoKey];
+  if (!promo) return;
+  appliedPromo = promo;
+  showToast(`🎟️ Promo "${promo.title}" added to your payment!`);
+};
 // ── CART HELPERS ───────────────────────────────────────────
 function getAllCartItems(){const a=[];Object.values(cartGroups).forEach(g=>{if(g.items)g.items.forEach(i=>a.push(i));});return a;}
 function getTotalItems(){return Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.quantity,0),0);}
@@ -1093,6 +1102,7 @@ let cartJustCleared = false;
 // ── FIX 2: clearCart now also resets local state and UI immediately ──────────
 async function clearCart(){
   // Reset local state first so UI updates instantly
+  appliedPromo = null; // reset promo when cart is cleared
   cartGroups = {};
   expandedGroups.clear();
   cartJustCleared = true; // block the onValue listener from restoring items
@@ -1268,10 +1278,13 @@ function renderCoReview(body,footer){
   footer.innerHTML=`<button class="co-confirm-btn" onclick="preparePaymentAndRedirect()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
 }
 window.preparePaymentAndRedirect = () => {
+  const subtotal = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
+  const delivery = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
   const data = {
-    subtotal: Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0),
-    delivery: Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0),
-    discount: 0,
+    subtotal: subtotal,
+    delivery: delivery,
+    discount: appliedPromo ? 25 : 0,
+    promo: appliedPromo ? JSON.parse(JSON.stringify(appliedPromo)) : null,
     items: getAllCartItems()
   };
   localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
