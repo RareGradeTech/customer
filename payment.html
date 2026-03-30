@@ -284,7 +284,7 @@
             <button class="receipt-btn" onclick="downloadReceipt()">
                 <i data-lucide="download" size="18"></i> Download Receipt
             </button>
-            <p onclick="clearCartAndRedirect()" style="margin-top:8px;color:var(--accent);font-weight:700;cursor:pointer;font-size:0.9rem;">Go to Orders Now →</p>
+            <p onclick="finishAndGoHome()" style="margin-top:8px;color:var(--accent);font-weight:700;cursor:pointer;font-size:0.9rem;">Go to Orders Now →</p>
         </div>
     </div>
 </div>
@@ -427,7 +427,7 @@
     </button>
 </div>
 
-<!-- Firebase (same project as vendor portal) -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -436,7 +436,7 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// FIREBASE — SAME PROJECT AS VENDOR PORTAL
+// FIREBASE
 // ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
     apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
@@ -501,7 +501,7 @@ async function init() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// LOAD CART FROM LOCALSTORAGE (written by grocery.html)
+// LOAD CART FROM LOCALSTORAGE
 // ═══════════════════════════════════════════════════════════════
 function loadCartFromStorage() {
     const saved = localStorage.getItem('vynixCartForPayment');
@@ -527,7 +527,6 @@ function loadCartFromStorage() {
     vendorName = d.vendorName || null;
     orderType = d.orderType || 'grocery';
 
-    // Show vendor badge
     if (vendorName) {
         document.getElementById('orderVendorBadge').style.display = 'inline-flex';
         document.getElementById('orderVendorName').textContent = vendorName;
@@ -824,16 +823,34 @@ function loadSavedCard() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PLACE ORDER — saves to Firebase in format vendor portal reads
+// FINISH & GO HOME — clears everything and redirects cleanly
+// ═══════════════════════════════════════════════════════════════
+function finishAndGoHome() {
+    // 1. Set the flag so index.html knows to open Orders tab and wipe cart
+    localStorage.setItem('vynixOpenOrdersTab', '1');
+
+    // 2. Nuke all cart-related localStorage keys
+    localStorage.removeItem('vynixCartForPayment');
+
+    // 3. Wipe Firebase cart for this user
+    if (userId) {
+        database.ref(`users/${userId}/cart`).remove().catch(() => {});
+        database.ref(`carts/${userId}`).set({ groups: {}, updatedAt: Date.now() }).catch(() => {});
+    }
+
+    // 4. Go home
+    window.location.href = 'index.html';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PLACE ORDER
 // ═══════════════════════════════════════════════════════════════
 async function processPayment() {
-    // Prefer authenticated uid
     if (currentUser && currentUser.uid) {
         userId = currentUser.uid;
         localStorage.setItem('vynixUserId', userId);
     }
 
-    // Resolve address from editor if open
     const editorInput = document.getElementById('manualAddressInput').value.trim();
     const editorActive = document.getElementById('addressEditor').classList.contains('active');
     if (editorActive && editorInput) {
@@ -867,7 +884,6 @@ async function processPayment() {
     const orderNum = 'VYX-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2,5).toUpperCase();
     const timestamp = Date.now();
 
-    // Build items array in vendor portal format
     const orderItems = cartItems.map(item => ({
         name: item.name,
         price: item.price,
@@ -904,14 +920,12 @@ async function processPayment() {
     document.getElementById('loadingOverlay').style.display = 'flex';
 
     try {
-        // Save to Firebase orders node (vendor portal reads from here)
         const ordersRef = database.ref('orders').push();
         await ordersRef.set({
             ...currentOrderData,
             serverTimestamp: firebase.database.ServerValue.TIMESTAMP,
         });
 
-        // Also save a reference under user's orders
         await database.ref(`users/${userId}/orders/${ordersRef.key}`).set({
             id: orderNum,
             firebaseKey: ordersRef.key,
@@ -924,33 +938,45 @@ async function processPayment() {
             deliveryAddress: selectedAddress.fullAddress,
         });
 
-        // Clear cart from Firebase
+        // ── CLEAR CART EVERYWHERE ──────────────────────────────────
+        // 1. Clear Firebase cart
         if (userId) {
-            database.ref(`users/${userId}/cart`).set({}).catch(() => {});
+            database.ref(`users/${userId}/cart`).remove().catch(() => {});
+            database.ref(`carts/${userId}`).set({ groups: {}, updatedAt: Date.now() }).catch(() => {});
         }
 
-        // Clear local cart
+        // 2. Clear localStorage cart data
         localStorage.removeItem('vynixCartForPayment');
+
+        // 3. Set the flag so index.html starts fresh and shows Orders tab
+        localStorage.setItem('vynixOpenOrdersTab', '1');
 
         showSyncIndicator();
 
-        // Show success
+        // Show success UI
         document.getElementById('loaderUI').style.display = 'none';
         document.getElementById('successUI').style.display = 'block';
         lucide.createIcons();
 
+        // Countdown then redirect cleanly
         let count = 3;
         const countEl = document.getElementById('redirectCountdown');
         const interval = setInterval(() => {
             count--;
             if (countEl) countEl.textContent = count;
-            if (count <= 0) { clearInterval(interval); window.location.href = 'index.html'; }
+            if (count <= 0) {
+                clearInterval(interval);
+                // Use finishAndGoHome for a clean redirect
+                finishAndGoHome();
+            }
         }, 1000);
 
     } catch (err) {
         console.error('Order error:', err);
         showToast('Error placing order. Please try again.');
         document.getElementById('loadingOverlay').style.display = 'none';
+        // Clear the flag if order failed
+        localStorage.removeItem('vynixOpenOrdersTab');
     }
 }
 
@@ -1081,11 +1107,6 @@ function showToast(msg) {
     t.textContent = msg;
     document.body.appendChild(t);
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 2500);
-}
-
-function clearCartAndRedirect() {
-    localStorage.removeItem('vynixCartForPayment');
-    window.location.href = 'index.html';
 }
 
 window.onload = init;
