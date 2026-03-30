@@ -631,9 +631,9 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div id="toast">Item added</div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-// ══ USE THE SAME FIREBASE PROJECT AS THE VENDOR PORTAL ══
+
 const firebaseConfig = {
   apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
   authDomain: "test-17881.firebaseapp.com",
@@ -646,6 +646,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
+
 /* ═══ CATEGORIES ═══════════════════════════════════════════════ */
 const CATS = [
   { key:'all', label:'All', emoji:'🛒', bg:'#f0fdf4', ib:'#bbf7d0' },
@@ -690,34 +691,283 @@ function sugBucket(p){
   return 'other';
 }
 function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
-/* ═══ STATE ════════════════════════════════════════════════════ */
+
+/* ═══ STATE — unified cart with groups structure ════════════════ */
 let allProducts = [];
-let cartItems = {};
+let cartGroups = {};       // { vendorId: { vendorId, vendorName, vendorImage, deliveryFee, items: [] } }
 let activeCat = 'all';
 let currentUser = null;
 let currentUserId = null;
 let activeSheetProduct = null;
 let sheetQty = 1;
-let cartRef = null;
 let activeVendorId = null;
 let activeVendorName = null;
-onAuthStateChanged(auth, u=>{
-  currentUser=u;
-  currentUserId=u?.uid||null;
-  if(currentUserId){
-    cartRef = ref(db, `users/${currentUserId}/cart`);
-    onValue(cartRef, (snap)=>{
-      cartItems = snap.val() || {};
-      updateCartUI();
-      Object.keys(cartItems).forEach(id => refreshAction(id));
+
+/* Helper: flatten groups into a map for quick UI lookups (productId -> quantity) */
+function flattenCartItems() {
+  const flat = {};
+  Object.values(cartGroups).forEach(group => {
+    group.items.forEach(item => {
+      flat[item.id] = item.quantity;
     });
+  });
+  return flat;
+}
+
+/* Save cart to Firebase using the same structure as main index */
+async function saveCartToFirebase() {
+  if (!currentUserId) return;
+  const groupsToSave = {};
+  Object.keys(cartGroups).forEach(vid => {
+    const g = cartGroups[vid];
+    groupsToSave[vid] = {
+      vendorId: g.vendorId,
+      vendorName: g.vendorName,
+      vendorImage: g.vendorImage || '',
+      deliveryFee: g.deliveryFee || 0,
+      items: g.items.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        imageURL: item.imageURL || '',
+        weight: item.weight || '',
+        category: item.category || '',
+        vendorId: item.vendorId,
+        vendorName: item.vendorName,
+        brand: item.brand || '',
+        originalPrice: item.originalPrice || null,
+        isNew: item.isNew || false,
+        featured: item.featured || false
+      }))
+    };
+  });
+  await set(ref(db, `carts/${currentUserId}`), { groups: groupsToSave, updatedAt: Date.now() });
+}
+
+/* Load cart from Firebase and merge with existing groups */
+async function loadCartFromFirebase() {
+  if (!currentUserId) return;
+  const snap = await get(ref(db, `carts/${currentUserId}`));
+  if (snap.exists()) {
+    const data = snap.val();
+    if (data.groups) {
+      cartGroups = {};
+      Object.entries(data.groups).forEach(([vid, group]) => {
+        cartGroups[vid] = {
+          vendorId: group.vendorId,
+          vendorName: group.vendorName,
+          vendorImage: group.vendorImage || '',
+          deliveryFee: group.deliveryFee || 0,
+          items: (group.items || []).map(item => ({
+            ...item,
+            quantity: item.quantity || 1
+          }))
+        };
+      });
+    }
   } else {
-    cartRef = null;
-    cartItems = {};
-    updateCartUI();
+    cartGroups = {};
   }
-});
-/* ═══ HERO CYCLE ═══════════════════════════════════════════════ */
+  updateCartUI();
+  // refresh all product action buttons
+  allProducts.forEach(p => refreshAction(p.id));
+}
+
+/* Add or update item in cart (groups structure) */
+function addToCart(product, qty = 1) {
+  const vendorId = product.vendorId;
+  if (!vendorId) return false;
+  
+  if (!cartGroups[vendorId]) {
+    cartGroups[vendorId] = {
+      vendorId: vendorId,
+      vendorName: product.vendorName || 'Grocery Store',
+      vendorImage: product.vendorImage || '',
+      deliveryFee: 0,
+      items: []
+    };
+  }
+  
+  const group = cartGroups[vendorId];
+  const existingItem = group.items.find(i => i.id === product.id);
+  if (existingItem) {
+    existingItem.quantity += qty;
+  } else {
+    group.items.push({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: qty,
+      imageURL: product.imageURL || '',
+      weight: product.weight || '',
+      category: product.category || '',
+      vendorId: product.vendorId,
+      vendorName: product.vendorName,
+      brand: product.brand || '',
+      originalPrice: product.originalPrice || null,
+      isNew: product.isNew || false,
+      featured: product.featured || false
+    });
+  }
+  // remove group if no items
+  if (group.items.length === 0) delete cartGroups[vendorId];
+  saveCartToFirebase();
+  updateCartUI();
+  return true;
+}
+
+function removeFromCart(productId, delta = -1) {
+  for (const vid in cartGroups) {
+    const group = cartGroups[vid];
+    const idx = group.items.findIndex(i => i.id === productId);
+    if (idx !== -1) {
+      const item = group.items[idx];
+      const newQty = item.quantity + delta;
+      if (newQty <= 0) {
+        group.items.splice(idx, 1);
+      } else {
+        item.quantity = newQty;
+      }
+      if (group.items.length === 0) delete cartGroups[vid];
+      saveCartToFirebase();
+      updateCartUI();
+      break;
+    }
+  }
+}
+
+function getProductQuantity(productId) {
+  for (const group of Object.values(cartGroups)) {
+    const item = group.items.find(i => i.id === productId);
+    if (item) return item.quantity;
+  }
+  return 0;
+}
+
+/* Update UI elements that depend on cart */
+function updateCartUI() {
+  const totalItems = Object.values(cartGroups).reduce((sum, g) => sum + g.items.reduce((s, i) => s + i.quantity, 0), 0);
+  const subtotal = Object.values(cartGroups).reduce((sum, g) => sum + g.items.reduce((s, i) => s + (i.price * i.quantity), 0), 0);
+  const deliveryTotal = Object.values(cartGroups).reduce((sum, g) => sum + (g.deliveryFee || 0), 0);
+  const grand = subtotal + deliveryTotal;
+  
+  const badge = document.getElementById('cartCount');
+  badge.textContent = totalItems;
+  badge.style.display = totalItems > 0 ? 'inline-block' : 'none';
+  
+  const bar = document.getElementById('floatingCartBar');
+  if (totalItems > 0) {
+    bar.classList.add('visible');
+    document.getElementById('fcCount').textContent = totalItems;
+    document.getElementById('fcTotal').textContent = `R ${grand.toFixed(2)}`;
+  } else {
+    bar.classList.remove('visible');
+  }
+  
+  const btn = document.getElementById('checkoutBtn');
+  if (btn) btn.disabled = totalItems === 0;
+  
+  const body = document.getElementById('cartBody'), footer = document.getElementById('cartFooter');
+  if (totalItems === 0) {
+    body.innerHTML = `<div class="cart-empty-state"><div class="empty-emoji">🛒</div><p>Your basket is empty</p><small>Add items to get started</small></div>`;
+    if (footer) footer.style.display = 'none';
+    return;
+  }
+  if (footer) footer.style.display = 'block';
+  
+  let itemsHtml = '';
+  Object.values(cartGroups).forEach(group => {
+    group.items.forEach(item => {
+      const imgC = item.imageURL ? `<img src="${item.imageURL}" alt="${item.name}" loading="lazy">` : getEmoji(item.category);
+      const isOne = item.quantity === 1;
+      itemsHtml += `<div class="cart-item">
+        <div class="cart-item-img">${imgC}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          ${item.weight ? `<div class="cart-item-weight">${item.weight}</div>` : ''}
+          <div class="cart-item-price">R${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+        <div class="cq-ctrl">
+          <button class="cq-btn" onclick="cQty('${item.id}',-1)"><i data-lucide="${isOne ? 'trash-2' : 'minus'}" style="width:11px;height:11px;${isOne ? 'color:var(--danger);' : ''}"></i></button>
+          <span class="cq-val">${item.quantity}</span>
+          <button class="cq-btn" onclick="cQty('${item.id}',1)"><i data-lucide="plus" style="width:11px;height:11px;"></i></button>
+        </div>
+      </div>`;
+    });
+  });
+  body.innerHTML = itemsHtml;
+  
+  const summary = document.getElementById('cartSummaryBox');
+  summary.innerHTML = `
+    <div class="prep-badge"><i data-lucide="clock" style="width:11px;height:11px;"></i> Est. delivery 25–40 min</div>
+    <div class="cart-summary-box">
+      <div class="cs-row"><span>Subtotal (${totalItems} items)</span><span>R ${subtotal.toFixed(2)}</span></div>
+      <div class="cs-row"><span>Delivery fee</span><span>R ${deliveryTotal.toFixed(2)}</span></div>
+      <div class="cs-row"><span>Total</span><span>R ${grand.toFixed(2)}</span></div>
+    </div>`;
+  lucide.createIcons();
+}
+
+/* Refresh action button on product card */
+function refreshAction(productId) {
+  const safeId = productId.replace(/[^a-z0-9]/gi,'_');
+  const el = document.getElementById(`act-${safeId}`);
+  if (!el) return;
+  const p = allProducts.find(x => x.id === productId);
+  if (!p) return;
+  const qty = getProductQuantity(productId);
+  el.innerHTML = buildAction(p, qty, safeId);
+  lucide.createIcons();
+}
+
+function buildAction(product, qty, safeId) {
+  if (product.status === 'unavailable') {
+    if (qty > 0) {
+      return `<div class="qty-ctrl">
+        <button onclick="cQty('${product.id}',-1,event)"><i data-lucide="minus"></i></button>
+        <span class="qty-num">${qty}</span>
+        <button disabled style="opacity:.4;pointer-events:none;"><i data-lucide="plus"></i></button>
+      </div>`;
+    }
+    return `<span style="font-size:.62rem;font-weight:700;color:var(--dim);background:var(--surface2);padding:3px 7px;border-radius:999px;">Unavailable</span>`;
+  }
+  if (qty > 0) {
+    return `<div class="qty-ctrl">
+      <button onclick="cQty('${product.id}',-1,event)"><i data-lucide="minus"></i></button>
+      <span class="qty-num">${qty}</span>
+      <button onclick="cQty('${product.id}',1,event)"><i data-lucide="plus"></i></button>
+    </div>`;
+  }
+  return `<button class="add-btn" onclick="addItem('${product.id}',event)"><i data-lucide="plus"></i></button>`;
+}
+
+/* Global cart actions */
+window.addItem = function(productId, event) {
+  event?.stopPropagation();
+  const p = allProducts.find(x => x.id === productId);
+  if (!p || p.status === 'unavailable') return;
+  addToCart(p, 1);
+  refreshAction(productId);
+  showToast(`${p.name} added 🛒`);
+};
+
+window.cQty = function(productId, delta, event) {
+  event?.stopPropagation();
+  const p = allProducts.find(x => x.id === productId);
+  if (!p) return;
+  const currentQty = getProductQuantity(productId);
+  const newQty = currentQty + delta;
+  if (newQty <= 0) {
+    removeFromCart(productId, delta);
+  } else {
+    addToCart(p, delta);
+  }
+  refreshAction(productId);
+  showToast(`${p.name} ${delta > 0 ? 'added' : 'removed'}`);
+};
+
+/* Hero cycle etc. (unchanged) */
 const HERO_EMOJIS=['🛒','🥦','🥛','🥩','🍞','🧃','🍿','🧴','🌿','🍎'];
 let heroIdx=0;
 setInterval(()=>{
@@ -726,9 +976,11 @@ setInterval(()=>{
   el.style.transform='scale(0)';
   setTimeout(()=>{ el.textContent=HERO_EMOJIS[heroIdx]; el.style.transform='scale(1)'; el.style.transition='transform .3s cubic-bezier(.34,1.56,.64,1)'; },180);
 },3000);
-/* ═══ FIREBASE LOAD ════════════════════════════════════════════ */
+
+/* Load products from Firebase */
 const urlParams = new URLSearchParams(window.location.search);
 const vendorParam = urlParams.get('vendor');
+
 function loadProducts(){
   const targRef = vendorParam ? ref(db,`vendors/${vendorParam}`) : ref(db,'vendors');
   onValue(targRef, snap=>{
@@ -754,14 +1006,18 @@ function loadProducts(){
     finishLoad();
   });
 }
+
 function ingestMenu(vid,v){
   if(!v.menu) return;
   Object.entries(v.menu).forEach(([pid,item])=>{
     if(!item||!item.name) return;
     allProducts.push({
       id:`${vid}_${pid}`,
-      vendorId:vid, vendorName:v.name||'Grocery Store',
-      name:item.name, brand:item.brand||'',
+      vendorId:vid,
+      vendorName:v.name||'Grocery Store',
+      vendorImage: v.imageURL || '',
+      name:item.name,
+      brand:item.brand||'',
       description:item.description||'',
       price:parseFloat(item.price||0),
       originalPrice:item.originalPrice?parseFloat(item.originalPrice):null,
@@ -774,14 +1030,17 @@ function ingestMenu(vid,v){
     });
   });
 }
+
 function finishLoad(){
   document.getElementById('loadingShimmer').style.display='none';
   if(!allProducts.length){ document.getElementById('storeEmpty').style.display='block'; return; }
   buildCatGrid();
   renderPopular();
   renderAisles('all');
+  loadCartFromFirebase(); // load cart after products are ready
 }
-/* ═══ CATEGORY TILES ═══════════════════════════════════════════ */
+
+/* Build category grid, render aisles, popular, etc. (largely unchanged but uses updated refreshAction) */
 function buildCatGrid(){
   const keysWithProducts=new Set(['all']);
   allProducts.forEach(p=>keysWithProducts.add(getCatKey(p.category)));
@@ -794,6 +1053,7 @@ function buildCatGrid(){
         <div class="cat-label">${c.label}</div>
       </div>`).join('');
 }
+
 window.selectCat=function(key){
   activeCat=key;
   document.querySelectorAll('.cat-tile').forEach(t=>t.classList.toggle('active',t.dataset.key===key));
@@ -805,7 +1065,7 @@ window.selectCat=function(key){
   renderAisles(key);
   window.scrollTo({top:0,behavior:'smooth'});
 };
-/* ═══ POPULAR ROW ══════════════════════════════════════════════ */
+
 function renderPopular(){
   const featured=allProducts.filter(p=>p.featured).slice(0,14);
   if(!featured.length) return;
@@ -815,7 +1075,7 @@ function renderPopular(){
   featured.forEach(p=>row.appendChild(buildCard(p,true)));
   lucide.createIcons();
 }
-/* ═══ RENDER AISLES ════════════════════════════════════════════ */
+
 function renderAisles(catKey){
   const cont=document.getElementById('aisleContainer');
   cont.innerHTML='';
@@ -831,6 +1091,7 @@ function renderAisles(catKey){
   }
   lucide.createIcons();
 }
+
 function buildAisleRow(cat,products){
   const div=document.createElement('div');
   div.className='section';
@@ -850,6 +1111,7 @@ function buildAisleRow(cat,products){
   });
   return div;
 }
+
 function buildAisleGrid(cat,products){
   const div=document.createElement('div');
   div.className='section';
@@ -866,13 +1128,13 @@ function buildAisleGrid(cat,products){
   });
   return div;
 }
-/* ═══ PRODUCT CARD ═════════════════════════════════════════════ */
+
 function buildCard(product,flex=true){
   const card=document.createElement('div');
   card.className='product-card'+(product.status==='unavailable'?' unavailable':'');
   if(!flex) card.style.cssText='flex:unset;width:auto';
   card.dataset.id=product.id;
-  const qty=cartItems[product.id]?.qty||0;
+  const qty=getProductQuantity(product.id);
   const unavail=product.status==='unavailable';
   const safeId=product.id.replace(/[^a-z0-9]/gi,'_');
   const imgH=product.imageURL
@@ -905,38 +1167,13 @@ function buildCard(product,flex=true){
   };
   return card;
 }
-function buildAction(product,qty,safeId){
-  if(product.status==='unavailable'){
-    if(qty>0){
-      return `<div class="qty-ctrl">
-        <button onclick="cQty('${product.id}',-1,event)"><i data-lucide="minus"></i></button>
-        <span class="qty-num">${qty}</span>
-        <button disabled style="opacity:.4;pointer-events:none;"><i data-lucide="plus"></i></button>
-      </div>`;
-    }
-    return `<span style="font-size:.62rem;font-weight:700;color:var(--dim);background:var(--surface2);padding:3px 7px;border-radius:999px;">Unavailable</span>`;
-  }
-  if(qty>0)
-    return `<div class="qty-ctrl">
-      <button onclick="cQty('${product.id}',-1,event)"><i data-lucide="minus"></i></button>
-      <span class="qty-num">${qty}</span>
-      <button onclick="cQty('${product.id}',1,event)"><i data-lucide="plus"></i></button>
-    </div>`;
-  return `<button class="add-btn" onclick="addItem('${product.id}',event)"><i data-lucide="plus"></i></button>`;
-}
-function refreshAction(productId){
-  const safeId=productId.replace(/[^a-z0-9]/gi,'_');
-  const el=document.getElementById(`act-${safeId}`); if(!el) return;
-  const p=allProducts.find(x=>x.id===productId); if(!p) return;
-  el.innerHTML=buildAction(p,cartItems[productId]?.qty||0,safeId);
-  lucide.createIcons();
-}
-/* ═══ ITEM DETAIL SHEET ════════════════════════════════════════ */
-window.openItemSheet=function(productId){
+
+/* Item sheet and suggested items (unchanged but use unified cart) */
+window.openItemSheet = function(productId){
   const product=allProducts.find(p=>p.id===productId); if(!product) return;
   if(product.status==='unavailable'){ showToast('This item is currently unavailable'); return; }
   activeSheetProduct=product;
-  sheetQty=Math.max(1,cartItems[productId]?.qty||1);
+  sheetQty=Math.max(1,getProductQuantity(productId)||1);
   const imgWrap=document.getElementById('itemSheetImageWrap');
   if(product.imageURL){
     imgWrap.innerHTML=`<img class="item-sheet-image" src="${product.imageURL}" alt="${product.name}">
@@ -972,6 +1209,7 @@ window.openItemSheet=function(productId){
   document.body.style.overflow='hidden';
   lucide.createIcons();
 };
+
 function updateSheetQtyUI(){
   if(!activeSheetProduct) return;
   document.getElementById('itemQtyMinus').disabled=sheetQty<=1;
@@ -979,10 +1217,12 @@ function updateSheetQtyUI(){
   document.getElementById('sheetBtnQty').textContent=sheetQty;
   document.getElementById('sheetBtnTotal').textContent=`R ${(activeSheetProduct.price*sheetQty).toFixed(2)}`;
 }
+
 window.changeSheetQty=function(delta){
   sheetQty=Math.max(1,sheetQty+delta);
   updateSheetQtyUI();
 };
+
 window.closeItemSheet=function(){
   const sheet=document.getElementById('itemSheet');
   sheet.classList.remove('open','is-dragging'); sheet.style.cssText='';
@@ -991,19 +1231,15 @@ window.closeItemSheet=function(){
   document.body.style.overflow='';
   activeSheetProduct=null;
 };
+
 window.addFromSheet=function(){
   if(!activeSheetProduct) return;
-  const p=activeSheetProduct;
-  if(!cartItems[p.id]) cartItems[p.id]={product:p,qty:0};
-  cartItems[p.id].qty=sheetQty;
-  if(cartItems[p.id].qty<=0) delete cartItems[p.id];
-  refreshAction(p.id);
-  updateCartUI();
-  saveCartToDB();
-  showToast(`${p.name} added 🛒`);
+  addToCart(activeSheetProduct, sheetQty);
+  refreshAction(activeSheetProduct.id);
+  showToast(`${activeSheetProduct.name} added 🛒`);
   closeItemSheet();
 };
-/* ═══ SUGGESTED ITEMS ══════════════════════════════════════════ */
+
 function renderSuggested(currentProduct){
   const pool=allProducts.filter(p=>p.id!==currentProduct.id&&p.status!=='unavailable');
   const fresh=[], dairy=[], others=[];
@@ -1030,8 +1266,9 @@ function renderSuggested(currentProduct){
   else otherG.style.display='none';
   lucide.createIcons();
 }
+
 function sugCard(product){
-  const inCart=cartItems[product.id]?.qty>0;
+  const inCart=getProductQuantity(product.id)>0;
   const catDef=getCatDef(getCatKey(product.category));
   const BUCKET_COLOR={fresh:'#15803d',dairy:'#1565c0',other:'#6d4c41'};
   const color=BUCKET_COLOR[sugBucket(product)];
@@ -1055,20 +1292,19 @@ function sugCard(product){
     </div>
   </div>`;
 }
+
 window.quickAddSuggested=function(productId,e){
   e.stopPropagation();
   const p=allProducts.find(x=>x.id===productId); if(!p||p.status==='unavailable') return;
-  if(!cartItems[productId]) cartItems[productId]={product:p,qty:0};
-  cartItems[productId].qty++;
+  addToCart(p, 1);
+  refreshAction(productId);
   const safeId=productId.replace(/[^a-z0-9]/gi,'_');
   const btn=document.getElementById(`sbtn-${safeId}`);
   if(btn){ btn.classList.add('added'); btn.innerHTML='<i data-lucide="check" style="width:11px;height:11px;"></i>'; lucide.createIcons(); }
-  refreshAction(productId);
-  updateCartUI();
-  saveCartToDB();
   showToast(`${p.name} added 🛒`);
 };
-/* ═══ DRAG TO CLOSE ════════════════════════════════════════════ */
+
+/* Drag to close sheet (unchanged) */
 (function initDrag(){
   const sheet=document.getElementById('itemSheet');
   const dragZone=document.getElementById('sheetDragZone');
@@ -1113,119 +1349,15 @@ document.addEventListener('keydown',e=>{
     if(document.getElementById('itemSheet').classList.contains('open')) closeItemSheet();
   }
 });
-/* ═══ CART LOGIC ═══════════════════════════════════════════════ */
-function saveCartToDB(){
-  if(!cartRef) return;
-  set(cartRef, cartItems).catch(e => console.error('Cart save failed:', e));
-}
-window.addItem=function(productId,event){
-  event?.stopPropagation();
-  const p=allProducts.find(x=>x.id===productId);
-  if(!p||p.status==='unavailable') return;
-  if(!cartItems[productId]) cartItems[productId]={product:p,qty:0};
-  cartItems[productId].qty++;
-  refreshAction(productId);
-  updateCartUI();
-  saveCartToDB();
-  showToast(`${p.name} added 🛒`);
-};
-window.cQty=function(productId,delta,event){
-  event?.stopPropagation();
-  if(!cartItems[productId]) return;
-  cartItems[productId].qty+=delta;
-  if(cartItems[productId].qty<=0) delete cartItems[productId];
-  refreshAction(productId);
-  updateCartUI();
-  saveCartToDB();
-};
-function totalQty(){ return Object.values(cartItems).reduce((s,i)=>s+i.qty,0); }
-function subtotal(){ return Object.values(cartItems).reduce((s,i)=>s+i.product.price*i.qty,0); }
-function deliveryFee(){ return subtotal()>0?25:0; }
-function grandTotal(){ return subtotal()+deliveryFee(); }
-function updateCartUI(){
-  const qty=totalQty(), tot=grandTotal();
-  const badge=document.getElementById('cartCount');
-  badge.textContent=qty; badge.style.display=qty>0?'inline-block':'none';
-  const bar=document.getElementById('floatingCartBar');
-  if(qty>0){ bar.classList.add('visible'); document.getElementById('fcCount').textContent=qty; document.getElementById('fcTotal').textContent=`R ${tot.toFixed(2)}`; }
-  else bar.classList.remove('visible');
-  const btn=document.getElementById('checkoutBtn'); if(btn) btn.disabled=qty===0;
-  const body=document.getElementById('cartBody'), footer=document.getElementById('cartFooter');
-  const items=Object.values(cartItems);
-  if(!items.length){
-    body.innerHTML=`<div class="cart-empty-state"><div class="empty-emoji">🛒</div><p>Your basket is empty</p><small>Add items to get started</small></div>`;
-    if(footer) footer.style.display='none'; return;
-  }
-  if(footer) footer.style.display='block';
-  body.innerHTML=items.map(({product:p,qty:q})=>{
-    const imgC=p.imageURL?`<img src="${p.imageURL}" alt="${p.name}" loading="lazy">`:getEmoji(p.category);
-    const isOne=q===1;
-    return `<div class="cart-item">
-      <div class="cart-item-img">${imgC}</div>
-      <div class="cart-item-info">
-        <div class="cart-item-name">${p.name}</div>
-        ${p.weight?`<div class="cart-item-weight">${p.weight}</div>`:''}
-        <div class="cart-item-price">R${(p.price*q).toFixed(2)}</div>
-      </div>
-      <div class="cq-ctrl">
-        <button class="cq-btn" onclick="cQty('${p.id}',-1)"><i data-lucide="${isOne?'trash-2':'minus'}" style="width:11px;height:11px;${isOne?'color:var(--danger);':''}"></i></button>
-        <span class="cq-val">${q}</span>
-        <button class="cq-btn" onclick="cQty('${p.id}',1)"><i data-lucide="plus" style="width:11px;height:11px;"></i></button>
-      </div>
-    </div>`;
-  }).join('');
-  const sub=subtotal(), fee=deliveryFee();
-  document.getElementById('cartSummaryBox').innerHTML=`
-    <div class="prep-badge"><i data-lucide="clock" style="width:11px;height:11px;"></i> Est. delivery 25–40 min</div>
-    <div class="cart-summary-box">
-      <div class="cs-row"><span>Subtotal (${qty} items)</span><span>R ${sub.toFixed(2)}</span></div>
-      <div class="cs-row"><span>Delivery fee</span><span>R ${fee.toFixed(2)}</span></div>
-      <div class="cs-row"><span>Total</span><span>R ${tot.toFixed(2)}</span></div>
-    </div>`;
-  lucide.createIcons();
-}
-/* ═══ GO TO PAYMENT ════════════════════════════════════════════ */
-// Saves cart summary to localStorage so payment.html can read it
-window.goToPayment = function(){
-  if(totalQty()===0) return;
-  const items = Object.values(cartItems).map(({product:p, qty:q})=>({
-    name: p.name,
-    price: p.price,
-    quantity: q,
-    imageURL: p.imageURL || '',
-    weight: p.weight || '',
-    category: p.category || '',
-    vendorId: p.vendorId,
-    vendorName: p.vendorName,
-  }));
-  // Group by vendor to pick dominant vendor key
-  const byVendor = {};
-  items.forEach(i=>{ if(!byVendor[i.vendorId]) byVendor[i.vendorId]={ name:i.vendorName, count:0 }; byVendor[i.vendorId].count++; });
-  const topVendorId = Object.entries(byVendor).sort((a,b)=>b[1].count-a[1].count)[0]?.[0] || activeVendorId || '';
-  const topVendorName = byVendor[topVendorId]?.name || activeVendorName || 'Grocery Store';
-  const sub = subtotal();
-  const fee = deliveryFee();
-  const cartData = {
-    items,
-    subtotal: sub,
-    delivery: fee,
-    discount: 0,
-    vendorKey: topVendorId,
-    vendorName: topVendorName,
-    orderType: 'grocery',
-    savedAt: Date.now(),
-  };
-  localStorage.setItem('vynixCartForPayment', JSON.stringify(cartData));
-  window.location.href = 'payment.html';
-};
-/* ═══ CART DRAWER ══════════════════════════════════════════════ */
+
+/* Cart drawer toggle, search, toast, payment redirect (updated to use unified cart data) */
 window.toggleCart=function(){
   const d=document.getElementById('cartDrawer'), o=document.getElementById('cartOverlay');
   const open=d.classList.contains('open');
   if(open){ d.classList.remove('open'); o.classList.remove('open'); document.body.style.overflow=''; }
   else { d.classList.add('open'); o.classList.add('open'); document.body.style.overflow='hidden'; updateCartUI(); }
 };
-/* ═══ SEARCH ═══════════════════════════════════════════════════ */
+
 window.toggleSearch=function(){
   const sec=document.getElementById('searchSection');
   const hidden=sec.style.display==='none'||!sec.style.display;
@@ -1233,6 +1365,7 @@ window.toggleSearch=function(){
   if(hidden) setTimeout(()=>document.getElementById('searchInput').focus(),100);
   else{ document.getElementById('searchInput').value=''; handleSearch(''); }
 };
+
 let searchTimer;
 window.handleSearch=function(q){
   clearTimeout(searchTimer);
@@ -1264,13 +1397,60 @@ window.handleSearch=function(q){
     lucide.createIcons();
   },240);
 };
-/* ═══ TOAST ════════════════════════════════════════════════════ */
+
 window.showToast=function(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2400);
 };
-/* ═══ INIT ══════════════════════════════════════════════════════ */
+
+/* Go to payment: save cart using the same structure as main index expects */
+window.goToPayment = function(){
+  const totalItems = Object.values(cartGroups).reduce((sum,g)=>sum+g.items.reduce((s,i)=>s+i.quantity,0),0);
+  if(totalItems===0) return;
+  const items = [];
+  Object.values(cartGroups).forEach(group => {
+    group.items.forEach(item => {
+      items.push({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        imageURL: item.imageURL || '',
+        weight: item.weight || '',
+        category: item.category || '',
+        vendorId: item.vendorId,
+        vendorName: item.vendorName
+      });
+    });
+  });
+  const subtotal = items.reduce((s,i)=>s+(i.price*i.quantity),0);
+  const delivery = Object.values(cartGroups).reduce((sum,g)=>sum+(g.deliveryFee||0),0);
+  const cartData = {
+    items: items,
+    subtotal: subtotal,
+    delivery: delivery,
+    discount: 0,
+    vendorKey: Object.keys(cartGroups)[0] || '',
+    vendorName: Object.values(cartGroups)[0]?.vendorName || 'Grocery Store',
+    orderType: 'grocery',
+    savedAt: Date.now()
+  };
+  localStorage.setItem('vynixCartForPayment', JSON.stringify(cartData));
+  window.location.href = 'payment.html';
+};
+
+/* Auth state change: load cart when user logs in */
+onAuthStateChanged(auth, u=>{
+  currentUser=u;
+  currentUserId=u?.uid||null;
+  if(currentUserId){
+    loadCartFromFirebase();
+  } else {
+    cartGroups = {};
+    updateCartUI();
+  }
+});
+
 lucide.createIcons();
 loadProducts();
 </script>
