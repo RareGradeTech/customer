@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vynix Eats | Payment</title>
+    <meta name="theme-color" content="#ff751f">
+    <title>1BUSKET | Payment</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.css" rel="stylesheet">
@@ -11,15 +12,15 @@
         :root {
             --bg: #f8f9fa;
             --surface: #ffffff;
-            --accent: #06C167;
+            --accent: #ff751f;
+            --accent-dark: #e0661c;
+            --accent-light: #ffe8d6;
             --text: #1a1d23;
             --dim: #6c757d;
             --radius: 24px;
             --radius-sm: 16px;
             --glass: rgba(255, 255, 255, 0.9);
             --error: #ff4d4d;
-            --accent-light: #e8f8ef;
-            --accent-dark: #05a357;
             --border: #e9ecef;
         }
         * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
@@ -47,6 +48,11 @@
             gap: 16px;
             margin-bottom: 32px;
         }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .back-btn {
             width: 48px; height: 48px; border-radius: 14px;
             background: white; display: flex; align-items: center;
@@ -55,6 +61,11 @@
             transition: 0.2s; text-decoration: none; color: var(--text);
         }
         .back-btn:active { transform: scale(0.9); }
+        .logo { height: 32px; width: auto; object-fit: contain; display: block; }
+        .header-title {
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
         .card {
             background: var(--surface);
             border-radius: var(--radius);
@@ -74,7 +85,6 @@
             margin-bottom: 20px;
             display: flex; align-items: center; gap: 10px;
         }
-
         /* ── ORDER ITEMS CARD ── */
         .order-items-list { display: flex; flex-direction: column; gap: 10px; }
         .order-item-row {
@@ -90,7 +100,7 @@
             width: 52px; height: 52px; border-radius: 10px;
             object-fit: cover; flex-shrink: 0;
             background: var(--accent-light);
-            border: 1px solid rgba(6,193,103,.15);
+            border: 1px solid rgba(255,117,31,.15);
         }
         .order-item-placeholder {
             width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0;
@@ -114,30 +124,29 @@
         .order-vendor-badge {
             display: inline-flex; align-items: center; gap: 6px;
             background: var(--accent-light); color: var(--accent-dark);
-            border: 1px solid rgba(6,193,103,.25); border-radius: 999px;
+            border: 1px solid rgba(255,117,31,.25); border-radius: 999px;
             padding: 5px 12px; font-size: 0.75rem; font-weight: 700;
             margin-bottom: 14px;
         }
-
         /* ── ADDRESS ── */
         .confirmed-address {
             display: none;
             align-items: flex-start;
             gap: 12px;
             background: var(--accent-light);
-            border: 1.5px solid rgba(6,193,103,0.25);
+            border: 1.5px solid rgba(255,117,31,0.25);
             border-radius: var(--radius-sm);
             padding: 14px 16px;
             cursor: pointer;
             transition: 0.2s;
         }
         .confirmed-address.active { display: flex; }
-        .confirmed-address:hover { border-color: var(--accent); background: #d4f5e4; }
+        .confirmed-address:hover { border-color: var(--accent); background: #ffe8d6; }
         .confirmed-address-icon { color: var(--accent); flex-shrink: 0; margin-top: 2px; }
         .confirmed-address-body { flex: 1; min-width: 0; }
         .confirmed-address-text { font-weight: 700; font-size: 0.9rem; color: var(--text); line-height: 1.4; word-break: break-word; }
         .confirmed-address-meta { font-size: 0.75rem; color: var(--dim); margin-top: 3px; }
-        .confirmed-address-change { font-size: 0.75rem; font-weight: 700; color: var(--accent); white-space: nowrap; flex-shrink: 0; align-self: center; background: white; padding: 4px 10px; border-radius: 8px; border: 1.5px solid rgba(6,193,103,0.3); }
+        .confirmed-address-change { font-size: 0.75rem; font-weight: 700; color: var(--accent); white-space: nowrap; flex-shrink: 0; align-self: center; background: white; padding: 4px 10px; border-radius: 8px; border: 1.5px solid rgba(255,117,31,0.3); }
         .address-editor { display: none; }
         .address-editor.active { display: block; }
         .manual-input-wrap { display: flex; gap: 10px; margin-bottom: 12px; }
@@ -170,17 +179,15 @@
         .detecting-state .spin { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
-
         /* ── PROMO ── */
         .promo-flex { display: flex; gap: 10px; margin-top: 10px; }
         .promo-input { flex: 1; background: #f8f9fa; border: 1px solid #eee; padding: 12px 16px; border-radius: 12px; font-family: inherit; font-weight: 600; text-transform: uppercase; outline: none; }
         .promo-btn { background: var(--text); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: inherit; }
         .promo-btn:active { transform: scale(0.95); }
         .promo-msg { font-size: 0.8rem; margin-top: 8px; font-weight: 600; display: none; }
-
         /* ── PAYMENT METHODS ── */
         .method-card { border: 2px solid #f1f3f5; border-radius: var(--radius-sm); padding: 18px; margin-bottom: 12px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; }
-        .method-card.active { border-color: var(--accent); background: #f0fff4; }
+        .method-card.active { border-color: var(--accent); background: #ffe8d6; }
         .method-icon { width: 44px; height: 44px; border-radius: 12px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; }
         .active .method-icon { background: white; color: var(--accent); }
         .card-details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -193,7 +200,6 @@
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
-
         /* ── SUMMARY ── */
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
         .summary-row span:first-child { color: var(--dim); }
@@ -202,7 +208,6 @@
         .summary-total { display: flex; justify-content: space-between; }
         .summary-total span:first-child { font-weight: 800; font-size: 1.2rem; }
         .summary-total span:last-child { font-weight: 800; font-size: 1.2rem; color: var(--accent); }
-
         /* ── BOTTOM BAR ── */
         .action-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
@@ -216,13 +221,12 @@
             padding: 20px; border-radius: var(--radius-sm);
             font-weight: 800; font-size: 1.1rem; display: flex;
             justify-content: space-between; align-items: center;
-            cursor: pointer; box-shadow: 0 12px 24px rgba(6, 193, 103, 0.25);
+            cursor: pointer; box-shadow: 0 12px 24px rgba(255,117,31,0.25);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-family: inherit;
         }
         .pay-btn:active { transform: scale(0.96); }
         .pay-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
-
         /* ── LOADING OVERLAY ── */
         #loadingOverlay {
             position: fixed; inset:0; background: white; z-index: 1000;
@@ -232,7 +236,6 @@
         @keyframes successPop { 0%{transform:scale(0);opacity:0;} 60%{transform:scale(1.2);} 100%{transform:scale(1);opacity:1;} }
         .receipt-btn { margin-top: 20px; background: #f1f3f5; color: var(--text); border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; font-family: inherit; }
         .receipt-btn:active { transform: scale(0.95); }
-
         /* ── SYNC ── */
         .sync-indicator {
             position: fixed; top: 20px; right: 20px;
@@ -240,11 +243,10 @@
             padding: 8px 16px; border-radius: 20px;
             font-size: 0.75rem; font-weight: 700; z-index: 9999;
             display: none; align-items: center; gap: 6px;
-            box-shadow: 0 4px 12px rgba(6, 193, 103, 0.3);
+            box-shadow: 0 4px 12px rgba(255,117,31,0.3);
         }
         .sync-indicator.show { display: flex; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
-
         /* ── EMPTY CART NOTICE ── */
         .empty-cart-notice {
             text-align: center; padding: 32px 20px;
@@ -259,12 +261,10 @@
     </style>
 </head>
 <body>
-
 <div id="syncIndicator" class="sync-indicator">
     <i data-lucide="check-circle" style="width:14px;height:14px;"></i>
     <span>Saved to cloud</span>
 </div>
-
 <div id="loadingOverlay">
     <div id="loaderUI">
         <div class="spinner"></div>
@@ -288,15 +288,16 @@
         </div>
     </div>
 </div>
-
 <div class="payment-container">
     <div class="header">
-        <a href="grocery.html" class="back-btn" aria-label="Back">
-            <i data-lucide="chevron-left"></i>
-        </a>
-        <h1 style="font-weight:800;font-size:1.5rem;">Checkout</h1>
+        <div class="header-left">
+            <a href="grocery.html" class="back-btn" aria-label="Back">
+                <i data-lucide="chevron-left"></i>
+            </a>
+            <img src="https://i.postimg.cc/65pML87d/1BUSKET-LOGO.png" alt="1BUSKET" class="logo">
+        </div>
+        <h1 class="header-title">Checkout</h1>
     </div>
-
     <!-- EMPTY CART STATE (shown if no cart data) -->
     <div id="emptyCartNotice" class="empty-cart-notice" style="display:none;">
         <div class="emoji">🛒</div>
@@ -304,7 +305,6 @@
         <p>Go back and add some items before checking out.</p>
         <a href="grocery.html">Shop Groceries</a>
     </div>
-
     <!-- ORDER ITEMS CARD -->
     <div class="card" id="orderItemsCard">
         <div id="orderVendorBadge" class="order-vendor-badge" style="display:none;">
@@ -316,7 +316,6 @@
             <div class="order-items-empty">Loading items…</div>
         </div>
     </div>
-
     <!-- ADDRESS CARD -->
     <div class="card">
         <div class="section-title"><i data-lucide="map-pin" size="18"></i> Delivery Address</div>
@@ -355,7 +354,6 @@
             </div>
         </div>
     </div>
-
     <!-- PROMO -->
     <div class="card">
         <div class="section-title"><i data-lucide="tag" size="18"></i> Promo Code</div>
@@ -365,7 +363,6 @@
         </div>
         <div id="promoMsg" class="promo-msg"></div>
     </div>
-
     <!-- SUMMARY -->
     <div class="card">
         <div class="section-title"><i data-lucide="shopping-cart" size="18"></i> Summary</div>
@@ -387,7 +384,6 @@
             <span id="totalDisplay">R 0.00</span>
         </div>
     </div>
-
     <!-- PAYMENT METHOD -->
     <div class="card">
         <div class="section-title"><i data-lucide="wallet" size="18"></i> Payment Method</div>
@@ -419,21 +415,18 @@
         </div>
     </div>
 </div>
-
 <div class="action-bar">
     <button class="pay-btn" id="placeOrderBtn" onclick="processPayment()">
         <span>Place Order</span>
         <span id="btnTotal">R 0.00</span>
     </button>
 </div>
-
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-
 <script>
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE
@@ -450,9 +443,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
-
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw';
-
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
@@ -463,7 +454,6 @@ let vendorKey = null, vendorName = null, orderType = 'grocery';
 let userId = null, currentUser = null;
 let currentOrderId = null, currentOrderData = null;
 let suggestDebounce = null;
-
 let selectedAddress = {
     fullAddress: '',
     placeName: '',
@@ -472,7 +462,6 @@ let selectedAddress = {
     mapboxId: null,
     featureType: 'address'
 };
-
 // ═══════════════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════════════
@@ -483,7 +472,6 @@ auth.onAuthStateChanged(user => {
         localStorage.setItem('vynixUserId', userId);
     }
 });
-
 // ═══════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════
@@ -491,7 +479,6 @@ async function init() {
     lucide.createIcons();
     userId = localStorage.getItem('vynixUserId') || ('user_' + Date.now() + '_' + Math.random().toString(36).substr(2,9));
     localStorage.setItem('vynixUserId', userId);
-
     loadCartFromStorage();
     loadSavedCard();
     await loadSavedLocationFromFirebase();
@@ -499,7 +486,6 @@ async function init() {
         openAddressEditor(true);
     }
 }
-
 // ═══════════════════════════════════════════════════════════════
 // LOAD CART FROM LOCALSTORAGE
 // ═══════════════════════════════════════════════════════════════
@@ -511,14 +497,12 @@ function loadCartFromStorage() {
         document.getElementById('placeOrderBtn').disabled = true;
         return;
     }
-
     let d;
     try { d = JSON.parse(saved); } catch(e) {
         document.getElementById('emptyCartNotice').style.display = 'block';
         document.getElementById('orderItemsCard').style.display = 'none';
         return;
     }
-
     subtotal = parseFloat(d.subtotal) || 0;
     delivery = parseFloat(d.delivery) || 0;
     discount = parseFloat(d.discount) || 0;
@@ -526,16 +510,13 @@ function loadCartFromStorage() {
     vendorKey = d.vendorKey || null;
     vendorName = d.vendorName || null;
     orderType = d.orderType || 'grocery';
-
     if (vendorName) {
         document.getElementById('orderVendorBadge').style.display = 'inline-flex';
         document.getElementById('orderVendorName').textContent = vendorName;
     }
-
     renderOrderItems();
     updateTotals();
 }
-
 // ═══════════════════════════════════════════════════════════════
 // RENDER ORDER ITEMS
 // ═══════════════════════════════════════════════════════════════
@@ -552,14 +533,12 @@ function getCategoryEmoji(category) {
     }
     return '🛒';
 }
-
 function renderOrderItems() {
     const container = document.getElementById('orderItemsList');
     if (!cartItems.length) {
         container.innerHTML = '<div class="order-items-empty">No items found.</div>';
         return;
     }
-
     let totalQty = 0;
     container.innerHTML = cartItems.map((item, i) => {
         totalQty += item.quantity || 1;
@@ -579,11 +558,9 @@ function renderOrderItems() {
             <div class="order-item-price">R ${lineTotal}</div>
         </div>`;
     }).join('');
-
     document.getElementById('itemCountDisplay').textContent = totalQty;
     lucide.createIcons();
 }
-
 // ═══════════════════════════════════════════════════════════════
 // ADDRESS EDITOR
 // ═══════════════════════════════════════════════════════════════
@@ -596,13 +573,11 @@ function openAddressEditor(autoDetect = false) {
     setTimeout(() => input.focus(), 100);
     if (autoDetect) autoDetectCurrentLocation();
 }
-
 function cancelAddressEdit() {
     hideSuggestions();
     document.getElementById('addressEditor').classList.remove('active');
     if (selectedAddress.fullAddress) document.getElementById('confirmedAddressBox').classList.add('active');
 }
-
 function setConfirmedAddress(address, meta) {
     selectedAddress.fullAddress = address;
     document.getElementById('confirmedAddressText').textContent = address;
@@ -614,7 +589,6 @@ function setConfirmedAddress(address, meta) {
     lucide.createIcons();
     saveLocationToFirebase();
 }
-
 function confirmManualAddress() {
     const val = document.getElementById('manualAddressInput').value.trim();
     if (!val) { showToast('Please enter an address'); return; }
@@ -624,14 +598,12 @@ function confirmManualAddress() {
     selectedAddress.mapboxId = null;
     setConfirmedAddress(val, '');
 }
-
 function onAddressInput() {
     const val = document.getElementById('manualAddressInput').value.trim();
     clearTimeout(suggestDebounce);
     if (val.length < 3) { hideSuggestions(); return; }
     suggestDebounce = setTimeout(() => fetchSuggestions(val), 350);
 }
-
 async function fetchSuggestions(query) {
     try {
         const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json`
@@ -641,7 +613,6 @@ async function fetchSuggestions(query) {
         renderSuggestions(data.features || []);
     } catch (e) { hideSuggestions(); }
 }
-
 function renderSuggestions(features) {
     const list = document.getElementById('suggestionsList');
     if (!features.length) { hideSuggestions(); return; }
@@ -658,7 +629,6 @@ function renderSuggestions(features) {
     list.classList.add('show');
     lucide.createIcons();
 }
-
 function pickSuggestion(index) {
     const features = JSON.parse(document.getElementById('suggestionsList').dataset.features || '[]');
     const f = features[index]; if (!f) return;
@@ -671,12 +641,10 @@ function pickSuggestion(index) {
         ? `📍 ${selectedAddress.coordinates[1].toFixed(5)}, ${selectedAddress.coordinates[0].toFixed(5)}` : '';
     setConfirmedAddress(f.place_name, meta);
 }
-
 function hideSuggestions() {
     const list = document.getElementById('suggestionsList');
     list.classList.remove('show'); list.innerHTML = '';
 }
-
 function autoDetectCurrentLocation() {
     if (!navigator.geolocation) return;
     setDetectingState(true);
@@ -686,7 +654,6 @@ function autoDetectCurrentLocation() {
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
 }
-
 function useCurrentLocation() {
     if (!navigator.geolocation) { showToast('Geolocation not supported'); return; }
     const btn = document.getElementById('gpsBtn');
@@ -702,7 +669,6 @@ function useCurrentLocation() {
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
     );
 }
-
 async function reverseGeocode(lat, lng, silent, done) {
     try {
         const res = await fetch(`https://api.mapbox.com/search/geocode/v6/reverse?longitude=${lng}&latitude=${lat}&access_token=${MAPBOX_TOKEN}&limit=1`);
@@ -729,12 +695,10 @@ async function reverseGeocode(lat, lng, silent, done) {
         if (done) done();
     }
 }
-
 function setDetectingState(on) {
     document.getElementById('detectingState').classList.toggle('active', on);
     lucide.createIcons();
 }
-
 // ═══════════════════════════════════════════════════════════════
 // FIREBASE: LOCATION
 // ═══════════════════════════════════════════════════════════════
@@ -745,7 +709,6 @@ function saveLocationToFirebase() {
         .then(() => showSyncIndicator())
         .catch(err => console.error('Error saving location:', err));
 }
-
 function loadSavedLocationFromFirebase() {
     if (!userId) return Promise.resolve();
     return database.ref(`users/${userId}/currentLocation`).once('value')
@@ -762,7 +725,6 @@ function loadSavedLocationFromFirebase() {
         })
         .catch(err => console.error('Error loading location:', err));
 }
-
 // ═══════════════════════════════════════════════════════════════
 // PROMO
 // ═══════════════════════════════════════════════════════════════
@@ -784,7 +746,6 @@ function applyPromo() {
     msg.style.display = 'block';
     updateTotals();
 }
-
 // ═══════════════════════════════════════════════════════════════
 // TOTALS
 // ═══════════════════════════════════════════════════════════════
@@ -795,7 +756,6 @@ function updateTotals() {
     document.getElementById('totalDisplay').innerText = `R ${final.toFixed(2)}`;
     document.getElementById('btnTotal').innerText = `R ${final.toFixed(2)}`;
 }
-
 // ═══════════════════════════════════════════════════════════════
 // PAYMENT METHOD
 // ═══════════════════════════════════════════════════════════════
@@ -809,39 +769,32 @@ function setMethod(id) {
     icon.style.color = 'var(--accent)';
     lucide.createIcons();
 }
-
 document.getElementById('cardNum').addEventListener('input', (e) => {
     let v = e.target.value.replace(/\s+/g,'').replace(/[^0-9]/gi,'');
     let parts = [];
     for (let i = 0; i < v.length; i += 4) parts.push(v.substring(i, i+4));
     e.target.value = parts.join(' ');
 });
-
 function loadSavedCard() {
     const saved = JSON.parse(localStorage.getItem('vynix_card') || 'null');
     if (saved) { document.getElementById('cardNum').value = saved.num; document.getElementById('cardExpiry').value = saved.exp; }
 }
-
 // ═══════════════════════════════════════════════════════════════
 // FINISH & GO HOME — clears everything and redirects cleanly
 // ═══════════════════════════════════════════════════════════════
 function finishAndGoHome() {
     // 1. Set the flag so index.html knows to open Orders tab and wipe cart
     localStorage.setItem('vynixOpenOrdersTab', '1');
-
     // 2. Nuke all cart-related localStorage keys
     localStorage.removeItem('vynixCartForPayment');
-
     // 3. Wipe Firebase cart for this user
     if (userId) {
         database.ref(`users/${userId}/cart`).remove().catch(() => {});
         database.ref(`carts/${userId}`).set({ groups: {}, updatedAt: Date.now() }).catch(() => {});
     }
-
     // 4. Go home
     window.location.href = 'index.html';
 }
-
 // ═══════════════════════════════════════════════════════════════
 // PLACE ORDER
 // ═══════════════════════════════════════════════════════════════
@@ -850,26 +803,22 @@ async function processPayment() {
         userId = currentUser.uid;
         localStorage.setItem('vynixUserId', userId);
     }
-
     const editorInput = document.getElementById('manualAddressInput').value.trim();
     const editorActive = document.getElementById('addressEditor').classList.contains('active');
     if (editorActive && editorInput) {
         selectedAddress.fullAddress = editorInput;
         selectedAddress.placeName = editorInput;
     }
-
     if (!selectedAddress.fullAddress || !selectedAddress.fullAddress.trim()) {
         if (!document.getElementById('addressEditor').classList.contains('active')) openAddressEditor();
         showToast('Please enter a delivery address');
         document.getElementById('manualAddressInput').focus();
         return;
     }
-
     if (!cartItems.length) {
         showToast('Your basket is empty');
         return;
     }
-
     if (currentMethod === 'card') {
         const num = document.getElementById('cardNum').value;
         if (num.length < 19) { showToast('Invalid card number'); return; }
@@ -877,13 +826,10 @@ async function processPayment() {
             localStorage.setItem('vynix_card', JSON.stringify({ num, exp: document.getElementById('cardExpiry').value }));
         }
     }
-
     await saveLocationToFirebase();
-
     const finalTotal = Math.max(0, (subtotal + delivery) - discount);
     const orderNum = 'VYX-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2,5).toUpperCase();
     const timestamp = Date.now();
-
     const orderItems = cartItems.map(item => ({
         name: item.name,
         price: item.price,
@@ -892,7 +838,6 @@ async function processPayment() {
         weight: item.weight || '',
         category: item.category || '',
     }));
-
     currentOrderId = orderNum;
     currentOrderData = {
         id: orderNum,
@@ -916,16 +861,13 @@ async function processPayment() {
         createdAt: timestamp,
         updatedAt: timestamp,
     };
-
     document.getElementById('loadingOverlay').style.display = 'flex';
-
     try {
         const ordersRef = database.ref('orders').push();
         await ordersRef.set({
             ...currentOrderData,
             serverTimestamp: firebase.database.ServerValue.TIMESTAMP,
         });
-
         await database.ref(`users/${userId}/orders/${ordersRef.key}`).set({
             id: orderNum,
             firebaseKey: ordersRef.key,
@@ -937,27 +879,21 @@ async function processPayment() {
             itemCount: orderItems.length,
             deliveryAddress: selectedAddress.fullAddress,
         });
-
         // ── CLEAR CART EVERYWHERE ──────────────────────────────────
         // 1. Clear Firebase cart
         if (userId) {
             database.ref(`users/${userId}/cart`).remove().catch(() => {});
             database.ref(`carts/${userId}`).set({ groups: {}, updatedAt: Date.now() }).catch(() => {});
         }
-
         // 2. Clear localStorage cart data
         localStorage.removeItem('vynixCartForPayment');
-
         // 3. Set the flag so index.html starts fresh and shows Orders tab
         localStorage.setItem('vynixOpenOrdersTab', '1');
-
         showSyncIndicator();
-
         // Show success UI
         document.getElementById('loaderUI').style.display = 'none';
         document.getElementById('successUI').style.display = 'block';
         lucide.createIcons();
-
         // Countdown then redirect cleanly
         let count = 3;
         const countEl = document.getElementById('redirectCountdown');
@@ -970,7 +906,6 @@ async function processPayment() {
                 finishAndGoHome();
             }
         }, 1000);
-
     } catch (err) {
         console.error('Order error:', err);
         showToast('Error placing order. Please try again.');
@@ -979,7 +914,6 @@ async function processPayment() {
         localStorage.removeItem('vynixOpenOrdersTab');
     }
 }
-
 // ═══════════════════════════════════════════════════════════════
 // PDF RECEIPT
 // ═══════════════════════════════════════════════════════════════
@@ -987,33 +921,30 @@ function downloadReceipt() {
     if (!currentOrderData) return;
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    const green = [6, 193, 103];
+    const orange = [255, 117, 31];
     const dark = [26, 29, 35];
     const gray = [108, 117, 125];
-    const light = [241, 243, 245];
+    const light = [255, 232, 214];
     const orderId = currentOrderData.orderNumber;
     const date = new Date().toLocaleString('en-ZA', { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
     const address = selectedAddress.fullAddress || 'Not specified';
     const methodName = currentMethod === 'cod' ? 'Cash on Delivery' : currentMethod === 'card' ? 'Credit Card' : 'Digital Wallet';
     const finalTotal = currentOrderData.total;
-
-    doc.setFillColor(...green);
+    doc.setFillColor(...orange);
     doc.rect(0, 0, 210, 40, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(28);
-    doc.text('VYNIX EATS', 105, 22, { align: 'center' });
+    doc.text('1BUSKET', 105, 22, { align: 'center' });
     doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
-    doc.text('Grocery delivered to your door', 105, 32, { align: 'center' });
-
+    doc.text('Premium Delivery', 105, 32, { align: 'center' });
     let y = 50;
     doc.setTextColor(...dark);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(20);
-    doc.text('GROCERY RECEIPT', 20, y);
+    doc.text('RECEIPT', 20, y);
     y += 10;
-
     doc.setFillColor(...light);
     doc.roundedRect(15, y - 5, 180, 25, 3, 3, 'F');
     doc.setFontSize(10);
@@ -1024,10 +955,9 @@ function downloadReceipt() {
     doc.text(`Payment: ${methodName}`, 110, y + 5);
     if (vendorName) doc.text(`Store: ${vendorName}`, 110, y + 12);
     y += 30;
-
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(12);
-    doc.setTextColor(...green);
+    doc.setTextColor(...orange);
     doc.text('DELIVERY ADDRESS', 20, y);
     y += 8;
     doc.setFont('helvetica', 'normal');
@@ -1036,7 +966,6 @@ function downloadReceipt() {
     const splitAddr = doc.splitTextToSize(address, 170);
     doc.text(splitAddr, 20, y);
     y += splitAddr.length * 5 + 8;
-
     const tableBody = (currentOrderData.items || []).map(item => [
         item.name, `×${item.quantity}`, `R ${item.price.toFixed(2)}`, `R ${(item.price * item.quantity).toFixed(2)}`
     ]);
@@ -1045,12 +974,11 @@ function downloadReceipt() {
         head: [['Item', 'Qty', 'Unit Price', 'Total']],
         body: tableBody,
         theme: 'striped',
-        headStyles: { fillColor: green, textColor: 255, fontStyle: 'bold', fontSize: 10 },
+        headStyles: { fillColor: orange, textColor: 255, fontStyle: 'bold', fontSize: 10 },
         bodyStyles: { fontSize: 10, textColor: dark },
         columnStyles: { 0:{cellWidth:80,fontStyle:'bold'}, 1:{cellWidth:20,halign:'center'}, 2:{cellWidth:35,halign:'right'}, 3:{cellWidth:35,halign:'right'} },
         margin: { left: 15, right: 15 }
     });
-
     let fy = doc.lastAutoTable.finalY + 10;
     doc.setFillColor(...light);
     doc.roundedRect(120, fy, 75, discount > 0 ? 46 : 38, 3, 3, 'F');
@@ -1065,7 +993,7 @@ function downloadReceipt() {
     doc.text(`R ${delivery.toFixed(2)}`, 185, sy, { align: 'right' });
     sy += 7;
     if (discount > 0) {
-        doc.setTextColor(...green);
+        doc.setTextColor(...orange);
         doc.text('Discount:', 125, sy);
         doc.text(`-R ${discount.toFixed(2)}`, 185, sy, { align: 'right' });
         sy += 7;
@@ -1075,22 +1003,20 @@ function downloadReceipt() {
     sy += 6;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
-    doc.setTextColor(...green);
+    doc.setTextColor(...orange);
     doc.text('TOTAL:', 125, sy + 5);
     doc.text(`R ${finalTotal.toFixed(2)}`, 185, sy + 5, { align: 'right' });
-
     const ph = doc.internal.pageSize.height;
-    doc.setFillColor(...green);
+    doc.setFillColor(...orange);
     doc.rect(0, ph - 25, 210, 25, 'F');
     doc.setTextColor(255,255,255);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
-    doc.text('Thank you for shopping with Vynix!', 105, ph - 15, { align: 'center' });
+    doc.text('Thank you for shopping with 1BUSKET!', 105, ph - 15, { align: 'center' });
     doc.setFontSize(8);
-    doc.text('support@vynixeats.com | www.vynixeats.com', 105, ph - 8, { align: 'center' });
-    doc.save(`VynixGrocery_Receipt_${orderId}_${Date.now()}.pdf`);
+    doc.text('support@1busket.com | www.1busket.com', 105, ph - 8, { align: 'center' });
+    doc.save(`1BUSKET_Receipt_${orderId}_${Date.now()}.pdf`);
 }
-
 // ═══════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════
@@ -1100,7 +1026,6 @@ function showSyncIndicator() {
     lucide.createIcons();
     setTimeout(() => el.classList.remove('show'), 2000);
 }
-
 function showToast(msg) {
     const t = document.createElement('div');
     t.style.cssText = 'position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:#1a1d23;color:white;padding:12px 24px;border-radius:12px;font-weight:600;font-size:0.9rem;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.3);white-space:nowrap;font-family:Plus Jakarta Sans,sans-serif;';
@@ -1108,7 +1033,6 @@ function showToast(msg) {
     document.body.appendChild(t);
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity 0.3s'; setTimeout(() => t.remove(), 300); }, 2500);
 }
-
 window.onload = init;
 </script>
 </body>
