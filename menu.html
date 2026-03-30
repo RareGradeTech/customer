@@ -282,65 +282,6 @@
         .cart-empty-state i { width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.25; animation: float 3s ease-in-out infinite; }
         .cart-empty-state p { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; color: var(--text); }
         .cart-empty-state small { font-size: 0.8rem; }
-        /* ORDERS DRAWER STYLES (matched exactly to home page) */
-        .order-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; box-shadow: var(--shadow); overflow: hidden; }
-        .order-card-header { padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .order-card-vendor-img { width: 48px; height: 48px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
-        .order-card-vendor-placeholder { width: 48px; height: 48px; border-radius: 12px; background: var(--surface2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .order-card-info { flex: 1; min-width: 0; }
-        .order-card-vendor-name { font-size: 0.95rem; font-weight: 700; line-height: 1.3; }
-        .order-card-meta { font-size: 0.78rem; color: var(--dim); margin-top: 2px; }
-        .order-status-badge { font-size: 0.68rem; font-weight: 700; padding: 4px 10px; border-radius: 100px; margin-left: auto; align-self: flex-start; }
-        .order-status-badge.pending { background: #fff3cd; color: #856404; }
-        .order-status-badge.confirmed { background: #d1fae5; color: #065f46; }
-        .order-status-badge.preparing { background: #dbeafe; color: #1e40af; }
-        .order-status-badge.out-for-delivery { background: #fef3c7; color: #854d0e; }
-        .order-status-badge.delivered { background: #d1fae5; color: #065f46; }
-        .order-status-badge.cancelled { background: #fee2e2; color: #991b1b; }
-        .order-card-right { text-align: right; }
-        .order-card-total { font-size: 0.95rem; font-weight: 800; color: var(--text); }
-        .order-card-chevron { width: 20px; height: 20px; color: var(--dim); transition: var(--transition); margin-left: 8px; }
-        .order-card.expanded .order-card-chevron { transform: rotate(180deg); }
-        .order-collapse { display: none; padding: 0 16px 16px; }
-        .order-card.expanded .order-collapse { display: block; }
-        .order-collapse-inner { border-top: 1px solid var(--border-light); padding-top: 14px; }
-        .order-item-row { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border-light); }
-        .order-item-row:last-child { border-bottom: none; }
-        .order-item-img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; }
-        .order-item-placeholder { width: 42px; height: 42px; border-radius: 8px; background: var(--surface2); display: flex; align-items: center; justify-content: center; }
-        .order-item-info { flex: 1; }
-        .order-item-name { font-weight: 600; font-size: 0.82rem; }
-        .order-item-desc { font-size: 0.71rem; color: var(--dim); }
-        .order-item-qty-price { text-align: right; font-size: 0.8rem; }
-        .order-item-qty { font-weight: 600; color: var(--accent); }
-        .order-item-price { font-weight: 700; }
-        .order-summary-footer { background: var(--surface2); border-radius: var(--radius-xs); padding: 11px 13px; margin: 14px 0; }
-        .order-summary-row { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px; }
-        .order-summary-row.total { font-weight: 800; font-size: 0.9rem; border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
-        .order-detail-section { margin-top: 14px; }
-        .order-detail-section-title { font-size: 0.68rem; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px; }
-        .order-detail-section-body { background: var(--surface2); border-radius: var(--radius-xs); padding: 9px 0; }
-        .order-details-row { display: flex; gap: 11px; padding: 8px 13px; }
-        .order-details-icon { color: var(--accent); width: 18px; }
-        .order-details-label { font-size: 0.71rem; color: var(--dim); font-weight: 600; }
-        .order-details-value { font-size: 0.82rem; font-weight: 600; }
-        .reorder-btn { width: 100%; background: var(--accent-light); color: var(--accent-dark); border: none; padding: 11px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; }
-        .tracking-step { display: flex; gap: 14px; margin-bottom: 14px; position: relative; }
-        .tracking-step:last-child { margin-bottom: 0; }
-        .tracking-step-dot { width: 28px; height: 28px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; z-index: 2; }
-        .tracking-step.done .tracking-step-dot { background: var(--accent); border-color: var(--accent); }
-        .tracking-step.active .tracking-step-dot { background: var(--accent-light); border-color: var(--accent); animation: pulse 2s infinite; }
-        .tracking-step-body { flex: 1; }
-        .tracking-step-label { font-weight: 700; font-size: 0.85rem; }
-        .tracking-step-time { font-size: 0.73rem; color: var(--dim); }
-        /* ITEM DETAIL SHEET (continued) */
-        .item-sheet-footer { padding: 12px 16px; padding-bottom: calc(14px + var(--safe-bottom)); background: var(--surface); border-top: 1px solid var(--border-light); flex-shrink: 0; }
-        .item-sheet-add-btn { width: 100%; background: var(--accent); color: white; border: none; padding: 14px 20px; border-radius: var(--radius-xs); font-family: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: var(--transition); letter-spacing: -0.01em; position: relative; overflow: hidden; }
-        .item-sheet-add-btn:active { transform: scale(0.98); background: var(--accent-dark); }
-        .item-sheet-add-btn:hover { background: var(--accent-dark); box-shadow: 0 4px 16px rgba(6,193,103,0.3); }
-        .item-sheet-add-btn-left { display: flex; align-items: center; gap: 8px; }
-        .item-sheet-add-btn-qty { background: rgba(255,255,255,0.25); border: 1.5px solid rgba(255,255,255,0.35); width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; }
-        /* CART DRAWER (continued) */
         .vendor-group { background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: var(--transition); }
         .vendor-group:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
         .vendor-group-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; transition: var(--transition); background: var(--surface); user-select: none; }
@@ -607,7 +548,6 @@
     </div>
 </div>
 <div id="toast">Message</div>
-
 <!-- ITEM DETAIL SHEET -->
 <div class="item-backdrop" id="itemBackdrop" onclick="closeItemSheet()"></div>
 <div class="item-sheet" id="itemSheet" role="dialog" aria-modal="true" aria-labelledby="itemSheetName">
@@ -658,7 +598,6 @@
         </button>
     </div>
 </div>
-
 <!-- MAIN APP -->
 <div class="app-container">
     <header class="header">
@@ -674,7 +613,6 @@
             </button>
         </div>
     </header>
-
     <div class="restaurant-hero" id="restaurantHero" style="display:none;">
         <div class="restaurant-banner-wrap">
             <img class="restaurant-image" id="restaurantImage" src="" alt="">
@@ -695,20 +633,17 @@
             <div class="restaurant-tags" id="restaurantTags"></div>
         </div>
     </div>
-
     <div class="search-section" id="searchSection" style="display:none;">
         <div class="search-input-wrap">
             <i data-lucide="search"></i>
             <input type="text" class="search-input" id="searchInput" placeholder="Search menu..." oninput="handleSearch(this.value)">
         </div>
     </div>
-
     <div class="category-tabs" id="categoryTabs" style="display:none;">
         <div class="tabs-scroll no-scrollbar" id="tabsContainer">
             <button class="tab-btn active" onclick="filterCategory('all', this)">All</button>
         </div>
     </div>
-
     <main class="menu-content">
         <div class="empty-state" id="emptyState">
             <i data-lucide="package-open"></i>
@@ -723,7 +658,6 @@
         <div id="menuContainer"></div>
     </main>
 </div>
-
 <!-- FLOATING CART BAR -->
 <div class="floating-cart-bar" id="floatingCartBar" onclick="toggleCart()">
     <div class="floating-cart-inner">
@@ -737,10 +671,8 @@
         </div>
     </div>
 </div>
-
 <!-- CART OVERLAY -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
-
 <!-- CART DRAWER -->
 <div class="cart-drawer" id="cartDrawer">
     <div class="cart-header">
@@ -776,15 +708,14 @@
 
 <!-- ORDERS OVERLAY -->
 <div class="cart-overlay" id="ordersOverlay" onclick="if(event.target.id==='ordersOverlay')toggleOrders()"></div>
-
-<!-- ORDERS DRAWER (now fully matched to home page) -->
+<!-- ORDERS DRAWER -->
 <div class="cart-drawer" id="ordersDrawer" style="max-width:440px;">
     <div class="cart-header">
         <h3>Your Orders</h3>
         <button class="close-cart-btn" onclick="toggleOrders()"><i data-lucide="x"></i></button>
     </div>
     <div class="cart-body" id="ordersBody">
-        <!-- Populated by renderOrders() - identical to home page -->
+        <!-- Populated by JS -->
     </div>
 </div>
 
@@ -835,9 +766,6 @@ let coStep = 0;
 let selectedPayment = 'cash';
 let coDeliveryAddress = null;
 let coAnimDir = 'forward';
-
-// All user orders (shared with home page style)
-let allUserOrders = [];
 
 // ================================================================
 // SUGGESTED ITEMS
@@ -965,7 +893,7 @@ function showShimmer() { document.getElementById('shimmerOverlay').classList.add
 function hideShimmer() { document.getElementById('shimmerOverlay').classList.remove('active'); document.body.style.overflow=''; }
 
 // ================================================================
-// LOAD MENU
+// LOAD MENU (modified to include all items regardless of status)
 // ================================================================
 async function loadMenu() {
     showShimmer();
@@ -996,6 +924,7 @@ function displayVendorInfo(v) {
     lucide.createIcons();
 }
 
+// MODIFIED: include all items, store status
 function processAndDisplayMenu(data) {
     allMenuItems=[]; categories=new Set(['all']);
     if (!data||typeof data!=='object') { showEmptyState(); return; }
@@ -1014,7 +943,7 @@ function processAndDisplayMenu(data) {
                 calories: item.calories || '',
                 prepTime: item.prepTime || '',
                 featured: item.featured || false,
-                status: item.status || 'unavailable'
+                status: item.status || 'unavailable' // default if missing
             });
         }
     });
@@ -1028,7 +957,7 @@ function processAndDisplayMenu(data) {
 }
 
 // ================================================================
-// MENU RENDERING
+// MENU RENDERING (modified to show unavailable items but not clickable)
 // ================================================================
 function getItemCartQty(itemId) { const i=cart.find(c=>c.itemId===itemId); return i?i.quantity:0; }
 
@@ -1130,8 +1059,15 @@ function getFilteredItems() {
     return items;
 }
 
-window.filterCategory=(cat,btn)=>{ document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); currentCategory=cat; renderMenuItems(getFilteredItems(),true); };
+window.filterCategory=(cat,btn)=>{ 
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); 
+    btn.classList.add('active'); 
+    currentCategory=cat; 
+    renderMenuItems(getFilteredItems(),true); 
+};
+
 window.handleSearch=val=>{ searchQuery=val.toLowerCase().trim(); renderMenuItems(getFilteredItems(),false); };
+
 window.toggleSearch=()=>{
     const s=document.getElementById('searchSection'), vis=s.style.display!=='none';
     s.style.display=vis?'none':'block';
@@ -1139,10 +1075,11 @@ window.toggleSearch=()=>{
     else { document.getElementById('searchInput').value=''; searchQuery=''; handleSearch(''); }
     lucide.createIcons();
 };
+
 window.goBack=()=>{ window.location.href='index.html'; };
 
 // ================================================================
-// ITEM SHEET
+// ITEM SHEET (modified to block unavailable)
 // ================================================================
 window.openItemSheet=itemId=>{
     const item=allMenuItems.find(i=>i.id===itemId); if(!item) return;
@@ -1322,6 +1259,8 @@ window.toggleVendorGroup=gVendorId=>{
     lucide.createIcons();
 };
 
+window.toggleCartGroup=()=>window.toggleVendorGroup(vendorId);
+
 window.updateCartItemQty=async(gVendorId,idx,qty)=>{
     if (!allGroups[gVendorId]) return;
     const itemId=allGroups[gVendorId].items[idx]?.itemId||null;
@@ -1332,6 +1271,8 @@ window.updateCartItemQty=async(gVendorId,idx,qty)=>{
     if (itemId&&gVendorId===vendorId) refreshControl(itemId);
     updateCartUI();
 };
+
+window.updateCartItemQuantity=async(idx,qty)=>window.updateCartItemQty(vendorId,idx,qty);
 
 window.toggleCart=()=>{
     const d=document.getElementById('cartDrawer'), o=document.getElementById('cartOverlay');
@@ -1597,169 +1538,85 @@ window.handleCheckout = async () => {
 window.showToast=msg=>{ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); };
 
 // ================================================================
-// ORDERS DRAWER - FULLY MATCHED TO HOME PAGE
+// ORDERS DRAWER (NEW - fully functional on menu page)
 // ================================================================
-function getStatusClass(status) {
-    const map = {
-        'pending': 'pending',
-        'confirmed': 'confirmed',
-        'preparing': 'preparing',
-        'out_for_delivery': 'out-for-delivery',
-        'delivered': 'delivered',
-        'cancelled': 'cancelled'
-    };
-    return map[status] || 'pending';
-}
-
-function getStatusLabel(status) {
-    const map = {
-        'pending': 'Pending',
-        'confirmed': 'Confirmed',
-        'preparing': 'Preparing',
-        'out_for_delivery': 'On the way',
-        'delivered': 'Delivered',
-        'cancelled': 'Cancelled'
-    };
-    return map[status] || status.charAt(0).toUpperCase() + status.slice(1);
-}
-
-function buildDeliveryBlock(o) {
-    const statusOrder = ['pending','confirmed','preparing','out_for_delivery','delivered'];
-    const activeStatuses = ['pending','confirmed','preparing','out_for_delivery'];
-    const isActive = activeStatuses.includes(o.status);
-    const isCompleted = ['delivered','completed'].includes(o.status);
-    const isCancelled = o.status === 'cancelled';
-    const steps = [
-        {key:'pending', label:'Order Placed', icon:'check', time:'We received your order'},
-        {key:'confirmed', label:'Confirmed', icon:'thumbs-up', time:'Restaurant accepted'},
-        {key:'preparing', label:'Being Prepared', icon:'chef-hat', time:'Kitchen is cooking'},
-        {key:'out_for_delivery',label:'Out for Delivery', icon:'bike', time:'Driver is on the way'},
-        {key:'delivered', label:'Delivered', icon:'home', time:'Enjoy your meal!'},
-    ];
-    const currentIdx = statusOrder.indexOf(o.status);
-    const progressPct = isCompleted ? 100 : Math.round((Math.max(currentIdx,0) / (statusOrder.length-1)) * 100);
-    const etaMins = isCompleted ? 0 : Math.max(5, 40 - (currentIdx * 8));
-    const stepperHTML = steps.map((step, idx) => {
-        const isDone = idx < currentIdx || isCompleted;
-        const isStepActive = idx === currentIdx && !isCompleted;
-        return `<div class="tracking-step ${isDone?'done':''} ${isStepActive?'active':''}">
-            <div class="tracking-step-dot"><i data-lucide="${isDone?'check':step.icon}"></i></div>
-            <div class="tracking-step-body">
-                <div class="tracking-step-label">${step.label}</div>
-                <div class="tracking-step-time">${isDone||isStepActive ? step.time : 'Waiting…'}</div>
-            </div></div>`;
-    }).join('');
-    const etaBarHTML = !isCancelled ? `
-        <div style="padding:0 13px 11px;">
-            <div style="display:flex;justify-content:space-between;font-size:0.67rem;color:var(--dim);font-weight:600;margin-bottom:5px;"><span>📍 Restaurant</span><span>🏠 Your Door</span></div>
-            <div style="height:6px;background:var(--border);border-radius:100px;overflow:hidden;"><div style="height:100%;width:${progressPct}%;background:linear-gradient(90deg,var(--accent),var(--accent-dark));border-radius:100px;transition:width 1s ease;"></div></div>
-            <div style="display:flex;gap:7px;margin-top:9px;">
-                <div style="flex:1;background:var(--surface2);border-radius:var(--radius-xs);padding:7px 9px;text-align:center;border:1px solid var(--border-light);"><div style="font-weight:800;font-size:0.82rem;">${isCompleted?'✓':'~'+etaMins+' min'}</div><div style="font-size:0.59rem;color:var(--dim);margin-top:1px;">${isCompleted?'Delivered':'ETA'}</div></div>
-                <div style="flex:1;background:var(--surface2);border-radius:var(--radius-xs);padding:7px 9px;text-align:center;border:1px solid var(--border-light);"><div style="font-weight:800;font-size:0.82rem;">${(1.2 + Math.random()*3).toFixed(1)} km</div><div style="font-size:0.59rem;color:var(--dim);margin-top:1px;">Distance</div></div>
-                <div style="flex:1;background:var(--surface2);border-radius:var(--radius-xs);padding:7px 9px;text-align:center;border:1px solid var(--border-light);"><div style="font-weight:800;font-size:0.82rem;">R${parseFloat(o.total||0).toFixed(0)}</div><div style="font-size:0.59rem;color:var(--dim);margin-top:1px;">Total</div></div>
-            </div>
-        </div>` : '';
-    let driverHTML = '';
-    if (o.status === 'out_for_delivery') {
-        driverHTML = `<div style="margin:0 13px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:11px;"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;font-weight:800;color:white;">D</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.82rem;">Driver on the way</div><div style="font-size:0.67rem;color:var(--dim);margin-top:1px;">Motorcycle · Live tracking enabled</div></div></div>`;
-    } else if (o.status === 'preparing') {
-        driverHTML = `<div style="margin:0 13px 13px;padding:10px 13px;background:rgba(6,193,103,0.06);border-radius:var(--radius-sm);border:1px solid rgba(6,193,103,0.18);display:flex;align-items:center;gap:9px;"><i data-lucide="chef-hat" style="width:18px;height:18px;color:var(--accent);flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:var(--text);">Kitchen is preparing your order</div></div></div>`;
+async function loadUserOrders() {
+    if (!currentUserId) return [];
+    try {
+        const ordersSnap = await get(ref(db, 'orders'));
+        if (ordersSnap.exists()) {
+            let orders = [];
+            ordersSnap.forEach((childSnap) => {
+                const order = childSnap.val();
+                if (order.userId === currentUserId) {
+                    orders.push({ ...order, id: childSnap.key });
+                }
+            });
+            orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            return orders;
+        }
+    } catch (e) {
+        console.error("Load orders error:", e);
     }
-    return `<div style="margin-top:11px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border-light);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
-        <div style="padding:8px 13px;background:linear-gradient(90deg,${isCompleted?'#e8f5e9':'var(--accent-light)'},transparent);font-size:0.67rem;font-weight:800;color:${isCompleted?'#2e7d32':'var(--accent-dark)'};text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:5px;">
-            ${isCancelled ? 'Order Status' : (isCompleted ? 'Delivery Summary' : '🚀 Live Delivery Tracking')}${isActive?`<span style="display:inline-flex;align-items:center;gap:3px;margin-left:auto;font-size:0.6rem;background:var(--accent);color:white;padding:2px 7px;border-radius:100px;font-weight:700;"><span style="width:5px;height:5px;border-radius:50%;background:white;animation:pulse 1.5s infinite;display:inline-block;"></span> LIVE</span>`:''}
-        </div>
-        ${etaBarHTML}
-        <div style="padding:13px 13px 4px;">${stepperHTML}</div>
-        ${driverHTML}
-    </div>`;
+    return [];
 }
 
-function renderOrders(orders, containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    if (!orders || !orders.length) {
-        container.innerHTML = `<div class="cart-empty-state"><i data-lucide="receipt"></i><p>No orders yet</p><small>Your order history will appear here</small></div>`;
+async function showOrders() {
+    const orders = await loadUserOrders();
+    const body = document.getElementById('ordersBody');
+    if (orders.length === 0) {
+        body.innerHTML = `
+            <div class="cart-empty-state">
+                <i data-lucide="receipt"></i>
+                <p>No orders yet</p>
+                <small>When you place orders, they will appear here</small>
+            </div>`;
         lucide.createIcons();
         return;
     }
-    let html = '';
-    orders.forEach(o => {
-        const date = new Date(o.createdAt || Date.now());
-        const dateStr = date.toLocaleDateString('en-ZA', {day:'numeric', month:'short', year:'numeric'});
-        const timeStr = date.toLocaleTimeString('en-ZA', {hour:'2-digit', minute:'2-digit'});
-        const items = o.items || [];
-        const itemCount = items.reduce((s, i) => s + (i.quantity || 1), 0);
-        const statusClass = getStatusClass(o.status);
-        const statusLabel = getStatusLabel(o.status);
-        const vImg = o.vendorImage ? `<img class="order-card-vendor-img" src="${o.vendorImage}" alt="${o.vendorName || ''}" loading="lazy">` : `<div class="order-card-vendor-placeholder"><i data-lucide="store"></i></div>`;
-        const itemsH = items.map(item => {
-            const imgH = item.imageURL ? `<img class="order-item-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">` : `<div class="order-item-placeholder"><i data-lucide="image"></i></div>`;
-            return `<div class="order-item-row">${imgH}<div class="order-item-info"><div class="order-item-name">${item.name}</div><div class="order-item-desc">R${(item.price||0).toFixed(2)} each</div></div><div class="order-item-qty-price"><div class="order-item-qty">×${item.quantity||1}</div><div class="order-item-price">R${((item.price||0)*(item.quantity||1)).toFixed(2)}</div></div></div>`;
-        }).join('');
-        const sub = o.subtotal || items.reduce((s, i) => s + (i.price||0)*(i.quantity||1), 0);
-        const fee = parseFloat(o.deliveryFee || 0);
-        const total = o.total || sub + fee;
-        const deliveryBlock = buildDeliveryBlock(o);
-        html += `<div class="order-card" id="ocard-${o.id}">
-            <div class="order-card-header" onclick="toggleOrder('${o.id}')">
-                ${vImg}
-                <div class="order-card-info">
-                    <div class="order-card-vendor-name">${o.vendorName || 'Restaurant'}</div>
-                    <div class="order-card-meta"><span>${dateStr} · ${timeStr}</span><span>·</span><span>${itemCount} item${itemCount !== 1 ? 's' : ''}</span></div>
-                    <span class="order-status-badge ${statusClass}">${statusLabel}</span>
+    let html = `<div style="padding:12px 8px;">`;
+    orders.forEach(order => {
+        const created = new Date(order.createdAt).toLocaleString('en-ZA', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        const status = order.status || 'pending';
+        let statusHtml = '';
+        if (status === 'pending') {
+            statusHtml = `<span style="background:#ffc107;color:#000;padding:3px 9px;border-radius:100px;font-size:0.68rem;font-weight:700;">PENDING</span>`;
+        } else if (status === 'completed') {
+            statusHtml = `<span style="background:var(--accent);color:white;padding:3px 9px;border-radius:100px;font-size:0.68rem;font-weight:700;">COMPLETED</span>`;
+        } else {
+            statusHtml = `<span style="background:var(--dim);color:white;padding:3px 9px;border-radius:100px;font-size:0.68rem;font-weight:700;">${status.toUpperCase()}</span>`;
+        }
+        const itemsSummary = order.items ? order.items.map(i => i.name).slice(0, 2).join(', ') + (order.items.length > 2 ? '...' : '') : '';
+        html += `
+        <div class="vendor-group" style="margin-bottom:12px;cursor:pointer;" onclick="showToast('Order #${order.orderNumber || 'N/A'} details would open here (full view in main app)')">
+            <div class="vendor-group-header" style="cursor:pointer;">
+                <div class="vendor-group-info" style="flex:1;">
+                    <div class="vendor-group-name">${order.vendorName || 'Vynix Eats'}</div>
+                    <div class="vendor-group-meta">${created}</div>
                 </div>
-                <div class="order-card-right"><div class="order-card-total">R${total.toFixed(2)}</div><i data-lucide="chevron-down" class="order-card-chevron"></i></div>
+                <div class="vendor-group-right">
+                    ${statusHtml}
+                </div>
             </div>
-            <div class="order-collapse"><div class="order-collapse-inner">
-                ${deliveryBlock}
-                <div style="font-size:0.65rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.4px;margin:13px 0 6px;">Items Ordered</div>
-                ${itemsH}
-                <div class="order-summary-footer">
-                    <div class="order-summary-row"><span>Subtotal</span><span>R${sub.toFixed(2)}</span></div>
-                    <div class="order-summary-row"><span>Delivery fee</span><span>${fee > 0 ? `R${fee.toFixed(2)}` : 'Free'}</span></div>
-                    <div class="order-summary-row total"><span>Total</span><span>R${total.toFixed(2)}</span></div>
+            <div style="padding:0 14px 12px;">
+                <div style="color:var(--dim);font-size:0.78rem;">${itemsSummary}</div>
+                <div style="display:flex;justify-content:space-between;margin-top:8px;">
+                    <span style="font-weight:600;">Order #${order.orderNumber || 'N/A'}</span>
+                    <span style="font-weight:800;color:var(--accent);">R ${(order.total || 0).toFixed(2)}</span>
                 </div>
-                <button class="reorder-btn" onclick="reorderItems('${o.id}', '${o.vendorId}', event)"><i data-lucide="rotate-ccw"></i> Reorder</button>
-            </div></div>
+            </div>
         </div>`;
     });
-    container.innerHTML = html;
+    html += `</div>`;
+    body.innerHTML = html;
     lucide.createIcons();
 }
-
-window.toggleOrder = (id) => {
-    const card = document.getElementById(`ocard-${id}`);
-    if (card) card.classList.toggle('expanded');
-    lucide.createIcons();
-};
-
-window.reorderItems = async (orderId, vendorId, event) => {
-    event.stopPropagation();
-    showToast("Adding items to cart...");
-    try {
-        const snap = await get(ref(db, 'orders'));
-        let orderData = null;
-        snap.forEach(child => { if (child.key === orderId) orderData = child.val(); });
-        if (!orderData || !orderData.items) { showToast("Could not find order"); return; }
-        const vInfo = await get(ref(db, `vendors/${vendorId}`)).then(s => s.exists() ? s.val() : null);
-        allGroups[vendorId] = {
-            vendorId,
-            vendorName: vInfo?.name || orderData.vendorName || '',
-            vendorImage: vInfo?.imageURL || orderData.vendorImage || '',
-            deliveryFee: parseFloat(vInfo?.deliveryFee || orderData.deliveryFee || 0),
-            items: orderData.items.map(i => ({...i, addedAt: Date.now()}))
-        };
-        await saveCart();
-        updateCartUI();
-        toggleOrders(); // close orders drawer
-        toggleCart();   // open cart
-        showToast("Items added to cart ✓");
-    } catch (e) {
-        console.error(e);
-        showToast("Reorder failed");
-    }
-};
 
 window.toggleOrders = function() {
     const drawer = document.getElementById('ordersDrawer');
@@ -1773,25 +1630,25 @@ window.toggleOrders = function() {
         drawer.classList.add('open');
         overlay.classList.add('open');
         document.body.style.overflow = 'hidden';
-        // Render full-featured orders (exactly like home page)
-        renderOrders(allUserOrders, 'ordersBody');
+        showOrders();
     }
 };
 
-// ================================================================
-// BOTTOM NAV
-// ================================================================
+// ── BOTTOM NAV - ORDERS TAB NOW FULLY SHOWS ORDERS ON MENU PAGE ───────────────────────────────
 window.bottomNavClick = function(idx) {
+    // Update active state on all nav items
     for(let i=0;i<4;i++){
         const el=document.getElementById(`bnav${i}`);
         if(el)el.classList.toggle('active',i===idx);
     }
     if(idx===0){
+        // Home - redirect to main app
         window.location.href = 'index.html';
     } else if(idx===1){
-        // Orders tab on menu page now shows full featured drawer
+        // Orders - NOW SHOWS ORDERS EVEN ON MENU PAGE
         toggleOrders();
     } else if(idx===2){
+        // Search - show search bar on this page
         const searchSection = document.getElementById('searchSection');
         if(searchSection) searchSection.style.display = searchSection.style.display === 'block' ? 'none' : 'block';
         if (searchSection && searchSection.style.display === 'block') {
@@ -1799,40 +1656,15 @@ window.bottomNavClick = function(idx) {
             if(input) input.focus();
         }
     } else if(idx===3){
+        // Profile - still toast (as before)
         showToast("Profile is available in the main Home screen");
     }
 };
 
-// ================================================================
-// FIREBASE AUTH & ORDERS SUBSCRIPTION
-// ================================================================
-onAuthStateChanged(auth, user => {
-    currentUser = user;
-    if (user) {
-        currentUserId = user.uid;
-        loadCart();
-        // Subscribe to orders (same as home page)
-        const legacyId = localStorage.getItem('vynixUserId');
-        onValue(ref(db, 'orders'), snap => {
-            const orders = [];
-            snap.forEach(child => {
-                const o = child.val();
-                if (o.userId === currentUserId || (legacyId && o.userId === legacyId)) {
-                    orders.push({ id: child.key, ...o });
-                }
-            });
-            orders.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-            allUserOrders = orders;
-            // If orders drawer is open, refresh it instantly
-            if (document.getElementById('ordersDrawer').classList.contains('open')) {
-                renderOrders(allUserOrders, 'ordersBody');
-            }
-        });
-    } else {
-        currentUserId = null;
-        cart = [];
-        updateCartUI();
-    }
+onAuthStateChanged(auth,user=>{
+    currentUser=user;
+    if (user) { currentUserId=user.uid; loadCart(); }
+    else { currentUserId=null; cart=[]; updateCartUI(); }
 });
 
 lucide.createIcons();
