@@ -185,6 +185,17 @@
         .promo-btn { background: var(--text); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: inherit; }
         .promo-btn:active { transform: scale(0.95); }
         .promo-msg { font-size: 0.8rem; margin-top: 8px; font-weight: 600; display: none; }
+        /* HOME PROMO BANNER */
+        #homePromoApplied {
+            display: none;
+            background: linear-gradient(90deg, #ff751f, #e0661c);
+            color: white;
+            border-radius: 12px;
+            padding: 14px;
+            margin-top: 12px;
+            align-items: center;
+            gap: 10px;
+        }
         /* ── PAYMENT METHODS ── */
         .method-card { border: 2px solid #f1f3f5; border-radius: var(--radius-sm); padding: 18px; margin-bottom: 12px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; }
         .method-card.active { border-color: var(--accent); background: #ffe8d6; }
@@ -291,7 +302,7 @@
 <div class="payment-container">
     <div class="header">
         <div class="header-left">
-            <a href="grocery.html" class="back-btn" aria-label="Back">
+            <a href="index.html" class="back-btn" aria-label="Back">
                 <i data-lucide="chevron-left"></i>
             </a>
             <img src="https://i.postimg.cc/65pML87d/1BUSKET-LOGO.png" alt="1BUSKET" class="logo">
@@ -303,7 +314,7 @@
         <div class="emoji">🛒</div>
         <h3>Your basket is empty</h3>
         <p>Go back and add some items before checking out.</p>
-        <a href="grocery.html">Shop Groceries</a>
+        <a href="index.html">Shop Now</a>
     </div>
     <!-- ORDER ITEMS CARD -->
     <div class="card" id="orderItemsCard">
@@ -361,21 +372,33 @@
             <input type="text" id="promoInput" class="promo-input" placeholder="VYNIX20">
             <button class="promo-btn" onclick="applyPromo()">Apply</button>
         </div>
+        <!-- HOME PROMO BANNER - automatically shown when promo was clicked on home page -->
+        <div id="homePromoApplied">
+            <i data-lucide="tag" style="width:22px;height:22px;"></i>
+            <div style="flex:1">
+                <div style="font-weight:700;font-size:0.95rem;" id="appliedPromoTitle">Special Deal</div>
+                <div style="font-size:0.78rem;opacity:0.9;" id="appliedPromoSub">30% OFF applied from home page</div>
+            </div>
+        </div>
         <div id="promoMsg" class="promo-msg"></div>
     </div>
     <!-- SUMMARY -->
     <div class="card">
         <div class="section-title"><i data-lucide="shopping-cart" size="18"></i> Summary</div>
+        <!-- SUBTOTAL WITH STRIKE-THROUGH WHEN PROMO IS APPLIED -->
         <div class="summary-row">
             <span>Subtotal (<span id="itemCountDisplay">0</span> items)</span>
-            <span id="subtotalDisplay">R 0.00</span>
+            <div style="text-align:right;">
+                <span id="subtotalOriginal" style="text-decoration: line-through; color:#999; font-size:0.95rem; display:none;">R 0.00</span>
+                <span id="subtotalDisplay" style="font-weight:600;">R 0.00</span>
+            </div>
         </div>
         <div class="summary-row">
             <span>Delivery fee</span>
             <span id="deliveryDisplay">R 0.00</span>
         </div>
         <div id="discountRow" style="display:none;" class="summary-row">
-            <span style="color:var(--accent);">Discount</span>
+            <span style="color:var(--accent);">Discount (Promo)</span>
             <span style="color:var(--accent);" id="discountVal">- R 0.00</span>
         </div>
         <div class="summary-divider"></div>
@@ -462,6 +485,7 @@ let selectedAddress = {
     mapboxId: null,
     featureType: 'address'
 };
+let homePromo = null;   // ← NEW: promo clicked from home page
 // ═══════════════════════════════════════════════════════════════
 // AUTH
 // ═══════════════════════════════════════════════════════════════
@@ -487,7 +511,7 @@ async function init() {
     }
 }
 // ═══════════════════════════════════════════════════════════════
-// LOAD CART FROM LOCALSTORAGE
+// LOAD CART FROM LOCALSTORAGE (now also handles promo from home)
 // ═══════════════════════════════════════════════════════════════
 function loadCartFromStorage() {
     const saved = localStorage.getItem('vynixCartForPayment');
@@ -510,6 +534,18 @@ function loadCartFromStorage() {
     vendorKey = d.vendorKey || null;
     vendorName = d.vendorName || null;
     orderType = d.orderType || 'grocery';
+    homePromo = d.promo || null;   // ← NEW: receive promo clicked on home page
+
+    // If a promo was passed from home page → force 30% off (as requested)
+    if (homePromo) {
+        discount = Math.round(subtotal * 0.30);
+        // Show the home promo banner
+        const banner = document.getElementById('homePromoApplied');
+        banner.style.display = 'flex';
+        document.getElementById('appliedPromoTitle').textContent = homePromo.title || 'Special Deal';
+        document.getElementById('appliedPromoSub').textContent = '30% OFF applied from home page';
+    }
+
     if (vendorName) {
         document.getElementById('orderVendorBadge').style.display = 'inline-flex';
         document.getElementById('orderVendorName').textContent = vendorName;
@@ -562,7 +598,7 @@ function renderOrderItems() {
     lucide.createIcons();
 }
 // ═══════════════════════════════════════════════════════════════
-// ADDRESS EDITOR
+// ADDRESS EDITOR (unchanged)
 // ═══════════════════════════════════════════════════════════════
 function openAddressEditor(autoDetect = false) {
     document.getElementById('confirmedAddressBox').classList.remove('active');
@@ -726,7 +762,7 @@ function loadSavedLocationFromFirebase() {
         .catch(err => console.error('Error loading location:', err));
 }
 // ═══════════════════════════════════════════════════════════════
-// PROMO
+// PROMO (manual input still works + home promo is pre-applied)
 // ═══════════════════════════════════════════════════════════════
 function applyPromo() {
     const code = document.getElementById('promoInput').value.toUpperCase().trim();
@@ -747,17 +783,35 @@ function applyPromo() {
     updateTotals();
 }
 // ═══════════════════════════════════════════════════════════════
-// TOTALS
+// TOTALS - now shows strike-through on original subtotal when promo is active
 // ═══════════════════════════════════════════════════════════════
 function updateTotals() {
-    const final = Math.max(0, (subtotal + delivery) - discount);
-    document.getElementById('subtotalDisplay').innerText = `R ${subtotal.toFixed(2)}`;
+    const effectiveSub = subtotal - discount;
+    const final = Math.max(0, effectiveSub + delivery);
+
+    // Original subtotal with strike-through when promo is applied
+    document.getElementById('subtotalDisplay').innerText = `R ${effectiveSub.toFixed(2)}`;
+    if (discount > 0) {
+        document.getElementById('subtotalOriginal').innerText = `R ${subtotal.toFixed(2)}`;
+        document.getElementById('subtotalOriginal').style.display = 'inline';
+    } else {
+        document.getElementById('subtotalOriginal').style.display = 'none';
+    }
+
     document.getElementById('deliveryDisplay').innerText = `R ${delivery.toFixed(2)}`;
+
+    if (discount > 0) {
+        document.getElementById('discountRow').style.display = 'flex';
+        document.getElementById('discountVal').innerText = `- R ${discount.toFixed(2)}`;
+    } else {
+        document.getElementById('discountRow').style.display = 'none';
+    }
+
     document.getElementById('totalDisplay').innerText = `R ${final.toFixed(2)}`;
     document.getElementById('btnTotal').innerText = `R ${final.toFixed(2)}`;
 }
 // ═══════════════════════════════════════════════════════════════
-// PAYMENT METHOD
+// PAYMENT METHOD (unchanged)
 // ═══════════════════════════════════════════════════════════════
 function setMethod(id) {
     currentMethod = id;
@@ -780,19 +834,15 @@ function loadSavedCard() {
     if (saved) { document.getElementById('cardNum').value = saved.num; document.getElementById('cardExpiry').value = saved.exp; }
 }
 // ═══════════════════════════════════════════════════════════════
-// FINISH & GO HOME — clears everything and redirects cleanly
+// FINISH & GO HOME
 // ═══════════════════════════════════════════════════════════════
 function finishAndGoHome() {
-    // 1. Set the flag so index.html knows to open Orders tab and wipe cart
     localStorage.setItem('vynixOpenOrdersTab', '1');
-    // 2. Nuke all cart-related localStorage keys
     localStorage.removeItem('vynixCartForPayment');
-    // 3. Wipe Firebase cart for this user
     if (userId) {
         database.ref(`users/${userId}/cart`).remove().catch(() => {});
         database.ref(`carts/${userId}`).set({ groups: {}, updatedAt: Date.now() }).catch(() => {});
     }
-    // 4. Go home
     window.location.href = 'index.html';
 }
 // ═══════════════════════════════════════════════════════════════
@@ -860,6 +910,7 @@ async function processPayment() {
         status: 'pending',
         createdAt: timestamp,
         updatedAt: timestamp,
+        promo: homePromo || null   // ← also save the promo that was applied
     };
     document.getElementById('loadingOverlay').style.display = 'flex';
     try {
@@ -879,22 +930,16 @@ async function processPayment() {
             itemCount: orderItems.length,
             deliveryAddress: selectedAddress.fullAddress,
         });
-        // ── CLEAR CART EVERYWHERE ──────────────────────────────────
-        // 1. Clear Firebase cart
         if (userId) {
             database.ref(`users/${userId}/cart`).remove().catch(() => {});
             database.ref(`carts/${userId}`).set({ groups: {}, updatedAt: Date.now() }).catch(() => {});
         }
-        // 2. Clear localStorage cart data
         localStorage.removeItem('vynixCartForPayment');
-        // 3. Set the flag so index.html starts fresh and shows Orders tab
         localStorage.setItem('vynixOpenOrdersTab', '1');
         showSyncIndicator();
-        // Show success UI
         document.getElementById('loaderUI').style.display = 'none';
         document.getElementById('successUI').style.display = 'block';
         lucide.createIcons();
-        // Countdown then redirect cleanly
         let count = 3;
         const countEl = document.getElementById('redirectCountdown');
         const interval = setInterval(() => {
@@ -902,7 +947,6 @@ async function processPayment() {
             if (countEl) countEl.textContent = count;
             if (count <= 0) {
                 clearInterval(interval);
-                // Use finishAndGoHome for a clean redirect
                 finishAndGoHome();
             }
         }, 1000);
@@ -910,12 +954,11 @@ async function processPayment() {
         console.error('Order error:', err);
         showToast('Error placing order. Please try again.');
         document.getElementById('loadingOverlay').style.display = 'none';
-        // Clear the flag if order failed
         localStorage.removeItem('vynixOpenOrdersTab');
     }
 }
 // ═══════════════════════════════════════════════════════════════
-// PDF RECEIPT
+// PDF RECEIPT (unchanged)
 // ═══════════════════════════════════════════════════════════════
 function downloadReceipt() {
     if (!currentOrderData) return;
