@@ -85,7 +85,7 @@
             margin-bottom: 20px;
             display: flex; align-items: center; gap: 10px;
         }
-        /* ORDER ITEMS */
+        /* ── ORDER ITEMS CARD ── */
         .order-items-list { display: flex; flex-direction: column; gap: 10px; }
         .order-item-row {
             display: flex; align-items: center; gap: 12px;
@@ -128,7 +128,7 @@
             padding: 5px 12px; font-size: 0.75rem; font-weight: 700;
             margin-bottom: 14px;
         }
-        /* ADDRESS */
+        /* ── ADDRESS ── */
         .confirmed-address {
             display: none;
             align-items: flex-start;
@@ -178,12 +178,14 @@
         .detecting-state.active { display: flex; }
         .detecting-state .spin { animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
-        /* PROMO */
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+        /* ── PROMO ── */
         .promo-flex { display: flex; gap: 10px; margin-top: 10px; }
         .promo-input { flex: 1; background: #f8f9fa; border: 1px solid #eee; padding: 12px 16px; border-radius: 12px; font-family: inherit; font-weight: 600; text-transform: uppercase; outline: none; }
         .promo-btn { background: var(--text); color: white; border: none; padding: 0 20px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: inherit; }
         .promo-btn:active { transform: scale(0.95); }
         .promo-msg { font-size: 0.8rem; margin-top: 8px; font-weight: 600; display: none; }
+        /* HOME PROMO BANNER */
         #homePromoApplied {
             display: none;
             background: linear-gradient(90deg, #ff751f, #e0661c);
@@ -194,7 +196,7 @@
             align-items: center;
             gap: 10px;
         }
-        /* PAYMENT METHODS */
+        /* ── PAYMENT METHODS ── */
         .method-card { border: 2px solid #f1f3f5; border-radius: var(--radius-sm); padding: 18px; margin-bottom: 12px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 15px; }
         .method-card.active { border-color: var(--accent); background: #ffe8d6; }
         .method-icon { width: 44px; height: 44px; border-radius: 12px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; }
@@ -209,7 +211,7 @@
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent); }
         input:checked + .slider:before { transform: translateX(20px); }
-        /* SUMMARY */
+        /* ── SUMMARY ── */
         .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
         .summary-row span:first-child { color: var(--dim); }
         .summary-row span:last-child { font-weight: 600; }
@@ -217,7 +219,7 @@
         .summary-total { display: flex; justify-content: space-between; }
         .summary-total span:first-child { font-weight: 800; font-size: 1.2rem; }
         .summary-total span:last-child { font-weight: 800; font-size: 1.2rem; color: var(--accent); }
-        /* BOTTOM BAR */
+        /* ── BOTTOM BAR ── */
         .action-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
             padding: 24px; background: var(--glass);
@@ -236,7 +238,7 @@
         }
         .pay-btn:active { transform: scale(0.96); }
         .pay-btn:disabled { background: #ccc; box-shadow: none; cursor: not-allowed; transform: none; }
-        /* LOADING OVERLAY */
+        /* ── LOADING OVERLAY ── */
         #loadingOverlay {
             position: fixed; inset:0; background: white; z-index: 1000;
             display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -245,7 +247,7 @@
         @keyframes successPop { 0%{transform:scale(0);opacity:0;} 60%{transform:scale(1.2);} 100%{transform:scale(1);opacity:1;} }
         .receipt-btn { margin-top: 20px; background: #f1f3f5; color: var(--text); border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; font-family: inherit; }
         .receipt-btn:active { transform: scale(0.95); }
-        /* SYNC */
+        /* ── SYNC ── */
         .sync-indicator {
             position: fixed; top: 20px; right: 20px;
             background: var(--accent); color: white;
@@ -256,7 +258,7 @@
         }
         .sync-indicator.show { display: flex; animation: slideDown 0.3s ease; }
         @keyframes slideDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
-        /* EMPTY CART */
+        /* ── EMPTY CART NOTICE ── */
         .empty-cart-notice {
             text-align: center; padding: 32px 20px;
             background: white; border-radius: var(--radius);
@@ -307,7 +309,7 @@
         </div>
         <h1 class="header-title">Checkout</h1>
     </div>
-    <!-- EMPTY CART -->
+    <!-- EMPTY CART STATE (shown if no cart data) -->
     <div id="emptyCartNotice" class="empty-cart-notice" style="display:none;">
         <div class="emoji">🛒</div>
         <h3>Your basket is empty</h3>
@@ -370,6 +372,7 @@
             <input type="text" id="promoInput" class="promo-input" placeholder="VYNIX20">
             <button class="promo-btn" onclick="applyPromo()">Apply</button>
         </div>
+        <!-- HOME PROMO BANNER - automatically shown when promo was clicked on home page -->
         <div id="homePromoApplied">
             <i data-lucide="tag" style="width:22px;height:22px;"></i>
             <div style="flex:1">
@@ -382,6 +385,7 @@
     <!-- SUMMARY -->
     <div class="card">
         <div class="section-title"><i data-lucide="shopping-cart" size="18"></i> Summary</div>
+        <!-- SUBTOTAL WITH STRIKE-THROUGH WHEN PROMO IS APPLIED -->
         <div class="summary-row">
             <span>Subtotal (<span id="itemCountDisplay">0</span> items)</span>
             <div style="text-align:right;">
@@ -447,9 +451,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
-/* ══════════════════════════════════════════════════════
-   FIREBASE
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE
+// ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
     apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
     authDomain: "test-17881.firebaseapp.com",
@@ -463,17 +467,13 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw';
-
-/* ══════════════════════════════════════════════════════
-   STATE
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
 let currentMethod = 'cod';
 let subtotal = 0, delivery = 0, discount = 0;
 let cartItems = [];
-// vendorKey  = the Firebase push key (e.g. -OQ1234abc) — used for matching in vendor portal
-// vendorName = human-readable store name
-// vendorDisplayId = the human-readable VYX-xxx ID (if stored in cart data)
-let vendorKey = null, vendorName = null, vendorDisplayId = null, orderType = 'grocery';
+let vendorKey = null, vendorName = null, orderType = 'grocery';
 let userId = null, currentUser = null;
 let currentOrderId = null, currentOrderData = null;
 let suggestDebounce = null;
@@ -485,11 +485,10 @@ let selectedAddress = {
     mapboxId: null,
     featureType: 'address'
 };
-let homePromo = null;
-
-/* ══════════════════════════════════════════════════════
-   AUTH
-══════════════════════════════════════════════════════ */
+let homePromo = null;   // ← NEW: promo clicked from home page
+// ═══════════════════════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════════════════════
 auth.onAuthStateChanged(user => {
     currentUser = user;
     if (user) {
@@ -497,10 +496,9 @@ auth.onAuthStateChanged(user => {
         localStorage.setItem('vynixUserId', userId);
     }
 });
-
-/* ══════════════════════════════════════════════════════
-   INIT
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
 async function init() {
     lucide.createIcons();
     userId = localStorage.getItem('vynixUserId') || ('user_' + Date.now() + '_' + Math.random().toString(36).substr(2,9));
@@ -512,13 +510,9 @@ async function init() {
         openAddressEditor(true);
     }
 }
-
-/* ══════════════════════════════════════════════════════
-   LOAD CART FROM LOCALSTORAGE
-   KEY FIX: also reads vendorFirebaseKey if present,
-   which is the actual Firebase push key saved by the
-   home/shop page when adding items to cart.
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// LOAD CART FROM LOCALSTORAGE (now also handles promo from home)
+// ═══════════════════════════════════════════════════════════════
 function loadCartFromStorage() {
     const saved = localStorage.getItem('vynixCartForPayment');
     if (!saved) {
@@ -537,18 +531,15 @@ function loadCartFromStorage() {
     delivery = parseFloat(d.delivery) || 0;
     discount = parseFloat(d.discount) || 0;
     cartItems = d.items || [];
+    vendorKey = d.vendorKey || null;
+    vendorName = d.vendorName || null;
     orderType = d.orderType || 'grocery';
-    homePromo = d.promo || null;
+    homePromo = d.promo || null;   // ← NEW: receive promo clicked on home page
 
-    // ── VENDOR KEY RESOLUTION ──
-    // Priority: vendorFirebaseKey (the actual push key) > vendorKey > vendorId
-    // vendorFirebaseKey should be saved by the shop page when it knows the Firebase key
-    vendorId: vendorKey || '',
-    vendorKey: vendorKey || '',
-    vendorKeyFallback: vendorName || '',
-        
+    // If a promo was passed from home page → force 30% off (as requested)
     if (homePromo) {
         discount = Math.round(subtotal * 0.30);
+        // Show the home promo banner
         const banner = document.getElementById('homePromoApplied');
         banner.style.display = 'flex';
         document.getElementById('appliedPromoTitle').textContent = homePromo.title || 'Special Deal';
@@ -562,10 +553,9 @@ function loadCartFromStorage() {
     renderOrderItems();
     updateTotals();
 }
-
-/* ══════════════════════════════════════════════════════
-   RENDER ORDER ITEMS
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// RENDER ORDER ITEMS
+// ═══════════════════════════════════════════════════════════════
 const CAT_EMOJI_MAP = {
     fresh:'🥦', dairy:'🥛', meat:'🥩', bakery:'🍞', beverages:'🧃',
     snacks:'🍿', frozen:'🧊', pantry:'🫙', household:'🧹', personal:'🧴',
@@ -607,10 +597,9 @@ function renderOrderItems() {
     document.getElementById('itemCountDisplay').textContent = totalQty;
     lucide.createIcons();
 }
-
-/* ══════════════════════════════════════════════════════
-   ADDRESS EDITOR
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// ADDRESS EDITOR (unchanged)
+// ═══════════════════════════════════════════════════════════════
 function openAddressEditor(autoDetect = false) {
     document.getElementById('confirmedAddressBox').classList.remove('active');
     document.getElementById('addressEditor').classList.add('active');
@@ -746,10 +735,9 @@ function setDetectingState(on) {
     document.getElementById('detectingState').classList.toggle('active', on);
     lucide.createIcons();
 }
-
-/* ══════════════════════════════════════════════════════
-   FIREBASE: LOCATION
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// FIREBASE: LOCATION
+// ═══════════════════════════════════════════════════════════════
 function saveLocationToFirebase() {
     if (!selectedAddress.fullAddress || !userId) return Promise.resolve();
     const data = { ...selectedAddress, context: selectedAddress.context || [], updatedAt: firebase.database.ServerValue.TIMESTAMP };
@@ -773,10 +761,9 @@ function loadSavedLocationFromFirebase() {
         })
         .catch(err => console.error('Error loading location:', err));
 }
-
-/* ══════════════════════════════════════════════════════
-   PROMO
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// PROMO (manual input still works + home promo is pre-applied)
+// ═══════════════════════════════════════════════════════════════
 function applyPromo() {
     const code = document.getElementById('promoInput').value.toUpperCase().trim();
     const msg = document.getElementById('promoMsg');
@@ -795,13 +782,14 @@ function applyPromo() {
     msg.style.display = 'block';
     updateTotals();
 }
-
-/* ══════════════════════════════════════════════════════
-   TOTALS
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// TOTALS - now shows strike-through on original subtotal when promo is active
+// ═══════════════════════════════════════════════════════════════
 function updateTotals() {
     const effectiveSub = subtotal - discount;
     const final = Math.max(0, effectiveSub + delivery);
+
+    // Original subtotal with strike-through when promo is applied
     document.getElementById('subtotalDisplay').innerText = `R ${effectiveSub.toFixed(2)}`;
     if (discount > 0) {
         document.getElementById('subtotalOriginal').innerText = `R ${subtotal.toFixed(2)}`;
@@ -809,20 +797,22 @@ function updateTotals() {
     } else {
         document.getElementById('subtotalOriginal').style.display = 'none';
     }
+
     document.getElementById('deliveryDisplay').innerText = `R ${delivery.toFixed(2)}`;
+
     if (discount > 0) {
         document.getElementById('discountRow').style.display = 'flex';
         document.getElementById('discountVal').innerText = `- R ${discount.toFixed(2)}`;
     } else {
         document.getElementById('discountRow').style.display = 'none';
     }
+
     document.getElementById('totalDisplay').innerText = `R ${final.toFixed(2)}`;
     document.getElementById('btnTotal').innerText = `R ${final.toFixed(2)}`;
 }
-
-/* ══════════════════════════════════════════════════════
-   PAYMENT METHOD
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// PAYMENT METHOD (unchanged)
+// ═══════════════════════════════════════════════════════════════
 function setMethod(id) {
     currentMethod = id;
     document.querySelectorAll('.method-card').forEach(c => c.classList.remove('active'));
@@ -843,10 +833,9 @@ function loadSavedCard() {
     const saved = JSON.parse(localStorage.getItem('vynix_card') || 'null');
     if (saved) { document.getElementById('cardNum').value = saved.num; document.getElementById('cardExpiry').value = saved.exp; }
 }
-
-/* ══════════════════════════════════════════════════════
-   FINISH & GO HOME
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// FINISH & GO HOME
+// ═══════════════════════════════════════════════════════════════
 function finishAndGoHome() {
     localStorage.setItem('vynixOpenOrdersTab', '1');
     localStorage.removeItem('vynixCartForPayment');
@@ -856,13 +845,9 @@ function finishAndGoHome() {
     }
     window.location.href = 'index.html';
 }
-
-/* ══════════════════════════════════════════════════════
-   PLACE ORDER
-   KEY FIX: we now save BOTH the Firebase push key (vendorKey)
-   AND the human-readable display ID (vendorDisplayId) so the
-   vendor portal's reFilterOrders() can match on either.
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// PLACE ORDER
+// ═══════════════════════════════════════════════════════════════
 async function processPayment() {
     if (currentUser && currentUser.uid) {
         userId = currentUser.uid;
@@ -909,17 +894,10 @@ async function processPayment() {
         orderNumber: orderNum,
         orderType: orderType || 'grocery',
         userId: userId,
-
-        // ── VENDOR FIELDS: save every possible form so the portal can match ──
-        // vendorKey  = Firebase push key (e.g. -OQ1234abc) — preferred for matching
-        // vendorId   = same as vendorKey (legacy field name some portals check)
-        // vendorDisplayId = human-readable ID e.g. VYX-ABC (fallback)
-        // vendorName = store name (last-resort fallback)
+        vendorId: vendorKey || '',
         vendorKey: vendorKey || '',
-        vendorId:  vendorKey || '',
-        vendorDisplayId: vendorDisplayId || '',
-        vendorName: vendorName || 'Store',
-
+        vendorKeyFallback: vendorName || '',
+        vendorName: vendorName || 'Grocery Store',
         customerName: (currentUser && (currentUser.displayName || currentUser.email?.split('@')[0])) || 'Customer',
         customerEmail: (currentUser && currentUser.email) || '',
         items: orderItems,
@@ -933,7 +911,7 @@ async function processPayment() {
         status: 'pending',
         createdAt: timestamp,
         updatedAt: timestamp,
-        promo: homePromo || null
+        promo: homePromo || null   // ← also save the promo that was applied
     };
     document.getElementById('loadingOverlay').style.display = 'flex';
     try {
@@ -980,10 +958,9 @@ async function processPayment() {
         localStorage.removeItem('vynixOpenOrdersTab');
     }
 }
-
-/* ══════════════════════════════════════════════════════
-   PDF RECEIPT
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// PDF RECEIPT (unchanged)
+// ═══════════════════════════════════════════════════════════════
 function downloadReceipt() {
     if (!currentOrderData) return;
     const { jsPDF } = window.jspdf;
@@ -1084,10 +1061,9 @@ function downloadReceipt() {
     doc.text('support@1busket.com | www.1busket.com', 105, ph - 8, { align: 'center' });
     doc.save(`1BUSKET_Receipt_${orderId}_${Date.now()}.pdf`);
 }
-
-/* ══════════════════════════════════════════════════════
-   HELPERS
-══════════════════════════════════════════════════════ */
+// ═══════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════
 function showSyncIndicator() {
     const el = document.getElementById('syncIndicator');
     el.classList.add('show');
