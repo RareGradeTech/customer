@@ -631,7 +631,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 <div id="toast">Item added</div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -692,9 +692,9 @@ function sugBucket(p){
 }
 function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
 
-/* ═══ STATE — unified cart with groups structure ════════════════ */
+/* ═══ STATE ═══════════════════════════════════════════════════ */
 let allProducts = [];
-let cartGroups = {};       // { vendorId: { vendorId, vendorName, vendorImage, deliveryFee, items: [] } }
+let cartGroups = {};
 let activeCat = 'all';
 let currentUser = null;
 let currentUserId = null;
@@ -702,19 +702,22 @@ let activeSheetProduct = null;
 let sheetQty = 1;
 let activeVendorId = null;
 let activeVendorName = null;
+/* Flag to suppress re-saving when we receive our own Firebase update */
+let _cartSaveInProgress = false;
+let _cartListenerAttached = false;
 
-/* Helper: flatten groups into a map for quick UI lookups (productId -> quantity) */
-function flattenCartItems() {
-  const flat = {};
-  Object.values(cartGroups).forEach(group => {
-    group.items.forEach(item => {
-      flat[item.id] = item.quantity;
-    });
-  });
-  return flat;
-}
+/* ═══ FIREBASE CART — REALTIME SAVE / LISTEN ═══════════════════
+ *
+ * Cart is stored at:  carts/{uid}/groups/{vendorId}/...
+ *
+ * This is the SAME path and structure used by the index page,
+ * so both pages see an identical, live-synced basket.
+ * ─────────────────────────────────────────────────────────────*/
 
-/* Save cart to Firebase — maintains both groups (for grocery internal) and flattened items (for index page cart) */
+/**
+ * Persist the full groups object to Firebase.
+ * Called every time a cart mutation happens locally.
+ */
 async function saveCartToFirebase() {
   if (!currentUserId) return;
   const groupsToSave = {};
@@ -742,45 +745,33 @@ async function saveCartToFirebase() {
       }))
     };
   });
-  await set(ref(db, `carts/${currentUserId}/groups`), groupsToSave);
-  
-  // ALSO save flattened items array so that index.html cart can read directly
-  const flatItems = [];
-  Object.values(cartGroups).forEach(group => {
-    group.items.forEach(item => {
-      flatItems.push({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        imageURL: item.imageURL || '',
-        image: item.imageURL || '',        // compatibility for index page
-        weight: item.weight || '',
-        category: item.category || '',
-        vendorId: item.vendorId,
-        vendorName: item.vendorName,
-        brand: item.brand || '',
-        originalPrice: item.originalPrice || null,
-        isNew: item.isNew || false,
-        featured: item.featured || false,
-        itemTotal: item.price * item.quantity
-      });
+  _cartSaveInProgress = true;
+  try {
+    await set(ref(db, `carts/${currentUserId}`), {
+      groups: groupsToSave,
+      updatedAt: Date.now()
     });
-  });
-  await set(ref(db, `carts/${currentUserId}/items`), flatItems);
-  // also store a timestamp for sync
-  await set(ref(db, `carts/${currentUserId}/lastUpdated`), Date.now());
+  } finally {
+    /* Allow a short window for the listener echo to be ignored */
+    setTimeout(() => { _cartSaveInProgress = false; }, 600);
+  }
 }
 
-/* Load cart from Firebase (groups structure only, flattened is for index) */
-async function loadCartFromFirebase() {
-  if (!currentUserId) return;
-  const snap = await get(ref(db, `carts/${currentUserId}/groups`));
-  if (snap.exists()) {
+/**
+ * Attach a realtime listener on carts/{uid}.
+ * This fires on load AND whenever another page (e.g. index) mutates the cart,
+ * keeping this page perfectly in sync.
+ */
+function attachCartListener() {
+  if (!currentUserId || _cartListenerAttached) return;
+  _cartListenerAttached = true;
+  onValue(ref(db, `carts/${currentUserId}`), snap => {
+    /* Skip if this update was triggered by our own save */
+    if (_cartSaveInProgress) return;
     const data = snap.val();
-    if (data) {
+    if (data && data.groups) {
       cartGroups = {};
-      Object.entries(data).forEach(([vid, group]) => {
+      Object.entries(data.groups).forEach(([vid, group]) => {
         cartGroups[vid] = {
           vendorId: group.vendorId,
           vendorName: group.vendorName,
@@ -792,20 +783,20 @@ async function loadCartFromFirebase() {
           }))
         };
       });
+    } else {
+      cartGroups = {};
     }
-  } else {
-    cartGroups = {};
-  }
-  updateCartUI();
-  // refresh all product action buttons
-  allProducts.forEach(p => refreshAction(p.id));
+    updateCartUI();
+    /* Refresh all visible product action buttons to reflect synced quantities */
+    allProducts.forEach(p => refreshAction(p.id));
+  });
 }
 
-/* Add or update item in cart (groups structure) */
+/* ═══ CART MUTATION HELPERS ═══════════════════════════════════ */
+
 function addToCart(product, qty = 1) {
   const vendorId = product.vendorId;
   if (!vendorId) return false;
-  
   if (!cartGroups[vendorId]) {
     cartGroups[vendorId] = {
       vendorId: vendorId,
@@ -815,7 +806,6 @@ function addToCart(product, qty = 1) {
       items: []
     };
   }
-  
   const group = cartGroups[vendorId];
   const existingItem = group.items.find(i => i.id === product.id);
   if (existingItem) {
@@ -837,7 +827,6 @@ function addToCart(product, qty = 1) {
       featured: product.featured || false
     });
   }
-  // remove group if no items
   if (group.items.length === 0) delete cartGroups[vendorId];
   saveCartToFirebase();
   updateCartUI();
@@ -872,17 +861,18 @@ function getProductQuantity(productId) {
   return 0;
 }
 
-/* Update UI elements that depend on cart */
+/* ═══ CART UI ════════════════════════════════════════════════= */
+
 function updateCartUI() {
   const totalItems = Object.values(cartGroups).reduce((sum, g) => sum + g.items.reduce((s, i) => s + i.quantity, 0), 0);
   const subtotal = Object.values(cartGroups).reduce((sum, g) => sum + g.items.reduce((s, i) => s + (i.price * i.quantity), 0), 0);
   const deliveryTotal = Object.values(cartGroups).reduce((sum, g) => sum + (g.deliveryFee || 0), 0);
   const grand = subtotal + deliveryTotal;
-  
+
   const badge = document.getElementById('cartCount');
   badge.textContent = totalItems;
   badge.style.display = totalItems > 0 ? 'inline-block' : 'none';
-  
+
   const bar = document.getElementById('floatingCartBar');
   if (totalItems > 0) {
     bar.classList.add('visible');
@@ -891,10 +881,10 @@ function updateCartUI() {
   } else {
     bar.classList.remove('visible');
   }
-  
+
   const btn = document.getElementById('checkoutBtn');
   if (btn) btn.disabled = totalItems === 0;
-  
+
   const body = document.getElementById('cartBody'), footer = document.getElementById('cartFooter');
   if (totalItems === 0) {
     body.innerHTML = `<div class="cart-empty-state"><div class="empty-emoji">🛒</div><p>Your basket is empty</p><small>Add items to get started</small></div>`;
@@ -902,7 +892,7 @@ function updateCartUI() {
     return;
   }
   if (footer) footer.style.display = 'block';
-  
+
   let itemsHtml = '';
   Object.values(cartGroups).forEach(group => {
     group.items.forEach(item => {
@@ -924,7 +914,7 @@ function updateCartUI() {
     });
   });
   body.innerHTML = itemsHtml;
-  
+
   const summary = document.getElementById('cartSummaryBox');
   summary.innerHTML = `
     <div class="prep-badge"><i data-lucide="clock" style="width:11px;height:11px;"></i> Est. delivery 25–40 min</div>
@@ -969,7 +959,8 @@ function buildAction(product, qty, safeId) {
   return `<button class="add-btn" onclick="addItem('${product.id}',event)"><i data-lucide="plus"></i></button>`;
 }
 
-/* Global cart actions */
+/* ═══ GLOBAL CART ACTIONS ═════════════════════════════════════ */
+
 window.addItem = function(productId, event) {
   event?.stopPropagation();
   const p = allProducts.find(x => x.id === productId);
@@ -994,7 +985,7 @@ window.cQty = function(productId, delta, event) {
   showToast(`${p.name} ${delta > 0 ? 'added' : 'removed'}`);
 };
 
-/* Hero cycle etc. (unchanged) */
+/* ═══ HERO CYCLE ═════════════════════════════════════════════ */
 const HERO_EMOJIS=['🛒','🥦','🥛','🥩','🍞','🧃','🍿','🧴','🌿','🍎'];
 let heroIdx=0;
 setInterval(()=>{
@@ -1004,7 +995,7 @@ setInterval(()=>{
   setTimeout(()=>{ el.textContent=HERO_EMOJIS[heroIdx]; el.style.transform='scale(1)'; el.style.transition='transform .3s cubic-bezier(.34,1.56,.64,1)'; },180);
 },3000);
 
-/* Load products from Firebase */
+/* ═══ LOAD PRODUCTS FROM FIREBASE ════════════════════════════ */
 const urlParams = new URLSearchParams(window.location.search);
 const vendorParam = urlParams.get('vendor');
 
@@ -1064,10 +1055,12 @@ function finishLoad(){
   buildCatGrid();
   renderPopular();
   renderAisles('all');
-  loadCartFromFirebase(); // load cart after products are ready
+  /* Cart listener is attached in onAuthStateChanged; if already attached, refresh buttons */
+  allProducts.forEach(p => refreshAction(p.id));
 }
 
-/* Build category grid, render aisles, popular, etc. (largely unchanged but uses updated refreshAction) */
+/* ═══ CATEGORY GRID & AISLES ════════════════════════════════= */
+
 function buildCatGrid(){
   const keysWithProducts=new Set(['all']);
   allProducts.forEach(p=>keysWithProducts.add(getCatKey(p.category)));
@@ -1195,7 +1188,8 @@ function buildCard(product,flex=true){
   return card;
 }
 
-/* Item sheet and suggested items (unchanged but use unified cart) */
+/* ═══ ITEM DETAIL SHEET ══════════════════════════════════════ */
+
 window.openItemSheet = function(productId){
   const product=allProducts.find(p=>p.id===productId); if(!product) return;
   if(product.status==='unavailable'){ showToast('This item is currently unavailable'); return; }
@@ -1331,7 +1325,7 @@ window.quickAddSuggested=function(productId,e){
   showToast(`${p.name} added 🛒`);
 };
 
-/* Drag to close sheet (unchanged) */
+/* ═══ DRAG TO CLOSE SHEET ════════════════════════════════════ */
 (function initDrag(){
   const sheet=document.getElementById('itemSheet');
   const dragZone=document.getElementById('sheetDragZone');
@@ -1371,13 +1365,14 @@ window.quickAddSuggested=function(productId,e){
     }
   },{passive:true});
 })();
+
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     if(document.getElementById('itemSheet').classList.contains('open')) closeItemSheet();
   }
 });
 
-/* Cart drawer toggle, search, toast, payment redirect (updated to use unified cart data) */
+/* ═══ CART DRAWER TOGGLE ══════════════════════════════════════ */
 window.toggleCart=function(){
   const d=document.getElementById('cartDrawer'), o=document.getElementById('cartOverlay');
   const open=d.classList.contains('open');
@@ -1385,6 +1380,7 @@ window.toggleCart=function(){
   else { d.classList.add('open'); o.classList.add('open'); document.body.style.overflow='hidden'; updateCartUI(); }
 };
 
+/* ═══ SEARCH ══════════════════════════════════════════════════ */
 window.toggleSearch=function(){
   const sec=document.getElementById('searchSection');
   const hidden=sec.style.display==='none'||!sec.style.display;
@@ -1425,13 +1421,17 @@ window.handleSearch=function(q){
   },240);
 };
 
+/* ═══ TOAST ═══════════════════════════════════════════════════ */
 window.showToast=function(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2400);
 };
 
-/* Go to payment: save cart using the same structure as main index expects */
+/* ═══ GO TO PAYMENT ══════════════════════════════════════════
+ * Also writes a legacy flat-list copy to localStorage so the
+ * payment page can still read it the same way it always did.
+ * ─────────────────────────────────────────────────────────── */
 window.goToPayment = function(){
   const totalItems = Object.values(cartGroups).reduce((sum,g)=>sum+g.items.reduce((s,i)=>s+i.quantity,0),0);
   if(totalItems===0) return;
@@ -1466,15 +1466,21 @@ window.goToPayment = function(){
   window.location.href = 'payment.html';
 };
 
-/* Auth state change: load cart when user logs in */
+/* ═══ AUTH STATE ═════════════════════════════════════════════
+ * When a user signs in, attach the realtime cart listener once.
+ * The listener will immediately fire with the current DB state,
+ * populating the cart and refreshing all product buttons.
+ * ─────────────────────────────────────────────────────────── */
 onAuthStateChanged(auth, u=>{
-  currentUser=u;
-  currentUserId=u?.uid||null;
+  currentUser = u;
+  currentUserId = u?.uid || null;
+  _cartListenerAttached = false; /* allow re-attach on new sign-in */
   if(currentUserId){
-    loadCartFromFirebase();
+    attachCartListener();
   } else {
     cartGroups = {};
     updateCartUI();
+    allProducts.forEach(p => refreshAction(p.id));
   }
 });
 
