@@ -961,7 +961,7 @@ function renderCoReview(body,footer){
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="receipt"></i></div><span class="co-card-label">Price Breakdown</span></div><div class="co-card-body"><div class="co-price-row"><span>Subtotal</span><span>R${ts.toFixed(2)}</span></div><div class="co-price-row"><span>Delivery fee${vc>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div><div class="co-price-row total"><span>Total</span><span>R${total.toFixed(2)}</span></div></div></div>
     ${pt>0?`<div style="padding:2px 0;"><div class="co-eta-badge"><i data-lucide="clock"></i> Estimated prep: ~${pt} min</div></div>`:''}
   `;
-  footer.innerHTML=`<button class="co-confirm-btn" onclick="preparePaymentAndRedirect()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
+  footer.innerHTML=`<button class="co-confirm-btn" onclick="coGoNext()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
 }
 function renderCoPayment(body,footer){
   const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
@@ -984,7 +984,7 @@ function renderCoPayment(body,footer){
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="receipt"></i></div><span class="co-card-label">Order Total</span></div><div class="co-card-body"><div class="co-price-row"><span>Subtotal</span><span>R${ts.toFixed(2)}</span></div><div class="co-price-row"><span>Delivery fee${Object.keys(cartGroups).length>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div><div class="co-price-row total"><span>Total</span><span>R${total.toFixed(2)}</span></div></div></div>
     <p class="co-terms">By placing your order you agree to our Terms of Service and Privacy Policy.</p>
   `;
-  footer.innerHTML=`<button class="co-confirm-btn" id="coPlaceBtn" onclick="handleCheckout()"><i data-lucide="check-circle"></i> Place Order · R${total.toFixed(2)}</button>`;
+ footer.innerHTML=`<button class="co-confirm-btn" id="coPlaceBtn" onclick="handleCheckout()"><i data-lucide="check-circle"></i> Place Order · R${total.toFixed(2)}</button>`;
   const eb=document.getElementById('coAddrEditBtn');
   if(eb)eb.addEventListener('click',()=>{const inp=document.getElementById('coAddrInput');if(inp){const isHidden=inp.style.display==='none'||!inp.style.display;inp.style.display=isHidden?'block':'none';if(isHidden){inp.focus();}}});
 }
@@ -1049,23 +1049,80 @@ window.preparePaymentAndRedirect = () => {
   localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
   window.location.href = 'payment.html';
 };
-
+window.coGoNext = ()=>{
+  coAnimDir='forward';coStep=1;renderCoStep();lucide.createIcons();
+};
 /* FIXED CHECKOUT - NOW CREATES REAL ORDERS */
+  
 window.handleCheckout = async()=>{
-  if(getTotalItems()===0)return;
+  if(!currentUser){showToast("Please sign in to place an order");return;}
+  if(getTotalItems()===0){showToast("Cart is empty");return;}
   const btn=document.getElementById('coPlaceBtn');
   if(btn){btn.disabled=true;btn.innerHTML='<i data-lucide="loader-2" style="animation:spin 1s linear infinite;width:17px;height:17px;"></i> Placing order…';lucide.createIcons();}
   try{
-    await placeRealOrders();   // ← This is the key fix
+    const deliveryAddress=coDeliveryAddress||'';
+    if(!deliveryAddress){
+      showToast("Please set a delivery address");
+      if(btn){btn.disabled=false;btn.innerHTML='<i data-lucide="check-circle"></i> Place Order';lucide.createIcons();}
+      return;
+    }
+    
+    const snapshottedItems = getAllCartItems();
+    const snapshottedTotal = getTotalPrice();
+    const firstOrderId = generateOrderNumber();
+
+    const promises = Object.entries(cartGroups).map(async ([gVid, group]) => {
+      const sub = (group.items||[]).reduce((s,i)=>s+i.price*i.quantity, 0);
+      const fee = parseFloat(group.deliveryFee || 0);
+      
+      const orderNumber = generateOrderNumber();
+
+      // Build the order payload — matches homepage structure
+      const orderData = {
+        userId:           currentUserId,
+        vendorId:         gVid,
+        vendorKey:        gVid,                        // ← explicit vendor reference for vendor portal
+        vendorName:       group.vendorName   || 'Grocery Store',
+        vendorImage:      group.vendorImage  || '',
+        customerName:     currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Customer',
+        userEmail:        currentUser?.email  || '',
+        orderNumber,
+        storeType:        'grocery',
+        items:            group.items || [],
+        subtotal:         sub,
+        deliveryFee:      fee,
+        total:            sub + fee,
+        paymentMethod:    selectedPayment,
+        deliveryAddress:  deliveryAddress,
+        status:           'pending',
+        createdAt:        Date.now(),
+        updatedAt:        Date.now(),
+        estimatedPrepTime: calcPrepTime()
+      };
+
+      // Get a single key used for both write paths (dual write pattern) [^1^]
+      const newOrderRef = push(ref(db, 'orders'));
+      const orderKey    = newOrderRef.key;
+
+      // Write to BOTH nodes in parallel: flat orders + vendor-specific
+      // This enables vendor portal to query by vendorKey [^2^]
+      return Promise.all([
+        set(newOrderRef, orderData),                                    // orders/{key} - user history
+        set(ref(db, `vendors/${gVid}/orders/${orderKey}`), orderData)   // vendors/{vid}/orders/{key} - vendor portal
+      ]);
+    });
+
+    await Promise.all(promises);
     await clearCart();
-    coAnimDir='forward';
-    coStep=2;
+
+    // Show success screen with snapshotted data
+    coAnimDir='forward'; coStep=2;
     const body=document.getElementById('coBody'),footer=document.getElementById('coFooter');
     document.getElementById('coHeaderTitle').textContent='Order Placed!';
     for(let i=0;i<3;i++){const p=document.getElementById(`coPill${i}`);if(p){p.className='co-step-pill';if(i<2)p.classList.add('done');else if(i===2)p.classList.add('active');}}
     const bb=document.getElementById('coBackBtn');if(bb)bb.style.visibility='hidden';
     animateCoBody();
-    renderCoSuccess(body, footer, getAllCartItems(), getTotalPrice(), "MULTI-ORDER");
+    renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, firstOrderId);
     lucide.createIcons();
   }catch(e){
     console.error(e);
@@ -1073,6 +1130,43 @@ window.handleCheckout = async()=>{
     if(btn){btn.disabled=false;btn.innerHTML='<i data-lucide="check-circle"></i> Place Order';lucide.createIcons();}
   }
 };
+
+
+  
+// ─────────────────────────────────────────────────────────────────────────────
+// NEW: Payment redirect option (matches homepage functionality)
+// Prepares cart data and redirects to payment.html for external payment processing
+// ─────────────────────────────────────────────────────────────────────────────
+window.preparePaymentAndRedirect = () => {
+  const subtotal = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
+  const delivery = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
+
+  // Build per-vendor group array so payment.html knows which vendor each item belongs to
+  const groups = Object.entries(cartGroups).map(([vid,group]) => ({
+    vendorId:    vid,
+    vendorKey:   vid,                    // ← Key field for vendor portal matching
+    vendorName:  group.vendorName  || '',
+    vendorImage: group.vendorImage || '',
+    deliveryFee: parseFloat(group.deliveryFee || 0),
+    items:       group.items || []
+  }));
+
+  const data = {
+    subtotal,
+    delivery,
+    discount: 0,                          // Grocery doesn't have promo system yet
+    promo:    null,
+    items:    getAllCartItems(),
+    groups,                               // ← Per-vendor breakdown for multi-vendor orders
+    vendorKey: Object.keys(cartGroups)[0] || ''  // Primary vendor (single-vendor case)
+  };
+  localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
+  window.location.href = 'payment.html';
+};
+
+
+
+  
 
 /* GROCERY FUNCTIONS */
 function addToCart(product, qty = 1) {
@@ -1618,6 +1712,25 @@ onAuthStateChanged(auth, u=>{
 });
 lucide.createIcons();
 loadProducts();
+
+
+  
+
+// ── POST-PAYMENT REDIRECT HANDLING (matches homepage) ──
+(function checkPostPaymentRedirect() {
+    if (localStorage.getItem('vynixOpenOrdersTab') !== '1') return;
+    cartGroups = {}; expandedGroups.clear(); cartJustCleared = true; updateCartUI();
+    const _cd = document.getElementById('cartDrawer'); const _co = document.getElementById('cartOverlay');
+    if (_cd) _cd.classList.remove('open'); if (_co) _co.classList.remove('open');
+    document.body.style.overflow = '';
+    localStorage.removeItem('vynixOpenOrdersTab');
+    showToast('🎉 Order placed! Track it in your orders.');
+})();
+
+
+
+
+  
 </script>
 </body>
 </html>
