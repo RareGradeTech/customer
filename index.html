@@ -126,7 +126,7 @@ opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(
 .action-btn-compact:active { transform:scale(0.93); }
 .action-btn-compact i { width:20px;height:20px; }
 .cart-badge { position:absolute;top:-3px;right:-3px;background:var(--accent);color:white;font-size:0.65rem;font-weight:700;padding:1px 5px;border-radius:10px;min-width:17px;text-align:center;border:2px solid var(--surface);display:none;animation:pulse 2s infinite; }
-/* ── PILL ROW ─────────────────────── */
+/* ── PILL ROW ─────────── */
 .header-pill-row { display:flex;align-items:center;gap:8px;padding:0 16px 10px; }
 .location-pill { display:flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-pill);padding:8px 14px 8px 10px;cursor:pointer;transition:var(--transition);min-height:42px;max-width:200px;flex-shrink:0; }
 .location-pill:hover { border-color:var(--accent);background:white; }
@@ -173,7 +173,6 @@ opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(
 .promos-scroll { overflow: hidden;padding:4px 16px 12px; }
 .promo-marquee { display: flex;gap: 12px;animation: bannerScroll 35s linear infinite;width: max-content; }
 .promo-marquee:hover { animation-play-state: paused; }
-@keyframes bannerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .promo-card { flex:0 0 auto;width:260px;border-radius:var(--radius);overflow:hidden;position:relative;cursor:pointer;transition:var(--transition);box-shadow:0 4px 16px rgba(0,0,0,0.10); }
 .promo-card:hover { transform:translateY(-3px);box-shadow:0 8px 28px rgba(0,0,0,0.14); }
 .promo-card:active { transform:scale(0.97); }
@@ -1000,6 +999,7 @@ const MASTER_CATEGORIES = [
 ];
 const categoryEmojiMap = {};
 MASTER_CATEGORIES.forEach(c => { categoryEmojiMap[c.label] = c.emoji; });
+
 // ── DELIVERY FEE ENGINE ─────────────────────────────────────
 let deliveryFeeConfig = { ratePerKm: 10, minimumFee: 15, maximumFee: 120, freeThreshold: 0 };
 function loadDeliveryFeeConfig() {
@@ -1025,6 +1025,7 @@ function calcDeliveryFeeByCoords(vLat, vLng, uLat, uLng, orderTotal = 0) {
   const dist = haversineDistanceKm(vLat, vLng, uLat, uLng);
   return calcDeliveryFee(dist, orderTotal);
 }
+
 // ── PROMOTIONS ─────────────────────────────────────────────
 let promosCache = {};
 function loadPromos() {
@@ -1051,6 +1052,7 @@ function renderPromos() {
   marquee.innerHTML = html + html;
   lucide.createIcons();
 }
+
 // ── STATE ──────────────────────────────────────────────────
 let allVendors=[], cartGroups={}, expandedGroups=new Set();
 let currentStoreType='restaurant', currentFilter='all', searchTerm="";
@@ -1062,9 +1064,9 @@ let coStep=0, selectedPayment='cash', coDeliveryAddress=null, coAnimDir='forward
 let userProfile={name:'',phone:'',addresses:[],settings:{notif:true,loc:true,sms:false,promo:true}};
 let expandedOrders=new Set();
 let allUserOrders = [];
-// Track whether the orders modal is currently open so realtime updates re-render it
 let ordersModalOpen = false;
-let appliedPromo = null; // NEW: tracks the promo clicked from home page
+let appliedPromo = null;
+
 // ── TOAST ──────────────────────────────────────────────────
 let toastTimer;
 window.showToast = (msg) => {
@@ -1080,38 +1082,38 @@ function showLocToast(msg) {
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 3200);
 }
-// ── NEW: Apply promo from home page promo cards ─────────────────────
+
 window.applyPromo = function(promoKey) {
   const promo = promosCache[promoKey];
   if (!promo) return;
   appliedPromo = promo;
   showToast(`🎟️ Promo "${promo.title}" added to your payment!`);
 };
+
 // ── CART HELPERS ───────────────────────────────────────────
 function getAllCartItems(){const a=[];Object.values(cartGroups).forEach(g=>{if(g.items)g.items.forEach(i=>a.push(i));});return a;}
 function getTotalItems(){return Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.quantity,0),0);}
 function getTotalPrice(){return Object.values(cartGroups).reduce((s,g)=>{const sub=(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0);return s+sub+parseFloat(g.deliveryFee||0);},0);}
 function calcPrepTime(){const a=getAllCartItems();if(!a.length)return 0;return Math.ceil(a.reduce((s,i)=>s+(i.prepTime||0),0)/a.length);}
+
 async function saveCart(){
   if(!currentUserId)return;
   try{await set(ref(db,`carts/${currentUserId}`),{groups:JSON.parse(JSON.stringify(cartGroups)),updatedAt:Date.now()});}
   catch(e){console.error(e);}
 }
-// Flag to prevent the Firebase listener from repopulating the cart right after clearCart
+
 let cartJustCleared = false;
-// ── FIX 2: clearCart now also resets local state and UI immediately ──────────
 async function clearCart(){
-  // Reset local state first so UI updates instantly
-  appliedPromo = null; // reset promo when cart is cleared
+  appliedPromo = null;
   cartGroups = {};
   expandedGroups.clear();
-  cartJustCleared = true; // block the onValue listener from restoring items
+  cartJustCleared = true;
   updateCartUI();
-  // Then wipe Firebase
   if(!currentUserId)return;
   try{await set(ref(db,`carts/${currentUserId}`),{groups:{},updatedAt:Date.now()});}
   catch(e){console.error(e);}
 }
+
 async function fetchMenuItemsMap(vid){
   try{
     const snap=await get(ref(db,`vendors/${vid}/menu`));
@@ -1136,7 +1138,6 @@ function subscribeToCart(){
   if(!currentUserId)return;
   onValue(ref(db,`carts/${currentUserId}`),async snap=>{
     if(isConverting)return;
-    // If the cart was just cleared, ignore the next listener fire to prevent re-population
     if(cartJustCleared){ cartJustCleared=false; return; }
     if(!snap.exists()){cartGroups={};updateCartUI();return;}
     const d=snap.val();
@@ -1155,6 +1156,7 @@ function subscribeToCart(){
     cartGroups={};updateCartUI();
   });
 }
+
 function updateCartUI(){
   const body=document.getElementById('cartBody'),countEl=document.getElementById('cartCount');
   const checkoutBtn=document.getElementById('checkoutBtn'),summaryEl=document.getElementById('cartSummary');
@@ -1201,6 +1203,7 @@ function updateCartUI(){
   summaryEl.innerHTML=`${pt>0?`<div class="prep-time-badge"><i data-lucide="clock" style="width:11px;height:11px;"></i> ~${pt} min prep</div>`:''}<div class="cart-summary"><div class="cart-summary-row"><span>Subtotal (${totalItems} items)</span><span>R ${ts.toFixed(2)}</span></div><div class="cart-summary-row"><span>Delivery fee${vendorCount>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div>${vendorCount>1?`<div class="cart-summary-row"><span style="color:var(--dim);">${vendorCount} separate orders</span><span></span></div>`:''}<div class="cart-summary-row"><span>Total</span><span>R ${totalPrice.toFixed(2)}</span></div></div>`;
   lucide.createIcons();
 }
+
 window.toggleVendorGroup = vid => {
   if(expandedGroups.has(vid))expandedGroups.delete(vid);else expandedGroups.add(vid);
   const el=document.getElementById(`vgroup-${vid}`);
@@ -1218,6 +1221,7 @@ window.toggleCart = ()=>{
   if(isOpen){d.classList.remove('open');o.classList.remove('open');document.body.style.overflow='';}
   else{if(Object.keys(cartGroups).length===1)expandedGroups.add(Object.keys(cartGroups)[0]);d.classList.add('open');o.classList.add('open');document.body.style.overflow='hidden';updateCartUI();}
 };
+
 window.openCheckoutDrawer = ()=>{
   if(getTotalItems()===0)return;
   coStep=0;selectedPayment='cash';coDeliveryAddress=null;coAnimDir='forward';
@@ -1258,6 +1262,7 @@ function renderCoStep(){
   else if(coStep===1)renderCoPayment(body,footer);
   else renderCoSuccess(body,footer);
 }
+
 function renderCoReview(body,footer){
   const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
   const tf=Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
@@ -1277,22 +1282,42 @@ function renderCoReview(body,footer){
   `;
   footer.innerHTML=`<button class="co-confirm-btn" onclick="preparePaymentAndRedirect()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FIX: preparePaymentAndRedirect now includes full per-vendor group data so
+// payment.html knows which vendorId / vendorName each item belongs to.
+// ─────────────────────────────────────────────────────────────────────────────
 window.preparePaymentAndRedirect = () => {
   const subtotal = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
   const delivery = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
+
+  // Build per-vendor group array so payment.html can write orders to each vendor node
+  const groups = Object.entries(cartGroups).map(([vid,group]) => ({
+    vendorId:    vid,
+    vendorKey:   vid,
+    vendorName:  group.vendorName  || '',
+    vendorImage: group.vendorImage || '',
+    deliveryFee: parseFloat(group.deliveryFee || 0),
+    items:       group.items || []
+  }));
+
   const data = {
-    subtotal: subtotal,
-    delivery: delivery,
+    subtotal,
+    delivery,
     discount: appliedPromo ? 25 : 0,
-    promo: appliedPromo ? JSON.parse(JSON.stringify(appliedPromo)) : null,
-    items: getAllCartItems()
+    promo:    appliedPromo ? JSON.parse(JSON.stringify(appliedPromo)) : null,
+    items:    getAllCartItems(),
+    groups,                              // ← per-vendor breakdown
+    vendorKey: Object.keys(cartGroups)[0] || ''  // primary vendor (single-vendor case)
   };
   localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
   window.location.href = 'payment.html';
 };
+
 window.coGoNext = ()=>{
   coAnimDir='forward';coStep=1;renderCoStep();lucide.createIcons();
 };
+
 function renderCoPayment(body,footer){
   const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
   const tf=Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0),total=ts+tf;
@@ -1322,13 +1347,14 @@ function renderCoPayment(body,footer){
   });
   if(!defaultAddr){const inp=document.getElementById('coAddrInput');if(inp)inp.style.display='block';}
 }
+
 window.selectPayment = id=>{
   selectedPayment=id;
   document.querySelectorAll('.co-pay-option').forEach(el=>el.classList.toggle('selected',el.getAttribute('onclick').includes(`'${id}'`)));
   lucide.createIcons();
 };
+
 function renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, snapshottedOrderId){
-  // Use snapshotted values so cleared cart doesn't affect the success screen
   const rows=(snapshottedItems||[]).slice(0,6).map(i=>`<div class="co-success-item-row"><span class="co-success-item-name">${i.name} ×${i.quantity}</span><span class="co-success-item-price">R${(i.price*i.quantity).toFixed(2)}</span></div>`).join('');
   body.innerHTML=`<div class="co-success">
     <div class="co-success-ring"><i data-lucide="check"></i></div>
@@ -1347,51 +1373,27 @@ function renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, snaps
   </div>`;
   footer.innerHTML=`<button class="co-track-btn" onclick="dismissCheckout()">Done</button>`;
 }
-// ── dismissCheckout: close all layers, reset all state, return app to clean home ──
+
 window.dismissCheckout = ()=>{
-  // 1. Close every drawer / overlay layer
   document.getElementById('checkoutDrawer').classList.remove('open');
   document.getElementById('cartDrawer').classList.remove('open');
   document.getElementById('cartOverlay').classList.remove('open');
   document.body.style.overflow = '';
-  // 2. Reset checkout wizard state completely
-  coStep = 0;
-  selectedPayment = 'cash';
-  coDeliveryAddress = null;
-  coAnimDir = 'forward';
-  // 3. Wipe the checkout drawer body/footer so it is blank next time it opens
-  const coBody = document.getElementById('coBody');
-  const coFooter = document.getElementById('coFooter');
-  if(coBody) coBody.innerHTML = '';
-  if(coFooter) coFooter.innerHTML = '';
-  // 4. Cart is already cleared by handleCheckout; ensure UI reflects empty state
-  cartGroups = {};
-  expandedGroups.clear();
-  updateCartUI();
-  // 5. Reset search/filter so the home screen feels fresh
-  searchTerm = '';
-  currentFilter = 'all';
-  const si = document.getElementById('searchInput');
-  const mi = document.getElementById('mobileSearchInput');
-  if(si) si.value = '';
-  if(mi) mi.value = '';
-  buildCategoryFilters();
-  applyFilters();
-  // 6. Switch to Orders tab so the customer can track their order immediately
+  coStep = 0; selectedPayment = 'cash'; coDeliveryAddress = null; coAnimDir = 'forward';
+  const coBody = document.getElementById('coBody'); const coFooter = document.getElementById('coFooter');
+  if(coBody) coBody.innerHTML = ''; if(coFooter) coFooter.innerHTML = '';
+  cartGroups = {}; expandedGroups.clear(); updateCartUI();
+  searchTerm = ''; currentFilter = 'all';
+  const si = document.getElementById('searchInput'); const mi = document.getElementById('mobileSearchInput');
+  if(si) si.value = ''; if(mi) mi.value = '';
+  buildCategoryFilters(); applyFilters();
   const isMobile = window.innerWidth < 768;
   if(isMobile){
-    for(let i = 0; i < 4; i++){
-      const el = document.getElementById('bnav' + i);
-      if(el) el.classList.toggle('active', i === 1);
-    }
-    const homeView = document.getElementById('homeView');
-    const ordersView = document.getElementById('ordersView');
-    const foodFilters = document.getElementById('foodFilters');
-    const mobileSearchBar= document.getElementById('mobileSearchBar');
-    if(homeView) homeView.style.display = 'none';
-    if(ordersView) ordersView.style.display = 'block';
-    if(foodFilters) foodFilters.style.display = 'none';
-    if(mobileSearchBar) mobileSearchBar.style.display = 'none';
+    for(let i = 0; i < 4; i++){const el = document.getElementById('bnav' + i);if(el) el.classList.toggle('active', i === 1);}
+    const homeView = document.getElementById('homeView'); const ordersView = document.getElementById('ordersView');
+    const foodFilters = document.getElementById('foodFilters'); const mobileSearchBar= document.getElementById('mobileSearchBar');
+    if(homeView) homeView.style.display = 'none'; if(ordersView) ordersView.style.display = 'block';
+    if(foodFilters) foodFilters.style.display = 'none'; if(mobileSearchBar) mobileSearchBar.style.display = 'none';
     renderOrders(allUserOrders, 'mobileOrdersList');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     showToast('\u{1F389} Order placed! Track it below.');
@@ -1399,7 +1401,13 @@ window.dismissCheckout = ()=>{
     if(typeof openSidebarOrders === 'function') openSidebarOrders();
   }
 };
-// ── FIX 2: handleCheckout — snapshot cart, clear immediately, then show success
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FIX: handleCheckout now writes each order to BOTH:
+//   1. orders/{newKey}             ← flat user-facing history (same as menu.html)
+//   2. vendors/{vendorId}/orders/{newKey}  ← vendor-specific node (NEW)
+// This matches exactly how menu.html stores orders.
+// ─────────────────────────────────────────────────────────────────────────────
 window.handleCheckout = async()=>{
   if(!currentUser){showToast("Please sign in to place an order");handleProfileClick();return;}
   if(getTotalItems()===0){showToast("Cart is empty");return;}
@@ -1412,53 +1420,82 @@ window.handleCheckout = async()=>{
       if(btn){btn.disabled=false;btn.innerHTML='<i data-lucide="check-circle"></i> Place Order';lucide.createIcons();}
       return;
     }
-    // Snapshot cart data BEFORE clearing
     const snapshottedItems = getAllCartItems();
     const snapshottedTotal = getTotalPrice();
     const firstOrderId = generateOrderNumber();
-    const promises=Object.entries(cartGroups).map(([gVid,group])=>{
-      const sub=(group.items||[]).reduce((s,i)=>s+i.price*i.quantity,0),fee=parseFloat(group.deliveryFee||0);
-      const vendor=allVendors.find(v=>v.key===gVid);
-      let calculatedDeliveryFee=fee;
-      if(vendor&&vendor.lat&&vendor.lng&&userLocation.lat&&userLocation.lng){
-        const calc=calcDeliveryFeeByCoords(vendor.lat,vendor.lng,userLocation.lat,userLocation.lng,sub);
-        calculatedDeliveryFee=calc.fee;
+
+    const promises = Object.entries(cartGroups).map(async ([gVid, group]) => {
+      const sub = (group.items||[]).reduce((s,i)=>s+i.price*i.quantity, 0);
+      const fee = parseFloat(group.deliveryFee || 0);
+      const vendor = allVendors.find(v => v.key === gVid);
+
+      // Recalculate delivery fee by coordinates when possible
+      let calculatedDeliveryFee = fee;
+      if(vendor && vendor.lat && vendor.lng && userLocation.lat && userLocation.lng){
+        const calc = calcDeliveryFeeByCoords(vendor.lat, vendor.lng, userLocation.lat, userLocation.lng, sub);
+        calculatedDeliveryFee = calc.fee;
       }
-      const orderNumber=generateOrderNumber();
-      return set(push(ref(db,'orders')),{
-        userId:currentUserId,vendorId:gVid,vendorKey:gVid,
-        vendorName:group.vendorName||'',vendorImage:group.vendorImage||'',
-        vendorLat:vendor?.lat||null,vendorLng:vendor?.lng||null,
-        customerName:currentUser.displayName||currentUser.email?.split('@')[0]||'Customer',
-        userEmail:currentUser.email||'',orderNumber,items:group.items,
-        subtotal:sub,deliveryFee:calculatedDeliveryFee,total:sub+calculatedDeliveryFee,
-        paymentMethod:selectedPayment,deliveryAddress,
-        deliveryLat:userLocation.lat,deliveryLng:userLocation.lng,
-        status:'pending',createdAt:Date.now(),updatedAt:Date.now(),
-        estimatedPrepTime:calcPrepTime()
-      });
+
+      const orderNumber = generateOrderNumber();
+
+      // Build the order payload — identical structure to menu.html
+      const orderData = {
+        userId:           currentUserId,
+        vendorId:         gVid,
+        vendorKey:        gVid,                        // ← explicit vendor reference
+        vendorName:       group.vendorName   || '',
+        vendorImage:      group.vendorImage  || '',
+        vendorLat:        vendor?.lat        || null,
+        vendorLng:        vendor?.lng        || null,
+        customerName:     currentUser.displayName || currentUser.email?.split('@')[0] || 'Customer',
+        userEmail:        currentUser.email  || '',
+        orderNumber,
+        items:            group.items,
+        subtotal:         sub,
+        deliveryFee:      calculatedDeliveryFee,
+        total:            sub + calculatedDeliveryFee,
+        paymentMethod:    selectedPayment,
+        deliveryAddress,
+        deliveryLat:      userLocation.lat,
+        deliveryLng:      userLocation.lng,
+        status:           'pending',
+        createdAt:        Date.now(),
+        updatedAt:        Date.now(),
+        estimatedPrepTime: calcPrepTime()
+      };
+
+      // Get a single key used for both write paths
+      const newOrderRef = push(ref(db, 'orders'));
+      const orderKey    = newOrderRef.key;
+
+      // Write to flat orders node AND vendor-specific orders node in parallel
+      return Promise.all([
+        set(newOrderRef,                                           orderData),  // orders/{key}
+        set(ref(db, `vendors/${gVid}/orders/${orderKey}`),         orderData)   // vendors/{gVid}/orders/{key}
+      ]);
     });
+
     await Promise.all(promises);
-    // ── Optimistically prepend new orders so Orders tab renders instantly ──
-    // The realtime listener will reconcile with true Firebase data shortly after
+
+    // Optimistically prepend new orders for instant Orders-tab display
     const snapshottedGroups = JSON.parse(JSON.stringify(cartGroups));
     const optimisticOrders = Object.entries(snapshottedGroups).map(([gVid, group]) => {
       const sub = (group.items||[]).reduce((s,i)=>s+i.price*i.quantity,0);
       const fee = parseFloat(group.deliveryFee||0);
       return { id: "_pending_"+gVid, orderNumber: firstOrderId, userId: currentUserId,
-        vendorId: gVid, vendorName: group.vendorName||"", vendorImage: group.vendorImage||"",
+        vendorId: gVid, vendorKey: gVid, vendorName: group.vendorName||"", vendorImage: group.vendorImage||"",
         items: group.items, subtotal: sub, deliveryFee: fee, total: sub+fee,
         paymentMethod: selectedPayment, deliveryAddress: coDeliveryAddress||"",
         status: "pending", createdAt: Date.now() };
     });
     allUserOrders = [...optimisticOrders, ...allUserOrders];
     renderOrders(allUserOrders, "mobileOrdersList");
-    // ── CLEAR CART immediately after orders are placed ──────────────────
-    await clearCart(); // resets cartGroups, expandedGroups, updates UI, clears Firebase
-    // Show success with snapshotted data (not empty cart)
-    coAnimDir='forward';
-    coStep=2;
-    const body=document.getElementById('coBody'),footer=document.getElementById('coFooter');
+
+    await clearCart();
+
+    // Show success screen with snapshotted data
+    coAnimDir='forward'; coStep=2;
+    const body=document.getElementById('coBody'), footer=document.getElementById('coFooter');
     document.getElementById('coHeaderTitle').textContent='Order Placed!';
     for(let i=0;i<3;i++){const p=document.getElementById(`coPill${i}`);if(p){p.className='co-step-pill';if(i<2)p.classList.add('done');else if(i===2)p.classList.add('active');}}
     const bb=document.getElementById('coBackBtn');if(bb)bb.style.visibility='hidden';
@@ -1471,6 +1508,7 @@ window.handleCheckout = async()=>{
     if(btn){btn.disabled=false;btn.innerHTML='<i data-lucide="check-circle"></i> Place Order';lucide.createIcons();}
   }
 };
+
 // ── FILTERS & VENDORS ────────────────────────────────────────
 function buildCategoryFilters(){
   const c=document.getElementById('categoryFilters');
@@ -1546,6 +1584,7 @@ window.setStoreType = (type,btn)=>{
   searchTerm="";document.getElementById('searchInput').value="";
   currentFilter="all";buildCategoryFilters();toggleSidebar();applyFilters();
 };
+
 // ── AUTH ─────────────────────────────────────────────────────
 onAuthStateChanged(auth,user=>{
   currentUser=user;currentUserId=user?user.uid:null;
@@ -1633,10 +1672,11 @@ function renderProfileAddresses(){
 window.setDefaultAddress = async(id)=>{if(!currentUserId)return;userProfile.addresses.forEach(a=>a.isDefault=(a.id===id));await set(ref(db,`users/${currentUserId}`),userProfile);renderProfileAddresses();};
 window.deleteAddress = async(id)=>{if(!currentUserId)return;if(confirm("Delete this address?")){userProfile.addresses=userProfile.addresses.filter(a=>a.id!==id);if(userProfile.addresses.length>0&&!userProfile.addresses.some(a=>a.isDefault))userProfile.addresses[0].isDefault=true;await set(ref(db,`users/${currentUserId}`),userProfile);renderProfileAddresses();}};
 window.addNewAddress = ()=>{const addr=prompt("Enter delivery address:");if(addr&&currentUserId){const newAddr={id:Date.now().toString(),address:addr,isDefault:userProfile.addresses.length===0};userProfile.addresses.push(newAddr);set(ref(db,`users/${currentUserId}`),userProfile);renderProfileAddresses();}};
+
 // ── STATUS HELPERS ──
 function getStatusClass(status){const map={'pending':'pending','confirmed':'confirmed','preparing':'preparing','out_for_delivery':'out-for-delivery','delivered':'delivered','cancelled':'cancelled'};return map[status]||'pending';}
 function getStatusLabel(status){const map={'pending':'Pending','confirmed':'Confirmed','preparing':'Preparing','out_for_delivery':'On the way','delivered':'Delivered','cancelled':'Cancelled'};return map[status]||status.charAt(0).toUpperCase()+status.slice(1);}
-// ── BUILD DELIVERY BLOCK ─────────────────────────────────────
+
 function buildDeliveryBlock(o) {
   const statusOrder = ['pending','confirmed','preparing','out_for_delivery','delivered'];
   const activeStatuses = ['pending','confirmed','preparing','out_for_delivery'];
@@ -1680,12 +1720,12 @@ function buildDeliveryBlock(o) {
       </div>
     </div>` : '';
   let driverHTML = '';
-  if(o.status==='out_for_delivery'){driverHTML=`<div style="margin:0 13px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:11px;"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;font-weight:800;color:white;">${driverName.charAt(0)}</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.82rem;">${driverName}</div><div style="font-size:0.67rem;color:var(--dim);margin-top:1px;">${vehicle} · On the way to you</div><div style="display:flex;align-items:center;gap:3px;font-size:0.67rem;font-weight:600;color:var(--yellow);margin-top:3px;"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${rating} rating</div></div><div style="display:flex;gap:7px;flex-shrink:0;"><button onclick="showToast('Calling ${driverName}…')" style="width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);" title="Call driver"><i data-lucide="phone" style="width:15px;height:15px;"></i></button><button onclick="showToast('Opening chat with ${driverName}…')" style="width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);" title="Message driver"><i data-lucide="message-circle" style="width:15px;height:15px;"></i></button></div></div>`;
-  }else if(o.status==='preparing'){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:rgba(255,117,31,0.06);border-radius:var(--radius-sm);border:1px solid rgba(255,117,31,0.18);display:flex;align-items:center;gap:9px;"><i data-lucide="chef-hat" style="width:18px;height:18px;color:var(--accent);flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:var(--text);">Kitchen is preparing your order</div><div style="font-size:0.67rem;color:var(--dim);margin-top:2px;">A driver will be assigned shortly</div></div></div>`;
-  }else if(o.status==='confirmed'){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#e3f2fd;border-radius:var(--radius-sm);border:1px solid #90caf9;display:flex;align-items:center;gap:9px;"><i data-lucide="thumbs-up" style="width:18px;height:18px;color:#1565c0;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#1565c0;">Order confirmed by restaurant</div><div style="font-size:0.67rem;color:#1565c0;opacity:0.75;margin-top:2px;">Getting ready to start cooking</div></div></div>`;
-  }else if(o.status==='pending'){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#fff8e1;border-radius:var(--radius-sm);border:1px solid #ffe082;display:flex;align-items:center;gap:9px;"><i data-lucide="clock" style="width:18px;height:18px;color:#c07000;flex-shrink:0;animation:spin 3s linear infinite;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#c07000;">Waiting for restaurant to confirm</div><div style="font-size:0.67rem;color:#c07000;opacity:0.75;margin-top:2px;">This usually takes 1–3 minutes</div></div></div>`;
-  }else if(isCompleted){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#e8f5e9;border-radius:var(--radius-sm);border:1px solid #a5d6a7;display:flex;align-items:center;gap:9px;"><i data-lucide="package-check" style="width:18px;height:18px;color:#2e7d32;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#2e7d32;">Order delivered successfully</div><div style="font-size:0.67rem;color:#2e7d32;opacity:0.75;margin-top:2px;">Delivered by ${driverName} · ${vehicle}</div></div></div>`;
-  }else if(isCancelled){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#ffebee;border-radius:var(--radius-sm);border:1px solid #ef9a9a;display:flex;align-items:center;gap:9px;"><i data-lucide="x-circle" style="width:18px;height:18px;color:#c62828;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#c62828;">Order cancelled</div><div style="font-size:0.67rem;color:#c62828;opacity:0.75;margin-top:2px;">Contact support if you were charged</div></div></div>`;}
+  if(o.status==='out_for_delivery'){driverHTML=`<div style="margin:0 13px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:11px;"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;font-weight:800;color:white;">${driverName.charAt(0)}</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.82rem;">${driverName}</div><div style="font-size:0.67rem;color:var(--dim);margin-top:1px;">${vehicle} · On the way to you</div><div style="display:flex;align-items:center;gap:3px;font-size:0.67rem;font-weight:600;color:var(--yellow);margin-top:3px;"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${rating} rating</div></div><div style="display:flex;gap:7px;flex-shrink:0;"><button onclick="showToast('Calling ${driverName}…')" style="width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);" title="Call driver"><i data-lucide="phone" style="width:15px;height:15px;"></i></button><button onclick="showToast('Opening chat with ${driverName}…')" style="width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);" title="Message driver"><i data-lucide="message-circle" style="width:15px;height:15px;"></i></button></div></div>`;}
+  else if(o.status==='preparing'){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:rgba(255,117,31,0.06);border-radius:var(--radius-sm);border:1px solid rgba(255,117,31,0.18);display:flex;align-items:center;gap:9px;"><i data-lucide="chef-hat" style="width:18px;height:18px;color:var(--accent);flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:var(--text);">Kitchen is preparing your order</div><div style="font-size:0.67rem;color:var(--dim);margin-top:2px;">A driver will be assigned shortly</div></div></div>`;}
+  else if(o.status==='confirmed'){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#e3f2fd;border-radius:var(--radius-sm);border:1px solid #90caf9;display:flex;align-items:center;gap:9px;"><i data-lucide="thumbs-up" style="width:18px;height:18px;color:#1565c0;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#1565c0;">Order confirmed by restaurant</div><div style="font-size:0.67rem;color:#1565c0;opacity:0.75;margin-top:2px;">Getting ready to start cooking</div></div></div>`;}
+  else if(o.status==='pending'){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#fff8e1;border-radius:var(--radius-sm);border:1px solid #ffe082;display:flex;align-items:center;gap:9px;"><i data-lucide="clock" style="width:18px;height:18px;color:#c07000;flex-shrink:0;animation:spin 3s linear infinite;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#c07000;">Waiting for restaurant to confirm</div><div style="font-size:0.67rem;color:#c07000;opacity:0.75;margin-top:2px;">This usually takes 1–3 minutes</div></div></div>`;}
+  else if(isCompleted){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#e8f5e9;border-radius:var(--radius-sm);border:1px solid #a5d6a7;display:flex;align-items:center;gap:9px;"><i data-lucide="package-check" style="width:18px;height:18px;color:#2e7d32;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#2e7d32;">Order delivered successfully</div><div style="font-size:0.67rem;color:#2e7d32;opacity:0.75;margin-top:2px;">Delivered by ${driverName} · ${vehicle}</div></div></div>`;}
+  else if(isCancelled){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#ffebee;border-radius:var(--radius-sm);border:1px solid #ef9a9a;display:flex;align-items:center;gap:9px;"><i data-lucide="x-circle" style="width:18px;height:18px;color:#c62828;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#c62828;">Order cancelled</div><div style="font-size:0.67rem;color:#c62828;opacity:0.75;margin-top:2px;">Contact support if you were charged</div></div></div>`;}
   const sectionTitle = isCancelled ? 'Order Status' : (isCompleted ? 'Delivery Summary' : '🚀 Live Delivery Tracking');
   return `<div style="margin-top:11px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border-light);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
     <div style="padding:8px 13px;background:linear-gradient(90deg,${isCompleted?'#e8f5e9':'var(--accent-light)'},transparent);font-size:0.67rem;font-weight:800;color:${isCompleted?'#2e7d32':'var(--accent-dark)'};text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:5px;">
@@ -1696,7 +1736,7 @@ function buildDeliveryBlock(o) {
     ${driverHTML}
   </div>`;
 }
-// ── RENDER ORDERS ─────
+
 function renderOrders(orders, containerId='sidebarOrdersList'){
   const c=document.getElementById(containerId);if(!c)return;
   if(!orders||!orders.length){c.innerHTML=`<div class="empty-state"><i data-lucide="receipt"></i><p>No orders yet</p><small>Your order history will appear here</small></div>`;lucide.createIcons();return;}
@@ -1748,6 +1788,7 @@ function renderOrders(orders, containerId='sidebarOrdersList'){
   }).join('');
   lucide.createIcons();
 }
+
 window.toggleOrder = (id)=>{
   if(expandedOrders.has(id))expandedOrders.delete(id);else expandedOrders.add(id);
   const card=document.getElementById(`ocard-${id}`);
@@ -1765,64 +1806,48 @@ window.reorderItems = async(orderId,vendorId,event)=>{
     await saveCart();updateCartUI();closeSidebarDataModal();toggleCart();showToast("Items added to cart ✓");
   }catch(e){console.error(e);showToast("Reorder failed");}
 };
-// ── ORDERS SUBSCRIPTION — realtime, always up to date ──
+
+// ── ORDERS SUBSCRIPTION ──
 function subscribeToOrders(){
   if(!currentUserId) return;
-  // Also track any legacy anonymous userId that may have been used before auth resolved
   const legacyId = localStorage.getItem('vynixUserId');
   onValue(ref(db,'orders'), snap => {
     const orders = [];
     snap.forEach(child => {
       const o = child.val();
-      // Match by Firebase Auth uid OR by any stored vynixUserId (covers orders placed via payment.html)
       if(o.userId === currentUserId || (legacyId && o.userId === legacyId)){
         orders.push({ id: child.key, ...o });
       }
     });
-    // Sort newest first
     orders.sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
     const prevCount = allUserOrders.length;
     allUserOrders = orders;
-    // Always keep mobile Orders tab list fresh
     renderOrders(orders, 'mobileOrdersList');
-    // Update sidebar modal if it's currently open on Orders tab
     const modal = document.getElementById('sidebarDataModal');
     const ordersPane = document.getElementById('sidebarPane-orders');
     if(modal && modal.classList.contains('active') && ordersPane && ordersPane.classList.contains('active')){
       renderOrders(orders, 'sidebarOrdersList');
     }
-    // If a brand-new order just arrived (post-payment redirect), auto-switch to Orders tab on mobile
     const openFlag = localStorage.getItem('vynixOpenOrdersTab');
     if(openFlag === '1' && orders.length > prevCount && window.innerWidth < 768){
       localStorage.removeItem('vynixOpenOrdersTab');
-      for(let i=0;i<4;i++){
-        const el=document.getElementById('bnav'+i);
-        if(el) el.classList.toggle('active', i===1);
-      }
-      const homeView=document.getElementById('homeView');
-      const ordersView=document.getElementById('ordersView');
+      for(let i=0;i<4;i++){const el=document.getElementById('bnav'+i);if(el) el.classList.toggle('active', i===1);}
+      const homeView=document.getElementById('homeView'); const ordersView=document.getElementById('ordersView');
       const foodFilters=document.getElementById('foodFilters');
-      if(homeView) homeView.style.display='none';
-      if(ordersView) ordersView.style.display='block';
+      if(homeView) homeView.style.display='none'; if(ordersView) ordersView.style.display='block';
       if(foodFilters) foodFilters.style.display='none';
       window.scrollTo({top:0, behavior:'smooth'});
       showToast('\u{1F389} Order placed! Tracking below.');
     }
   });
 }
-// ── FAVORITES RENDER ─────
+
+// ── FAVORITES ──
 function renderFavorites(){
-  const c = document.getElementById('sidebarFavoritesList');
-  if(!c) return;
-  if(!userLikes.size){
-    c.innerHTML = `<div class="empty-state"><i data-lucide="heart"></i><p>No favorites yet</p><small>Restaurants you like will appear here</small></div>`;
-    lucide.createIcons();return;
-  }
+  const c = document.getElementById('sidebarFavoritesList'); if(!c) return;
+  if(!userLikes.size){c.innerHTML = `<div class="empty-state"><i data-lucide="heart"></i><p>No favorites yet</p><small>Restaurants you like will appear here</small></div>`;lucide.createIcons();return;}
   const likedVendors = allVendors.filter(v => userLikes.has(v.key));
-  if(!likedVendors.length){
-    c.innerHTML = `<div class="empty-state"><i data-lucide="heart"></i><p>No favorites yet</p><small>Restaurants you like will appear here</small></div>`;
-    lucide.createIcons();return;
-  }
+  if(!likedVendors.length){c.innerHTML = `<div class="empty-state"><i data-lucide="heart"></i><p>No favorites yet</p><small>Restaurants you like will appear here</small></div>`;lucide.createIcons();return;}
   c.innerHTML = likedVendors.map(v => generateFavCardHTML(v)).join('');
   lucide.createIcons();
 }
@@ -1848,13 +1873,13 @@ function generateFavCardHTML(v){
     ${vCats.length>0?`<div class="fav-categories">${catTags}</div>`:''}
     <div class="fav-meta-row"><span class="fav-meta">${catDisp} • ${deliveryFeeDisplay}</span><span class="fav-likes-count"><i data-lucide="heart" style="width:11px;height:11px;"></i>${v.likes||0}</span></div></div></div>`;
 }
-// ── PROFILE MODAL ─────────────────────────────────────────────
+
+// ── PROFILE MODAL ──
 window.switchTab = (tab,btn)=>{
   document.querySelectorAll('.profile-tab-item').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.profile-pane').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
-  const pane=document.getElementById(`pane-${tab}`);
-  if(pane)pane.classList.add('active');
+  const pane=document.getElementById(`pane-${tab}`); if(pane)pane.classList.add('active');
   lucide.createIcons();
 };
 window.openProfileModal = ()=>{if(!currentUser){handleProfileClick();return;}document.getElementById('profileOverlay').classList.add('active');document.getElementById('profileModal').classList.add('active');document.body.style.overflow='hidden';updateProfileHero();lucide.createIcons();};
@@ -1864,20 +1889,25 @@ window.handleProfileClick = ()=>{if(currentUser){openProfileModal();}else{docume
 window.signInWithGoogle = async()=>{try{showToast("Signing in...");const r=await signInWithPopup(auth,googleProvider);closeAuthModals();showToast(`Welcome, ${r.user.displayName}!`);}catch{showToast("Sign in failed");}};
 window.confirmSignOut = ()=>{document.getElementById('signOutOverlay').classList.add('active');document.getElementById('signOutModal').classList.add('active');};
 window.doSignOut = ()=>{signOut(auth).then(()=>{closeAuthModals();closeProfileModal();showToast("Signed out");}).catch(()=>showToast("Sign out failed"));};
-window.toggleSetting = async(key)=>{if(!currentUserId)return;const s=userProfile.settings||{};s[key]=!s[key];userProfile.settings=s;const el=document.getElementById(`toggle${k.charAt(0).toUpperCase()+k.slice(1)}`);if(el)el.classList.toggle('active',!!s[key]);try{await set(ref(db,`users/${currentUserId}`),userProfile);}catch(e){console.error(e);}};
-// ── FIX 1: SIDEBAR DATA MODAL — always render fresh orders on open ──────────
+window.toggleSetting = async(key)=>{
+  if(!currentUserId)return;
+  const s=userProfile.settings||{};s[key]=!s[key];userProfile.settings=s;
+  const el=document.getElementById(`toggle${key.charAt(0).toUpperCase()+key.slice(1)}`);
+  if(el)el.classList.toggle('active',!!s[key]);
+  try{await set(ref(db,`users/${currentUserId}`),userProfile);}catch(e){console.error(e);}
+};
+
+// ── SIDEBAR DATA MODAL ──
 window.openSidebarOrders = ()=>{
   if(!currentUser){showToast("Sign in to view your orders");handleProfileClick();return;}
   document.getElementById('sidebarDataModalTitle').textContent = 'My Orders';
   document.getElementById('sidebarDataModalOverlay').classList.add('active');
   document.getElementById('sidebarDataModal').classList.add('active');
   document.body.style.overflow='hidden';
-  // Activate orders tab
   document.querySelectorAll('.sidebar-data-tab-item').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.sidebar-data-pane').forEach(p=>p.classList.remove('active'));
   document.getElementById('sdTab-orders').classList.add('active');
   document.getElementById('sidebarPane-orders').classList.add('active');
-  // Render latest orders immediately
   renderOrders(allUserOrders, 'sidebarOrdersList');
   lucide.createIcons();
 };
@@ -1891,8 +1921,7 @@ window.openSidebarFavorites = ()=>{
   document.querySelectorAll('.sidebar-data-pane').forEach(p=>p.classList.remove('active'));
   document.getElementById('sdTab-favorites').classList.add('active');
   document.getElementById('sidebarPane-favorites').classList.add('active');
-  renderFavorites();
-  lucide.createIcons();
+  renderFavorites(); lucide.createIcons();
 };
 window.openSidebarWallet = ()=>{
   if(!currentUser){showToast("Sign in to access your wallet");handleProfileClick();return;}
@@ -1902,15 +1931,9 @@ window.switchSidebarDataTab = (tab, btn) => {
   document.querySelectorAll('.sidebar-data-tab-item').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.sidebar-data-pane').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
-  const pane = document.getElementById(`sidebarPane-${tab}`);
-  if(pane) pane.classList.add('active');
-  if(tab === 'orders'){
-    document.getElementById('sidebarDataModalTitle').textContent = 'My Orders';
-    renderOrders(allUserOrders, 'sidebarOrdersList');
-  } else if(tab === 'favorites'){
-    document.getElementById('sidebarDataModalTitle').textContent = 'My Favorites';
-    renderFavorites();
-  }
+  const pane = document.getElementById(`sidebarPane-${tab}`); if(pane) pane.classList.add('active');
+  if(tab === 'orders'){document.getElementById('sidebarDataModalTitle').textContent = 'My Orders';renderOrders(allUserOrders, 'sidebarOrdersList');}
+  else if(tab === 'favorites'){document.getElementById('sidebarDataModalTitle').textContent = 'My Favorites';renderFavorites();}
   lucide.createIcons();
 };
 window.closeSidebarDataModal = ()=>{
@@ -1918,7 +1941,8 @@ window.closeSidebarDataModal = ()=>{
   document.getElementById('sidebarDataModal').classList.remove('active');
   document.body.style.overflow='';
 };
-// ── VENDOR CARDS ──────────────────────────────────────────────
+
+// ── VENDOR CARDS ──
 window.toggleLike = async(vid,event)=>{
   event.stopPropagation();
   if(!currentUser){showToast("Sign in to like");handleProfileClick();return;}
@@ -1951,6 +1975,7 @@ function loadVendors(){
   });
 }
 function loadLikeCounts(){onValue(ref(db,"vendorLikes"),snap=>{if(snap.exists()){const d=snap.val();allVendors.forEach(v=>{if(d[v.key])v.likes=d[v.key].count||0;});applyFilters();renderFavorites();}});}
+
 function generateCardHTML(v){
   const isLiked=userLikes.has(v.key),vCats=getVendorCategories(v);
   const catDisp=vCats.length>0?vCats.join(' · '):v.cuisine;
@@ -1973,6 +1998,7 @@ function generateCardHTML(v){
     ${vCats.length>0?`<div class="r-categories">${catTags}</div>`:''}
     <div class="r-meta-row"><span class="r-meta">${catDisp} • ${deliveryFeeDisplay}</span><span class="likes-count"><i data-lucide="heart" style="width:11px;height:11px;"></i>${v.likes||0}</span></div></div></div>`;
 }
+
 function applyFilters(){
   let filtered=allVendors.filter(v=>v.storeType===currentStoreType);
   if(userLocation.lat&&userLocation.lng){filtered=filtered.map(v=>{if(v.lat&&v.lng)return{...v,distance:calculateDistance(userLocation.lat,userLocation.lng,v.lat,v.lng)};return{...v,distance:null};}).filter(v=>v.distance===null||v.distance<=searchRadius);}
@@ -1987,6 +2013,7 @@ function applyFilters(){
   ps.style.display=pop.length?"block":"none";document.getElementById("restaurantsGrid").innerHTML=pop.map(generateCardHTML).join('');
   lucide.createIcons();updateFilterArrows();
 }
+
 window.filterCategory = (cat,btn)=>{document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=cat;applyFilters();};
 window.handleSearch = (v)=>{
   searchTerm=v;
@@ -2007,57 +2034,41 @@ document.addEventListener('DOMContentLoaded',()=>{
   const c=document.getElementById('categoryFilters');
   if(c)c.addEventListener('scroll',updateFilterArrows);
 });
-// ── BOTTOM NAV ──────
+
+// ── BOTTOM NAV ──
 window.bottomNavClick = function(idx) {
-  for(let i=0;i<4;i++){
-    const el=document.getElementById(`bnav${i}`);
-    if(el) el.classList.toggle('active', i===idx);
-  }
+  for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el) el.classList.toggle('active', i===idx);}
   const homeView = document.getElementById('homeView');
   const ordersView = document.getElementById('ordersView');
   const mobileSearchBar = document.getElementById('mobileSearchBar');
   const foodFilters = document.getElementById('foodFilters');
   mobileSearchBar.style.display = 'none';
-  if(idx === 0){ // Home
-    homeView.style.display = 'block';
-    ordersView.style.display = 'none';
+  if(idx === 0){
+    homeView.style.display = 'block'; ordersView.style.display = 'none';
     if(currentStoreType==='restaurant') foodFilters.style.display = 'block';
     window.scrollTo({top:0, behavior:'smooth'});
   }
-  else if(idx === 1){ // Orders Tab - FIXED
+  else if(idx === 1){
     if(!currentUser){
-      showToast("Sign in to view your orders");
-      handleProfileClick();
-      // Reset to home
-      for(let i=0;i<4;i++){
-        const el=document.getElementById(`bnav${i}`);
-        if(el) el.classList.toggle('active', i===0);
-      }
+      showToast("Sign in to view your orders"); handleProfileClick();
+      for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el) el.classList.toggle('active', i===0);}
       return;
     }
-    foodFilters.style.display = 'none';
-    homeView.style.display = 'none';
-    ordersView.style.display = 'block';
-    // Show ALL orders (no limit)
+    foodFilters.style.display = 'none'; homeView.style.display = 'none'; ordersView.style.display = 'block';
     renderOrders(allUserOrders, 'mobileOrdersList');
     window.scrollTo({top:0, behavior:'smooth'});
   }
-  else if(idx === 2){ // Search
-    homeView.style.display = 'block';
-    ordersView.style.display = 'none';
+  else if(idx === 2){
+    homeView.style.display = 'block'; ordersView.style.display = 'none';
     if(currentStoreType==='restaurant') foodFilters.style.display = 'block';
     mobileSearchBar.style.display = 'block';
     const mobileInput = document.getElementById('mobileSearchInput');
-    if(mobileInput){
-      mobileInput.value = searchTerm;
-      setTimeout(()=>mobileInput.focus(), 80);
-    }
+    if(mobileInput){mobileInput.value = searchTerm;setTimeout(()=>mobileInput.focus(), 80);}
   }
-  else if(idx === 3){ // Profile
-    handleProfileClick();
-  }
+  else if(idx === 3){ handleProfileClick(); }
 };
-// ── INIT ──────────────────────────────────────────────────────
+
+// ── INIT ──
 lucide.createIcons();
 generateShimmerCards(6);
 buildCategoryFilters();
@@ -2066,53 +2077,32 @@ loadVendors();
 loadDeliveryFeeConfig();
 updateCartUI();
 if(navigator.geolocation)setTimeout(()=>detectCurrentLocation(),1000);
-// ── POST-PAYMENT REDIRECT: open Orders tab if coming from successful payment ──
-// Mobile: the flag is left in localStorage for subscribeToOrders() to consume when
-// the realtime data fires — guaranteeing the new order is already in the list.
-// Desktop: open the sidebar orders modal as soon as auth resolves.
+
+// Post-payment redirect handling
 (function checkPostPaymentRedirect() {
     if (localStorage.getItem('vynixOpenOrdersTab') !== '1') return;
-    // ── Immediately reset cart state and close the drawer ─────────────────
-    cartGroups = {};
-    expandedGroups.clear();
-    cartJustCleared = true; // prevent subscribeToCart's onValue from repopulating
-    updateCartUI();
-    // Close the cart drawer & overlay in case they were open
-    const _cd = document.getElementById('cartDrawer');
-    const _co = document.getElementById('cartOverlay');
-    if (_cd) _cd.classList.remove('open');
-    if (_co) _co.classList.remove('open');
+    cartGroups = {}; expandedGroups.clear(); cartJustCleared = true; updateCartUI();
+    const _cd = document.getElementById('cartDrawer'); const _co = document.getElementById('cartOverlay');
+    if (_cd) _cd.classList.remove('open'); if (_co) _co.classList.remove('open');
     document.body.style.overflow = '';
     if (window.innerWidth >= 768) {
-        // Desktop path only — clear flag here; mobile path cleared by subscribeToOrders
         localStorage.removeItem('vynixOpenOrdersTab');
         const tryOpen = () => {
             if (typeof currentUser !== 'undefined' && currentUser) {
-                // Also clear Firebase cart now that we have the userId
-                if (currentUserId) {
-                    set(ref(db, `carts/${currentUserId}`), { groups: {}, updatedAt: Date.now() })
-                        .catch(e => console.warn('Post-payment cart wipe failed:', e));
-                }
+                if (currentUserId) { set(ref(db, `carts/${currentUserId}`), { groups: {}, updatedAt: Date.now() }).catch(e => console.warn(e)); }
                 if (typeof openSidebarOrders === 'function') openSidebarOrders();
                 showToast('\u{1F389} Order placed! Track your order below.');
-            } else {
-                setTimeout(tryOpen, 400);
-            }
+            } else { setTimeout(tryOpen, 400); }
         };
         setTimeout(tryOpen, 500);
     } else {
-        // Mobile: wipe Firebase cart as soon as auth resolves
         const wipeMobileCart = () => {
             if (typeof currentUserId !== 'undefined' && currentUserId) {
-                set(ref(db, `carts/${currentUserId}`), { groups: {}, updatedAt: Date.now() })
-                    .catch(e => console.warn('Post-payment cart wipe failed:', e));
-            } else {
-                setTimeout(wipeMobileCart, 400);
-            }
+                set(ref(db, `carts/${currentUserId}`), { groups: {}, updatedAt: Date.now() }).catch(e => console.warn(e));
+            } else { setTimeout(wipeMobileCart, 400); }
         };
         setTimeout(wipeMobileCart, 300);
     }
-    // Mobile: vynixOpenOrdersTab flag left for subscribeToOrders() realtime callback to handle
 })();
 </script>
 </body>
