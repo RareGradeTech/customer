@@ -895,7 +895,7 @@ async function processPayment() {
         orderType: orderType || 'grocery',
         userId: userId,
         vendorId: vendorKey || '',
-        vendorKey: vendorId || '',
+        vendorKey: vendorKey || '',
         vendorName: vendorName || 'Grocery Store',
         customerName: (currentUser && (currentUser.displayName || currentUser.email?.split('@')[0])) || 'Customer',
         customerEmail: (currentUser && currentUser.email) || '',
