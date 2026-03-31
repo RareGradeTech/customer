@@ -714,7 +714,7 @@ function flattenCartItems() {
   return flat;
 }
 
-/* Save cart to Firebase using the same structure as main index */
+/* Save cart to Firebase — maintains both groups (for grocery internal) and flattened items (for index page cart) */
 async function saveCartToFirebase() {
   if (!currentUserId) return;
   const groupsToSave = {};
@@ -742,18 +742,45 @@ async function saveCartToFirebase() {
       }))
     };
   });
-  await set(ref(db, `carts/${currentUserId}`), { groups: groupsToSave, updatedAt: Date.now() });
+  await set(ref(db, `carts/${currentUserId}/groups`), groupsToSave);
+  
+  // ALSO save flattened items array so that index.html cart can read directly
+  const flatItems = [];
+  Object.values(cartGroups).forEach(group => {
+    group.items.forEach(item => {
+      flatItems.push({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        imageURL: item.imageURL || '',
+        image: item.imageURL || '',        // compatibility for index page
+        weight: item.weight || '',
+        category: item.category || '',
+        vendorId: item.vendorId,
+        vendorName: item.vendorName,
+        brand: item.brand || '',
+        originalPrice: item.originalPrice || null,
+        isNew: item.isNew || false,
+        featured: item.featured || false,
+        itemTotal: item.price * item.quantity
+      });
+    });
+  });
+  await set(ref(db, `carts/${currentUserId}/items`), flatItems);
+  // also store a timestamp for sync
+  await set(ref(db, `carts/${currentUserId}/lastUpdated`), Date.now());
 }
 
-/* Load cart from Firebase and merge with existing groups */
+/* Load cart from Firebase (groups structure only, flattened is for index) */
 async function loadCartFromFirebase() {
   if (!currentUserId) return;
-  const snap = await get(ref(db, `carts/${currentUserId}`));
+  const snap = await get(ref(db, `carts/${currentUserId}/groups`));
   if (snap.exists()) {
     const data = snap.val();
-    if (data.groups) {
+    if (data) {
       cartGroups = {};
-      Object.entries(data.groups).forEach(([vid, group]) => {
+      Object.entries(data).forEach(([vid, group]) => {
         cartGroups[vid] = {
           vendorId: group.vendorId,
           vendorName: group.vendorName,
