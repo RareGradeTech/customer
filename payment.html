@@ -543,10 +543,10 @@ function loadCartFromStorage() {
     // ── VENDOR KEY RESOLUTION ──
     // Priority: vendorFirebaseKey (the actual push key) > vendorKey > vendorId
     // vendorFirebaseKey should be saved by the shop page when it knows the Firebase key
-    vendorKey    = d.vendorFirebaseKey || d.vendorKey || d.vendorId || null;
-    vendorName   = d.vendorName || null;
-    vendorDisplayId = d.vendorDisplayId || d.vendorID || null;
-
+    vendorId: vendorKey || '',
+    vendorKey: vendorKey || '',
+    vendorKeyFallback: vendorName || '',
+        
     if (homePromo) {
         discount = Math.round(subtotal * 0.30);
         const banner = document.getElementById('homePromoApplied');
