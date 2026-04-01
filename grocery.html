@@ -992,8 +992,11 @@ window.dismissCheckout = ()=>{
   buildCatGrid(); renderAisles('all');
   showToast('🎉 Order placed! Track it in your orders.');
 };
+window.coGoNext = ()=>{ 
+  // Redirect to payment page instead of showing inline payment
+  window.location.href = 'payment.html'; 
+};
 
-window.coGoNext = ()=>{ coAnimDir='forward'; coStep=1; renderCoStep(); lucide.createIcons(); };
 
 // ─────────────────────────────────────────────────────────────────────────
 // handleCheckout: writes each order to BOTH nodes to match index.html and
