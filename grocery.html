@@ -61,7 +61,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 }
 .back-btn:active{background:var(--surface2);transform:scale(.9)}
 .back-btn i{width:20px;height:20px}
-.logo { height: 32px; width: auto; object-fit: contain; display: block; }
+.logo{height:32px;width:auto;object-fit:contain;display:block;}
 .header-title{
   font-weight:700;font-size:1rem;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -344,8 +344,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .fcr{display:flex;align-items:center;gap:4px}
 .fc-total{font-weight:800;font-size:.86rem}
 .fc-arr{width:15px;height:15px;opacity:.85}
-
-/* ── CART DRAWER (exact homepage match) ── */
+/* ── CART DRAWER ── */
 .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1999;opacity:0;visibility:hidden;transition:var(--tr);}
 .cart-overlay.open{opacity:1;visibility:visible;}
 .cart-drawer{position:fixed;right:0;top:0;bottom:0;width:100%;max-width:400px;background:var(--bg);z-index:2000;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;box-shadow:var(--shadow-lg);}
@@ -408,8 +407,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .checkout-btn:disabled{background:var(--border);cursor:not-allowed;color:var(--dim);transform:none;box-shadow:none;}
 .multi-restaurant-banner{background:#fff8e1;border:1px solid #ffe082;border-radius:var(--radius-xs);padding:9px 11px;font-size:0.73rem;font-weight:600;color:#7a5800;display:flex;align-items:flex-start;gap:7px;margin-bottom:2px;}
 .multi-restaurant-banner i{width:13px;height:13px;flex-shrink:0;margin-top:1px;color:#f59e0b;}
-
-/* ── CHECKOUT DRAWER (exact homepage match) ── */
+/* ── CHECKOUT DRAWER ── */
 .checkout-drawer{position:absolute;inset:0;background:var(--bg);transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;z-index:10;overflow:hidden;}
 .checkout-drawer.open{transform:translateX(0);}
 .co-header{padding:13px 15px;background:var(--surface);border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:9px;flex-shrink:0;}
@@ -695,7 +693,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
     <div id="cartSummary"></div>
     <button class="checkout-btn" id="checkoutBtn" disabled onclick="openCheckoutDrawer()">Place Order</button>
   </div>
-
   <!-- CHECKOUT DRAWER -->
   <div class="checkout-drawer" id="checkoutDrawer">
     <div class="co-header">
@@ -735,20 +732,20 @@ const auth = getAuth(app);
 
 /* ── CATEGORIES ── */
 const CATS = [
-  { key:'all', label:'All', emoji:'🛒', bg:'#f0fdf4', ib:'#bbf7d0' },
-  { key:'fresh', label:'Fresh & Veg', emoji:'🥦', bg:'#f0fdf4', ib:'#86efac' },
-  { key:'dairy', label:'Dairy & Eggs', emoji:'🥛', bg:'#eff6ff', ib:'#bfdbfe' },
-  { key:'meat', label:'Meat', emoji:'🥩', bg:'#fef2f2', ib:'#fecaca' },
-  { key:'bakery', label:'Bakery', emoji:'🍞', bg:'#fffbeb', ib:'#fde68a' },
-  { key:'beverages', label:'Drinks', emoji:'🧃', bg:'#eff6ff', ib:'#bfdbfe' },
-  { key:'snacks', label:'Snacks', emoji:'🍿', bg:'#fefce8', ib:'#fef08a' },
-  { key:'frozen', label:'Frozen', emoji:'🧊', bg:'#f0f9ff', ib:'#bae6fd' },
-  { key:'pantry', label:'Pantry', emoji:'🫙', bg:'#fdf4ff', ib:'#e9d5ff' },
-  { key:'household', label:'Cleaning', emoji:'🧹', bg:'#faf5ff', ib:'#ddd6fe' },
-  { key:'personal', label:'Personal Care', emoji:'🧴', bg:'#fff0f6', ib:'#fbcfe8' },
-  { key:'baby', label:'Baby', emoji:'🍼', bg:'#fff7ed', ib:'#fed7aa' },
-  { key:'stationery', label:'Stationery', emoji:'✏️', bg:'#f5f3ff', ib:'#ddd6fe' },
-  { key:'organic', label:'Organic', emoji:'🌿', bg:'#f0fdf4', ib:'#86efac' },
+  { key:'all',       label:'All',           emoji:'🛒', bg:'#f0fdf4', ib:'#bbf7d0' },
+  { key:'fresh',     label:'Fresh & Veg',   emoji:'🥦', bg:'#f0fdf4', ib:'#86efac' },
+  { key:'dairy',     label:'Dairy & Eggs',  emoji:'🥛', bg:'#eff6ff', ib:'#bfdbfe' },
+  { key:'meat',      label:'Meat',          emoji:'🥩', bg:'#fef2f2', ib:'#fecaca' },
+  { key:'bakery',    label:'Bakery',        emoji:'🍞', bg:'#fffbeb', ib:'#fde68a' },
+  { key:'beverages', label:'Drinks',        emoji:'🧃', bg:'#eff6ff', ib:'#bfdbfe' },
+  { key:'snacks',    label:'Snacks',        emoji:'🍿', bg:'#fefce8', ib:'#fef08a' },
+  { key:'frozen',    label:'Frozen',        emoji:'🧊', bg:'#f0f9ff', ib:'#bae6fd' },
+  { key:'pantry',    label:'Pantry',        emoji:'🫙', bg:'#fdf4ff', ib:'#e9d5ff' },
+  { key:'household', label:'Cleaning',      emoji:'🧹', bg:'#faf5ff', ib:'#ddd6fe' },
+  { key:'personal',  label:'Personal Care', emoji:'🧴', bg:'#fff0f6', ib:'#fbcfe8' },
+  { key:'baby',      label:'Baby',          emoji:'🍼', bg:'#fff7ed', ib:'#fed7aa' },
+  { key:'stationery',label:'Stationery',    emoji:'✏️', bg:'#f5f3ff', ib:'#ddd6fe' },
+  { key:'organic',   label:'Organic',       emoji:'🌿', bg:'#f0fdf4', ib:'#86efac' },
 ];
 const CAT_MAP = {
   'Fruits & Veg':'fresh','Fruits & Vegetables':'fresh','Produce':'fresh','Fresh':'fresh','Vegetables':'fresh','Fruit':'fresh',
@@ -808,9 +805,7 @@ function getTotalPrice(){ return Object.values(cartGroups).reduce((s,g)=>{ const
 function calcPrepTime(){ const a=getAllCartItems(); if(!a.length)return 0; return Math.ceil(a.reduce((s,i)=>s+(i.prepTime||0),0)/a.length); }
 
 async function clearCart(){
-  cartGroups={};
-  expandedGroups.clear();
-  updateCartUI();
+  cartGroups={}; expandedGroups.clear(); updateCartUI();
   if(!currentUserId)return;
   try{ await set(ref(db,`carts/${currentUserId}`),{groups:{},updatedAt:Date.now()}); }catch(e){console.error(e);}
 }
@@ -820,35 +815,25 @@ function updateCartUI(){
   const checkoutBtn=document.getElementById('checkoutBtn'),summaryEl=document.getElementById('cartSummary');
   const cartFooter=document.getElementById('cartFooter'),bar=document.getElementById('floatingCartBar');
   const totalItems=getTotalItems(),totalPrice=getTotalPrice(),vendorCount=Object.keys(cartGroups).length;
-
-  if(countEl){
-    if(totalItems>0){countEl.style.display='inline-flex';countEl.textContent=totalItems;}
-    else{countEl.style.display='none';}
-  }
+  if(countEl){ if(totalItems>0){countEl.style.display='inline-flex';countEl.textContent=totalItems;}else{countEl.style.display='none';} }
   checkoutBtn.disabled=totalItems===0;
   if(totalItems>0){
     bar.classList.add('visible');
     const fcCount=document.getElementById('fcCount'),fcTotal=document.getElementById('fcTotal');
-    if(fcCount)fcCount.textContent=totalItems;
-    if(fcTotal)fcTotal.textContent=`R ${totalPrice.toFixed(2)}`;
+    if(fcCount)fcCount.textContent=totalItems; if(fcTotal)fcTotal.textContent=`R ${totalPrice.toFixed(2)}`;
   }else{ bar.classList.remove('visible'); }
-
   if(totalItems===0){
     body.innerHTML=`<div class="cart-empty-state"><i data-lucide="shopping-bag"></i><p>Your cart is empty</p><small>Add items to get started</small></div>`;
     summaryEl.innerHTML=''; cartFooter.style.display='none'; lucide.createIcons(); return;
   }
   cartFooter.style.display='block';
-
   let html='';
   if(vendorCount>1) html+=`<div class="multi-restaurant-banner"><i data-lucide="alert-triangle"></i><span>You have items from <strong>${vendorCount} stores</strong>. Each will be placed as a separate order.</span></div>`;
-
   Object.entries(cartGroups).forEach(([vid,group])=>{
     const isExp=expandedGroups.has(vid),items=group.items||[];
     const sub=items.reduce((s,i)=>s+i.price*i.quantity,0),fee=parseFloat(group.deliveryFee||0);
     const total=sub+fee,cnt=items.reduce((s,i)=>s+i.quantity,0);
-    const prevs=items.slice(0,4).map(item=>item.imageURL
-      ?`<img class="preview-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">`
-      :`<div class="preview-img-placeholder"><i data-lucide="image"></i></div>`).join('');
+    const prevs=items.slice(0,4).map(item=>item.imageURL?`<img class="preview-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">`:`<div class="preview-img-placeholder"><i data-lucide="image"></i></div>`).join('');
     const more=items.length>4?`<div class="preview-more">+${items.length-4}</div>`:'';
     const itemsH=items.map((item,idx)=>{
       const img=item.imageURL?`<img class="cart-item-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">`:`<div class="cart-item-img-placeholder"><i data-lucide="image"></i></div>`;
@@ -858,7 +843,6 @@ function updateCartUI(){
     const vImg=group.vendorImage?`<img class="vendor-group-img" src="${group.vendorImage}" alt="${group.vendorName}" loading="lazy">`:`<div class="vendor-group-img" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="store" style="width:18px;height:18px;color:var(--dim);"></i></div>`;
     html+=`<div class="vendor-group ${isExp?'expanded':''}" id="vgroup-${vid}"><div class="vendor-group-header" onclick="toggleVendorGroup('${vid}')">${vImg}<div class="vendor-group-info"><div class="vendor-group-name">${group.vendorName}</div><div class="vendor-group-meta">${cnt} item${cnt!==1?'s':''} · R${total.toFixed(2)}</div></div><div class="vendor-group-right"><span class="vendor-item-count">${cnt}</span><i data-lucide="chevron-down" class="vendor-group-chevron"></i></div></div><div class="vendor-item-previews">${prevs}${more}</div><div class="vendor-items-list">${itemsH}<div class="vendor-subtotal-row"><div><div class="vendor-subtotal-label">Subtotal</div>${fee>0?`<div class="vendor-subtotal-label">+ R${fee.toFixed(2)} delivery</div>`:'<div class="vendor-subtotal-label">Free delivery</div>'}</div><div class="vendor-subtotal-value">R${total.toFixed(2)}</div></div></div></div>`;
   });
-
   body.innerHTML=html;
   const pt=calcPrepTime(),ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
   const tf=Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
@@ -892,10 +876,7 @@ window.openCheckoutDrawer = ()=>{
   document.getElementById('checkoutDrawer').classList.add('open');
   lucide.createIcons();
 };
-window.closeCheckoutDrawer = ()=>{
-  if(coStep===2)return;
-  document.getElementById('checkoutDrawer').classList.remove('open');
-};
+window.closeCheckoutDrawer = ()=>{ if(coStep===2)return; document.getElementById('checkoutDrawer').classList.remove('open'); };
 window.coHandleBack = ()=>{
   if(coStep===0){ closeCheckoutDrawer(); return; }
   if(coStep===2)return;
@@ -909,17 +890,14 @@ function animateCoBody(){
   setTimeout(()=>body.classList.remove('step-enter','step-enter-back'),350);
 }
 function generateOrderNumber(){
-  const ts=Date.now().toString(36).toUpperCase();
-  const rand=Math.random().toString(36).substring(2,5).toUpperCase();
-  return `VYX-${ts}-${rand}`;
+  return `VYX-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2,5).toUpperCase()}`;
 }
 function renderCoStep(){
   const body=document.getElementById('coBody'),footer=document.getElementById('coFooter');
   const titles=['Review Order','Payment & Delivery','Order Placed!'];
   document.getElementById('coHeaderTitle').textContent=titles[coStep];
   for(let i=0;i<3;i++){ const p=document.getElementById(`coPill${i}`); if(p){ p.className='co-step-pill'; if(i<coStep)p.classList.add('done'); else if(i===coStep)p.classList.add('active'); } }
-  const bb=document.getElementById('coBackBtn');
-  if(bb)bb.style.visibility=(coStep===2)?'hidden':'visible';
+  const bb=document.getElementById('coBackBtn'); if(bb)bb.style.visibility=(coStep===2)?'hidden':'visible';
   animateCoBody();
   if(coStep===0)renderCoReview(body,footer);
   else if(coStep===1)renderCoPayment(body,footer);
@@ -954,7 +932,7 @@ function renderCoPayment(body,footer){
     {id:'card',icon:'credit-card',name:'Card on Delivery',sub:'Swipe or tap at the door'},
     {id:'wallet',icon:'smartphone',name:'Digital Wallet',sub:'SnapScan, Ozow & more'}
   ];
-  const defaultAddr=coDeliveryAddress||(activeVendorName||'');
+  const defaultAddr=coDeliveryAddress||'';
   const addrH=`<div class="co-address-row">
     <div class="co-address-icon"><i data-lucide="map-pin"></i></div>
     <div>
@@ -1015,9 +993,14 @@ window.dismissCheckout = ()=>{
   showToast('🎉 Order placed! Track it in your orders.');
 };
 
-/* ── PLACE ORDER (writes to orders/ AND vendors/{vid}/orders/) ── */
 window.coGoNext = ()=>{ coAnimDir='forward'; coStep=1; renderCoStep(); lucide.createIcons(); };
 
+// ─────────────────────────────────────────────────────────────────────────
+// handleCheckout: writes each order to BOTH nodes to match index.html and
+// menu.html:
+//   1. orders/{newKey}                    ← flat user history
+//   2. vendors/{vendorId}/orders/{newKey} ← vendor dashboard node
+// ─────────────────────────────────────────────────────────────────────────
 window.handleCheckout = async()=>{
   if(!currentUser){ showToast("Please sign in to place an order"); return; }
   if(getTotalItems()===0){ showToast("Cart is empty"); return; }
@@ -1030,7 +1013,6 @@ window.handleCheckout = async()=>{
       if(btn){ btn.disabled=false; btn.innerHTML='<i data-lucide="check-circle"></i> Place Order'; lucide.createIcons(); }
       return;
     }
-
     const snapshottedItems=getAllCartItems();
     const snapshottedTotal=getTotalPrice();
     const firstOrderId=generateOrderNumber();
@@ -1041,42 +1023,42 @@ window.handleCheckout = async()=>{
       const orderNumber=generateOrderNumber();
 
       const orderData={
-        userId:           currentUserId,
-        vendorId:         gVid,
-        vendorKey:        gVid,
-        vendorName:       group.vendorName   || 'Grocery Store',
-        vendorImage:      group.vendorImage  || '',
-        customerName:     currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Customer',
-        userEmail:        currentUser?.email  || '',
+        userId:            currentUserId,
+        vendorId:          gVid,
+        vendorKey:         gVid,                          // ← explicit vendor reference
+        vendorName:        group.vendorName  || 'Grocery Store',
+        vendorImage:       group.vendorImage || '',
+        customerName:      currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Customer',
+        userEmail:         currentUser?.email || '',
         orderNumber,
-        storeType:        'grocery',
-        items:            group.items || [],
-        subtotal:         sub,
-        deliveryFee:      fee,
-        total:            sub+fee,
-        paymentMethod:    selectedPayment,
-        deliveryAddress:  deliveryAddress,
-        status:           'pending',
-        createdAt:        Date.now(),
-        updatedAt:        Date.now(),
+        storeType:         'grocery',                     // ← identifies as grocery order
+        items:             group.items || [],
+        subtotal:          sub,
+        deliveryFee:       fee,
+        total:             sub + fee,
+        paymentMethod:     selectedPayment,
+        deliveryAddress:   deliveryAddress,
+        status:            'pending',
+        createdAt:         Date.now(),
+        updatedAt:         Date.now(),
         estimatedPrepTime: calcPrepTime()
       };
 
-      // Get a shared key for dual write
-      const newOrderRef=push(ref(db,'orders'));
-      const orderKey=newOrderRef.key;
+      // Allocate a single Firebase key used for BOTH write paths
+      const newOrderRef = push(ref(db, 'orders'));
+      const orderKey    = newOrderRef.key;
 
-      // Write to flat orders node AND vendor-specific orders node (matches homepage)
+      // Dual write: flat orders node + vendor-specific orders node
       return Promise.all([
-        set(newOrderRef, orderData),
-        set(ref(db,`vendors/${gVid}/orders/${orderKey}`), orderData)
+        set(newOrderRef,                                          orderData),  // orders/{key}
+        set(ref(db, `vendors/${gVid}/orders/${orderKey}`),        orderData)   // vendors/{gVid}/orders/{key}
       ]);
     });
 
     await Promise.all(promises);
     await clearCart();
 
-    // Show success
+    // Show success screen with snapshotted data
     coAnimDir='forward'; coStep=2;
     const body=document.getElementById('coBody'),footer=document.getElementById('coFooter');
     document.getElementById('coHeaderTitle').textContent='Order Placed!';
@@ -1137,10 +1119,8 @@ function getProductQuantity(productId){
 }
 function refreshAction(productId){
   const safeId=productId.replace(/[^a-z0-9]/gi,'_');
-  const el=document.getElementById(`act-${safeId}`);
-  if(!el)return;
-  const p=allProducts.find(x=>x.id===productId);
-  if(!p)return;
+  const el=document.getElementById(`act-${safeId}`); if(!el)return;
+  const p=allProducts.find(x=>x.id===productId); if(!p)return;
   const qty=getProductQuantity(productId);
   el.innerHTML=buildAction(p,qty,safeId);
   lucide.createIcons();
@@ -1161,8 +1141,7 @@ window.addItem=function(productId,event){
 };
 window.cQty=function(productId,delta,event){
   event?.stopPropagation();
-  const p=allProducts.find(x=>x.id===productId);
-  if(!p)return;
+  const p=allProducts.find(x=>x.id===productId); if(!p)return;
   const currentQty=getProductQuantity(productId);
   const newQty=currentQty+delta;
   if(newQty<=0){ removeFromCart(productId,delta); }
@@ -1176,8 +1155,7 @@ const HERO_EMOJIS=['🛒','🥦','🥛','🥩','🍞','🧃','🍿','🧴','🌿
 let heroIdx=0;
 setInterval(()=>{
   heroIdx=(heroIdx+1)%HERO_EMOJIS.length;
-  const el=document.getElementById('heroEmoji');
-  if(!el)return;
+  const el=document.getElementById('heroEmoji'); if(!el)return;
   el.style.transform='scale(0)';
   setTimeout(()=>{ el.textContent=HERO_EMOJIS[heroIdx]; el.style.transform='scale(1)'; },180);
 },3000);
@@ -1380,12 +1358,9 @@ function renderSuggested(currentProduct){
   if(!sFresh.length&&!sDairy.length&&!sOther.length){ block.style.display='none'; return; }
   block.style.display='block';
   const freshG=document.getElementById('sugFreshGroup'),dairyG=document.getElementById('sugDairyGroup'),otherG=document.getElementById('sugOtherGroup');
-  if(sFresh.length){ freshG.style.display='block'; document.getElementById('sugFreshList').innerHTML=sFresh.map(p=>sugCard(p)).join(''); }
-  else freshG.style.display='none';
-  if(sDairy.length){ dairyG.style.display='block'; document.getElementById('sugDairyList').innerHTML=sDairy.map(p=>sugCard(p)).join(''); }
-  else dairyG.style.display='none';
-  if(sOther.length){ otherG.style.display='block'; document.getElementById('sugOtherList').innerHTML=sOther.map(p=>sugCard(p)).join(''); }
-  else otherG.style.display='none';
+  if(sFresh.length){ freshG.style.display='block'; document.getElementById('sugFreshList').innerHTML=sFresh.map(p=>sugCard(p)).join(''); } else freshG.style.display='none';
+  if(sDairy.length){ dairyG.style.display='block'; document.getElementById('sugDairyList').innerHTML=sDairy.map(p=>sugCard(p)).join(''); } else dairyG.style.display='none';
+  if(sOther.length){ otherG.style.display='block'; document.getElementById('sugOtherList').innerHTML=sOther.map(p=>sugCard(p)).join(''); } else otherG.style.display='none';
   lucide.createIcons();
 }
 function sugCard(product){
