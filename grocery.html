@@ -876,6 +876,26 @@ window.openCheckoutDrawer = ()=>{
   document.getElementById('checkoutDrawer').classList.add('open');
   lucide.createIcons();
 };
+  /* ── PASS CART TO PAYMENT PAGE ── */
+function goToPaymentPage() {
+  // Prepare cart data for payment page
+  const cartData = {
+    items: getAllCartItems(),
+    subtotal: Object.values(cartGroups).reduce((s, g) => s + (g.items || []).reduce((ss, i) => ss + i.price * i.quantity, 0), 0),
+    delivery: Object.values(cartGroups).reduce((s, g) => s + parseFloat(g.deliveryFee || 0), 0),
+    total: getTotalPrice(),
+    vendorKey: Object.keys(cartGroups)[0] || null,
+    vendorName: Object.values(cartGroups)[0]?.vendorName || 'Grocery Store',
+    orderType: 'grocery'
+  };
+  
+  // Save to localStorage for payment page to read
+  localStorage.setItem('vynixCartForPayment', JSON.stringify(cartData));
+  
+  // Redirect to payment page
+  window.location.href = 'payment.html';
+}
+  
 window.closeCheckoutDrawer = ()=>{ if(coStep===2)return; document.getElementById('checkoutDrawer').classList.remove('open'); };
 window.coHandleBack = ()=>{
   if(coStep===0){ closeCheckoutDrawer(); return; }
@@ -992,10 +1012,14 @@ window.dismissCheckout = ()=>{
   buildCatGrid(); renderAisles('all');
   showToast('🎉 Order placed! Track it in your orders.');
 };
-window.coGoNext = ()=>{ 
-  // Redirect to payment page instead of showing inline payment
-  window.location.href = 'payment.html'; 
+
+  
+  
+  window.coGoNext = ()=>{ 
+  // Redirect to payment page with cart data
+  goToPaymentPage();
 };
+  
 
 
 // ─────────────────────────────────────────────────────────────────────────
