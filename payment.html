@@ -848,114 +848,75 @@ function finishAndGoHome() {
 // ═══════════════════════════════════════════════════════════════
 // PLACE ORDER
 // ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════
+// MODIFIED PAYMENT & ORDER SPLITTING LOGIC
+// ═══════════════════════════════════════════════════════════════
+
 async function processPayment() {
-    if (currentUser && currentUser.uid) {
-        userId = currentUser.uid;
-        localStorage.setItem('vynixUserId', userId);
-    }
-    const editorInput = document.getElementById('manualAddressInput').value.trim();
-    const editorActive = document.getElementById('addressEditor').classList.contains('active');
-    if (editorActive && editorInput) {
-        selectedAddress.fullAddress = editorInput;
-        selectedAddress.placeName = editorInput;
-    }
-    if (!selectedAddress.fullAddress || !selectedAddress.fullAddress.trim()) {
-        if (!document.getElementById('addressEditor').classList.contains('active')) openAddressEditor();
-        showToast('Please enter a delivery address');
-        document.getElementById('manualAddressInput').focus();
-        return;
-    }
-    if (!cartItems.length) {
-        showToast('Your basket is empty');
-        return;
-    }
-    if (currentMethod === 'card') {
-        const num = document.getElementById('cardNum').value;
-        if (num.length < 19) { showToast('Invalid card number'); return; }
-        if (document.getElementById('saveCardToggle').checked) {
-            localStorage.setItem('vynix_card', JSON.stringify({ num, exp: document.getElementById('cardExpiry').value }));
-        }
-    }
-    await saveLocationToFirebase();
-    const finalTotal = Math.max(0, (subtotal + delivery) - discount);
-    const orderNum = 'VYX-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2,5).toUpperCase();
-    const timestamp = Date.now();
-    const orderItems = cartItems.map(item => ({
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity || 1,
-        imageURL: item.imageURL || '',
-        weight: item.weight || '',
-        category: item.category || '',
-    }));
-    currentOrderId = orderNum;
-    currentOrderData = {
-        id: orderNum,
-        orderNumber: orderNum,
-        orderType: orderType || 'grocery',
-        userId: userId,
-        vendorId: vendorKey || '',
-        vendorKey: vendorKey || '',
-        vendorKeyFallback: vendorName || '',
-        vendorName: vendorName || 'Grocery Store',
-        customerName: (currentUser && (currentUser.displayName || currentUser.email?.split('@')[0])) || 'Customer',
-        customerEmail: (currentUser && currentUser.email) || '',
-        items: orderItems,
-        subtotal: subtotal,
-        deliveryFee: delivery,
-        discount: discount,
-        total: finalTotal,
-        paymentMethod: currentMethod,
-        deliveryAddress: selectedAddress.fullAddress,
-        deliveryCoordinates: selectedAddress.coordinates || null,
-        status: 'pending',
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        promo: homePromo || null   // ← also save the promo that was applied
-    };
-    document.getElementById('loadingOverlay').style.display = 'flex';
+    if (!validatePaymentForm()) return;
+    
+    const payBtn = document.getElementById('payBtn');
+    const originalText = payBtn.innerHTML;
+    
     try {
-        const ordersRef = database.ref('orders').push();
-        await ordersRef.set({
-            ...currentOrderData,
-            serverTimestamp: firebase.database.ServerValue.TIMESTAMP,
-        });
-        await database.ref(`users/${userId}/orders/${ordersRef.key}`).set({
-            id: orderNum,
-            firebaseKey: ordersRef.key,
-            total: finalTotal,
-            status: 'pending',
-            timestamp: timestamp,
-            vendorKey: vendorKey || '',
-            vendorName: vendorName || '',
-            itemCount: orderItems.length,
-            deliveryAddress: selectedAddress.fullAddress,
-        });
-        if (userId) {
-            database.ref(`users/${userId}/cart`).remove().catch(() => {});
-            database.ref(`carts/${userId}`).set({ groups: {}, updatedAt: Date.now() }).catch(() => {});
-        }
-        localStorage.removeItem('vynixCartForPayment');
-        localStorage.setItem('vynixOpenOrdersTab', '1');
-        showSyncIndicator();
-        document.getElementById('loaderUI').style.display = 'none';
-        document.getElementById('successUI').style.display = 'block';
-        lucide.createIcons();
-        let count = 3;
-        const countEl = document.getElementById('redirectCountdown');
-        const interval = setInterval(() => {
-            count--;
-            if (countEl) countEl.textContent = count;
-            if (count <= 0) {
-                clearInterval(interval);
-                finishAndGoHome();
+        setLoadingState(payBtn, true);
+        
+        // 1. Group items by Vendor
+        const ordersByVendor = cart.reduce((acc, item) => {
+            if (!acc[item.vendorId]) {
+                acc[item.vendorId] = {
+                    items: [],
+                    subtotal: 0
+                };
             }
-        }, 1000);
-    } catch (err) {
-        console.error('Order error:', err);
-        showToast('Error placing order. Please try again.');
-        document.getElementById('loadingOverlay').style.display = 'none';
-        localStorage.removeItem('vynixOpenOrdersTab');
+            acc[item.vendorId].items.push(item);
+            acc[item.vendorId].subtotal += (item.price * item.quantity);
+            return acc;
+        }, {});
+
+        const orderResults = [];
+        const timestamp = Date.now();
+        const customerId = auth.currentUser ? auth.currentUser.uid : 'guest';
+        
+        // 2. Process each vendor group as a separate order
+        for (const vendorId in ordersByVendor) {
+            const vendorData = ordersByVendor[vendorId];
+            const orderId = `ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+            
+            const orderPayload = {
+                orderId: orderId,
+                vendorId: vendorId, // Crucial for index.html filtering
+                customerId: customerId,
+                customerName: document.getElementById('cardHolder').value,
+                customerPhone: document.getElementById('phoneInput').value,
+                items: vendorData.items,
+                subtotal: vendorData.subtotal,
+                deliveryFee: 15.00, // Or split logic if preferred
+                total: vendorData.subtotal + 15.00,
+                status: 'pending',
+                createdAt: timestamp,
+                address: confirmedAddress,
+                paymentMethod: 'card'
+            };
+
+            await firebase.database().ref(`orders/${orderId}`).set(orderPayload);
+            orderResults.push(orderId);
+        }
+
+        // 3. Success Handling
+        showToast(`Success! Created ${orderResults.length} separate vendor orders.`);
+        
+        // Clear cart and redirect
+        localStorage.removeItem('cart');
+        setTimeout(() => {
+            window.location.href = 'success.html?orders=' + orderResults.join(',');
+        }, 2000);
+
+    } catch (error) {
+        console.error("Order Error:", error);
+        showToast("Payment failed. Please try again.", "error");
+    } finally {
+        setLoadingState(payBtn, false, originalText);
     }
 }
 // ═══════════════════════════════════════════════════════════════
