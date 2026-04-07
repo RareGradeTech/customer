@@ -21,7 +21,7 @@
             --accent-dark: #e0661c;
             --accent-light: #ffe8d6;
             --yellow: #ffc107;
-            --danger: #ff3b30;
+            --danger: #ff2d55;
             --heart: #ff2d55;
             --radius: 14px;
             --radius-sm: 10px;
@@ -579,8 +579,8 @@
     </div>
     <div class="cart-footer" id="cartFooter" style="display:none;">
         <div id="cartSummary"></div>
-        <!-- Checkout button redirects to payment.html — matches index.html behaviour -->
-        <button class="checkout-btn" id="checkoutBtn" disabled onclick="preparePaymentAndRedirect()">Place Order</button>
+        <!-- Changed: "Continue to Payment" now redirects to payment.html with full cart data -->
+        <button class="checkout-btn" id="checkoutBtn" disabled onclick="goToPaymentPage()">Continue to Payment</button>
     </div>
 </div>
 <!-- BOTTOM NAV -->
@@ -609,7 +609,6 @@ const googleProvider = new GoogleAuthProvider();
 const urlParams = new URLSearchParams(window.location.search);
 const vendorId = urlParams.get('vendor');
 if (!vendorId) { showToast("No restaurant selected"); setTimeout(() => window.location.href = 'index.html', 2000); }
-
 // ── STATE ──
 let cart = [];
 let allGroups = {};
@@ -627,7 +626,6 @@ let allUserOrders = [];
 let expandedOrders = new Set();
 let userProfile = { name:'', phone:'', addresses:[], settings:{notif:true,loc:true,sms:false,promo:true} };
 let cartJustCleared = false;
-
 // ── SUGGESTED ──
 const SIDE_KW = ['side','sides','fries','salad','salads','soup','starter','starters','appetizer','bread','rice','chips','coleslaw'];
 const DRINK_KW = ['drink','drinks','beverage','juice','soda','water','milkshake','smoothie','coffee','tea','beer','cola'];
@@ -683,7 +681,6 @@ window.quickAddSuggested = async (itemId, e) => {
     const btn = document.getElementById(`sbtn-${itemId}`);
     if (btn) { btn.classList.add('added'); btn.innerHTML='<i data-lucide="check" style="width:11px;height:11px;"></i>'; lucide.createIcons(); }
 };
-
 // ── DRAG TO CLOSE ──
 (function initDrag() {
     const sheet=document.getElementById('itemSheet'), dragZone=document.getElementById('sheetDragZone'),
@@ -722,18 +719,15 @@ window.quickAddSuggested = async (itemId, e) => {
         }
     }, {passive:true});
 })();
-
 document.addEventListener('keydown', e => {
     if (e.key==='Escape') {
         if (document.getElementById('itemSheet').classList.contains('open')) closeItemSheet();
         else if (document.getElementById('profileModal').classList.contains('active')) closeProfileModal();
     }
 });
-
 // ── SHIMMER ──
 function showShimmer() { document.getElementById('shimmerOverlay').classList.add('active'); document.body.style.overflow='hidden'; }
 function hideShimmer() { document.getElementById('shimmerOverlay').classList.remove('active'); document.body.style.overflow=''; }
-
 // ── LOAD MENU ──
 async function loadMenu() {
     showShimmer();
@@ -853,7 +847,6 @@ window.toggleSearch = () => {
     lucide.createIcons();
 };
 window.goBack = () => { window.location.href = 'index.html'; };
-
 // ── ITEM SHEET ──
 window.openItemSheet = itemId => {
     const item = allMenuItems.find(i=>i.id===itemId); if(!item) return;
@@ -904,13 +897,11 @@ window.addFromSheet = async () => {
     refreshControl(item.id); updateCartUI();
     showToast(`${item.name} added to cart`); closeItemSheet();
 };
-
 // ── CART ──
 function getAllCartItems() { const all=[]; Object.values(allGroups).forEach(g=>{ if(g.items) g.items.forEach(i=>all.push(i)); }); return all; }
 function getTotalItems() { return Object.values(allGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.quantity,0),0); }
 function getTotalPrice() { return Object.values(allGroups).reduce((s,g)=>{ const sub=(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0); return s+sub+parseFloat(g.deliveryFee||0); },0); }
 function calcPrepTime() { const all=getAllCartItems(); if(!all.length) return 0; return Math.ceil(all.reduce((s,i)=>s+(i.prepTime||0),0)/all.length); }
-
 window.addToCartById = async itemId => {
     const menuItem = allMenuItems.find(i=>i.id===itemId); if(!menuItem) return;
     if (menuItem.status !== 'available') { showToast("Item unavailable"); return; }
@@ -1027,46 +1018,25 @@ window.toggleCart = () => {
         d.classList.add('open'); o.classList.add('open'); document.body.style.overflow='hidden'; updateCartUI();
     }
 };
-
-// ══════════════════════════════════════════════════════════════
-// PREPARE PAYMENT AND REDIRECT
-// Serialises ALL vendor groups into localStorage then navigates
-// to payment.html — identical pattern to index.html
-// ══════════════════════════════════════════════════════════════
-window.preparePaymentAndRedirect = () => {
-    if (getTotalItems() === 0) return;
-
-    const subtotal = Object.values(allGroups).reduce((s,g) =>
-        s + (g.items||[]).reduce((ss,i) => ss + i.price * i.quantity, 0), 0);
-    const delivery = Object.values(allGroups).reduce((s,g) =>
-        s + parseFloat(g.deliveryFee||0), 0);
-
-    // Build full per-vendor groups array
-    const groups = Object.entries(allGroups).map(([vid, group]) => ({
-        vendorId:    vid,
-        vendorKey:   vid,
-        vendorName:  group.vendorName  || '',
-        vendorImage: group.vendorImage || '',
-        deliveryFee: parseFloat(group.deliveryFee || 0),
-        items:       (group.items || []).map(i => ({ ...i }))
-    }));
-
-    const data = {
-        subtotal,
-        delivery,
-        discount:   0,
-        promo:      null,
-        items:      getAllCartItems(),  // flat list for display
-        groups,                        // per-vendor breakdown for order writing
-        vendorKey:  groups.length === 1 ? groups[0].vendorId : '',
-        vendorName: groups.length === 1 ? groups[0].vendorName : '',
-        orderType:  vendorInfo?.storeType || 'restaurant'
-    };
-
-    localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
-    window.location.href = 'payment.html';
+/* ── NEW: Redirect to payment.html with full cart data (exactly like grocery page) ── */
+window.goToPaymentPage = function(){
+  const totalItems = getTotalItems();
+  if(totalItems === 0){
+    showToast("Cart is empty");
+    return;
+  }
+  if(!currentUserId){
+    showToast("Please sign in to continue");
+    return;
+  }
+  // Save complete cart data using the same keys as the grocery page
+  localStorage.setItem('checkoutCartGroups', JSON.stringify(allGroups));
+  localStorage.setItem('checkoutTotalItems', totalItems.toString());
+  localStorage.setItem('checkoutTotalPrice', getTotalPrice().toFixed(2));
+  localStorage.setItem('checkoutUserId', currentUserId);
+  localStorage.setItem('checkoutTimestamp', Date.now().toString());
+  window.location.href = 'payment.html';
 };
-
 // ── ORDERS ──
 function subscribeToOrders() {
     if (!currentUserId) return;
@@ -1202,7 +1172,6 @@ window.reorderItems = async (orderId,vid,event) => {
         showToast("Items added to cart ✓");
     } catch(e){console.error(e);showToast("Reorder failed");}
 };
-
 // ── PROFILE MODAL ──
 function renderProfileModal() {
     const body = document.getElementById('profileModalBody');
@@ -1291,7 +1260,6 @@ window.closeProfileModal = () => {
     document.getElementById('profileModal').classList.remove('active');
     document.body.style.overflow = '';
 };
-
 // ── BOTTOM NAV ──
 window.bottomNavClick = function(idx) {
     for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el)el.classList.toggle('active',i===idx);}
@@ -1314,14 +1282,12 @@ window.bottomNavClick = function(idx) {
         for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el)el.classList.toggle('active',i===0);}
     }
 };
-
 // ── TOAST ──
 let toastTimer;
 window.showToast = (msg) => {
     const t = document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
     clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
 };
-
 // ── AUTH ──
 function loadUserProfile(uid) {
     onValue(ref(db,`users/${uid}`), snap => {
@@ -1344,11 +1310,9 @@ onAuthStateChanged(auth, user => {
         cart=[]; allGroups={}; allUserOrders=[]; updateCartUI();
     }
 });
-
 // ── INIT ──
 lucide.createIcons();
 loadMenu();
-
 // Post-payment redirect handling
 (function checkPostPaymentRedirect() {
     if (localStorage.getItem('vynixOpenOrdersTab') !== '1') return;
