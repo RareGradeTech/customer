@@ -341,7 +341,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .cart-empty-state i{width:44px;height:44px;margin-bottom:14px;opacity:0.25;}
 .cart-empty-state p{font-weight:700;font-size:0.9rem;margin-bottom:4px;color:var(--text);}
 .cart-empty-state small{font-size:0.78rem;}
-.vendor-group{background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+.vendor-group{background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05);}
 .vendor-group-header{display:flex;align-items:center;gap:9px;padding:11px 13px;cursor:pointer;transition:var(--tr);background:var(--surface);}
 .vendor-group-header:active{background:var(--surface2);}
 .vendor-group-img{width:42px;height:42px;border-radius:9px;object-fit:cover;flex-shrink:0;background:var(--surface2);border:1px solid var(--border-light);display:block;}
@@ -371,11 +371,11 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .cart-item-price{color:var(--dim);font-size:0.69rem;font-weight:500;}
 .cart-item-total{font-weight:800;font-size:0.79rem;color:var(--text);white-space:nowrap;}
 .cart-quantity-control{display:flex;align-items:center;gap:2px;background:var(--surface2);border-radius:100px;padding:2px;flex-shrink:0;}
-.cart-qty-btn{width:23px;height:23px;border-radius:50%;border:none;background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tr);box-shadow:0 1px 3px rgba(0,0,0,0.06);}
+.cart-qty-btn{width:23px;height:23px;border-radius:50%;border:none;background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tr);box-shadow:0 1px 3px rgba(0,0,0,.06);}
 .cart-qty-btn:hover{background:var(--accent-light);color:var(--accent);}
 .cart-qty-btn:active{background:var(--accent);color:white;}
 .cart-qty-value{font-weight:700;min-width:17px;text-align:center;font-size:0.75rem;}
-.vendor-subtotal-row{display:flex;justify-content:space-between;align-items:center;padding:7px 13px 11px;border-top:1px dashed var(--border);}
+.vendor-subtotal-row{display:flex;justify-content:space-between;align-items:center;padding:7px 13px 11px;border-top:1px dashed var(--border-light);}
 .vendor-subtotal-label{font-size:0.72rem;color:var(--dim);font-weight:600;}
 .vendor-subtotal-value{font-size:0.79rem;font-weight:800;color:var(--accent);}
 .cart-footer{padding:11px 13px;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;}
@@ -476,7 +476,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 </style>
 </head>
 <body>
-
 <header class="header">
   <div class="header-left">
     <a href="index.html" class="back-btn" aria-label="Go back">
@@ -498,7 +497,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
     </button>
   </div>
 </header>
-
 <div class="search-section-bar" id="searchSectionBar">
   <div class="search-wrap">
     <i data-lucide="search"></i>
@@ -507,7 +505,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
            autocomplete="off" oninput="handleSearch(this.value)">
   </div>
 </div>
-
 <main class="page">
   <div class="hero">
     <div class="hero-inner">
@@ -526,7 +523,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
       <div class="hero-emoji" id="heroEmoji">🛒</div>
     </div>
   </div>
-
   <div class="section" id="catSection">
     <div class="section-head">
       <div class="section-title"><span class="sec-icon">🏪</span> Shop by Category</div>
@@ -543,7 +539,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
       <div class="shimmer-block shimmer-cat"></div>
     </div>
   </div>
-
   <div class="section" id="popularSection" style="display:none;">
     <div class="section-head">
       <div class="section-title"><span class="sec-icon">⭐</span> Popular Right Now</div>
@@ -555,7 +550,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
       <div class="shimmer-block shimmer-card"></div>
     </div>
   </div>
-
   <div class="section" id="searchSection2" style="display:none;">
     <div class="section-head">
       <div class="section-title" id="searchTitle"><span class="sec-icon">🔍</span> Results</div>
@@ -570,9 +564,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
       </div>
     </div>
   </div>
-
   <div id="aisleContainer"></div>
-
   <div id="loadingShimmer" class="section">
     <div style="height:18px;width:140px;border-radius:6px;" class="shimmer-block"></div>
     <div class="products-row noscroll" style="margin-top:14px;">
@@ -588,7 +580,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
       <div class="shimmer-block shimmer-card"></div>
     </div>
   </div>
-
   <div id="storeEmpty" style="display:none;">
     <div style="text-align:center;padding:40px 20px;color:var(--dim);">
       <div style="font-size:2.5rem;margin-bottom:10px;">🛒</div>
@@ -597,7 +588,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
     </div>
   </div>
 </main>
-
 <!-- ITEM DETAIL SHEET -->
 <div class="item-backdrop" id="itemBackdrop" onclick="closeItemSheet()"></div>
 <div class="item-sheet" id="itemSheet" role="dialog" aria-modal="true">
@@ -653,7 +643,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
     </button>
   </div>
 </div>
-
 <!-- FLOATING CART BAR -->
 <div class="floating-cart-bar" id="floatingCartBar" onclick="toggleCart()">
   <div class="floating-cart-inner">
@@ -667,7 +656,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
     </div>
   </div>
 </div>
-
 <!-- CART OVERLAY + DRAWER -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
 <div class="cart-drawer" id="cartDrawer">
@@ -686,7 +674,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
     <div id="cartSummary"></div>
     <button class="checkout-btn" id="checkoutBtn" disabled onclick="openCheckoutDrawer()">Proceed to Checkout</button>
   </div>
-
   <!-- CHECKOUT DRAWER (inside cart drawer, same as index.html) -->
   <div class="checkout-drawer" id="checkoutDrawer">
     <div class="co-header">
@@ -702,14 +689,11 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
     <div class="co-footer" id="coFooter"></div>
   </div>
 </div>
-
 <div id="toast">Item added</div>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, set, push, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
   authDomain: "test-17881.firebaseapp.com",
@@ -719,29 +703,26 @@ const firebaseConfig = {
   messagingSenderId: "1057428047643",
   appId: "1:1057428047643:web:f3801c0d933225a5cd35be"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
-
 const MAPBOX_TOKEN = 'pk.eyJ1Ijoia2F0bGVnb3BoYXNoYSIsImEiOiJjbTlpOTdzbmYwMGNsMmpzYWJtZzN4d3pqIn0.Zt-aSMEoahrV3zkiVVHbOw';
-
 /* ── CATEGORIES ── */
 const CATS = [
-  { key:'all',       label:'All',           emoji:'🛒', bg:'#f0fdf4', ib:'#bbf7d0' },
-  { key:'fresh',     label:'Fresh & Veg',   emoji:'🥦', bg:'#f0fdf4', ib:'#86efac' },
-  { key:'dairy',     label:'Dairy & Eggs',  emoji:'🥛', bg:'#eff6ff', ib:'#bfdbfe' },
-  { key:'meat',      label:'Meat',          emoji:'🥩', bg:'#fef2f2', ib:'#fecaca' },
-  { key:'bakery',    label:'Bakery',        emoji:'🍞', bg:'#fffbeb', ib:'#fde68a' },
-  { key:'beverages', label:'Drinks',        emoji:'🧃', bg:'#eff6ff', ib:'#bfdbfe' },
-  { key:'snacks',    label:'Snacks',        emoji:'🍿', bg:'#fefce8', ib:'#fef08a' },
-  { key:'frozen',    label:'Frozen',        emoji:'🧊', bg:'#f0f9ff', ib:'#bae6fd' },
-  { key:'pantry',    label:'Pantry',        emoji:'🫙', bg:'#fdf4ff', ib:'#e9d5ff' },
-  { key:'household', label:'Cleaning',      emoji:'🧹', bg:'#faf5ff', ib:'#ddd6fe' },
-  { key:'personal',  label:'Personal Care', emoji:'🧴', bg:'#fff0f6', ib:'#fbcfe8' },
-  { key:'baby',      label:'Baby',          emoji:'🍼', bg:'#fff7ed', ib:'#fed7aa' },
-  { key:'stationery',label:'Stationery',    emoji:'✏️', bg:'#f5f3ff', ib:'#ddd6fe' },
-  { key:'organic',   label:'Organic',       emoji:'🌿', bg:'#f0fdf4', ib:'#86efac' },
+  { key:'all', label:'All', emoji:'🛒', bg:'#f0fdf4', ib:'#bbf7d0' },
+  { key:'fresh', label:'Fresh & Veg', emoji:'🥦', bg:'#f0fdf4', ib:'#86efac' },
+  { key:'dairy', label:'Dairy & Eggs', emoji:'🥛', bg:'#eff6ff', ib:'#bfdbfe' },
+  { key:'meat', label:'Meat', emoji:'🥩', bg:'#fef2f2', ib:'#fecaca' },
+  { key:'bakery', label:'Bakery', emoji:'🍞', bg:'#fffbeb', ib:'#fde68a' },
+  { key:'beverages', label:'Drinks', emoji:'🧃', bg:'#eff6ff', ib:'#bfdbfe' },
+  { key:'snacks', label:'Snacks', emoji:'🍿', bg:'#fefce8', ib:'#fef08a' },
+  { key:'frozen', label:'Frozen', emoji:'🧊', bg:'#f0f9ff', ib:'#bae6fd' },
+  { key:'pantry', label:'Pantry', emoji:'🫙', bg:'#fdf4ff', ib:'#e9d5ff' },
+  { key:'household', label:'Cleaning', emoji:'🧹', bg:'#faf5ff', ib:'#ddd6fe' },
+  { key:'personal', label:'Personal Care', emoji:'🧴', bg:'#fff0f6', ib:'#fbcfe8' },
+  { key:'baby', label:'Baby', emoji:'🍼', bg:'#fff7ed', ib:'#fed7aa' },
+  { key:'stationery',label:'Stationery', emoji:'✏️', bg:'#f5f3ff', ib:'#ddd6fe' },
+  { key:'organic', label:'Organic', emoji:'🌿', bg:'#f0fdf4', ib:'#86efac' },
 ];
 const CAT_MAP = {
   'Fruits & Veg':'fresh','Fruits & Vegetables':'fresh','Produce':'fresh','Fresh':'fresh','Vegetables':'fresh','Fruit':'fresh',
@@ -765,7 +746,6 @@ const FRESH_KEYS = ['fresh','organic'];
 const DAIRY_KEYS = ['dairy','frozen'];
 function sugBucket(p){ const k=getCatKey(p.category); if(FRESH_KEYS.includes(k))return'fresh'; if(DAIRY_KEYS.includes(k))return'dairy'; return'other'; }
 function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
-
 /* ── STATE ── */
 let allProducts = [];
 let cartGroups = {};
@@ -778,27 +758,23 @@ let sheetQty = 1;
 let activeVendorId = null;
 let activeVendorName = null;
 let userLocation = { lat: null, lng: null, address: null };
-
 // Checkout state (mirrors index.html)
 let coStep = 0;
 let selectedPayment = 'cash';
 let coDeliveryAddress = null;
 let coAnimDir = 'forward';
-
 /* ── TOAST ── */
 window.showToast = function(msg){
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('show'), 2400);
 };
-
 /* ── ORDER NUMBER GENERATOR (matches index.html) ── */
 function generateOrderNumber(){
   const ts = Date.now().toString(36).toUpperCase();
   const rand = Math.random().toString(36).substring(2,5).toUpperCase();
   return `VYX-${ts}-${rand}`;
 }
-
 /* ── CART HELPERS ── */
 async function saveCart(){
   if(!currentUserId) return;
@@ -819,7 +795,6 @@ function getTotalPrice(){
     return s + sub + parseFloat(g.deliveryFee||0);
   }, 0);
 }
-
 /* ── CART UI ── */
 function updateCartUI(){
   const body = document.getElementById('cartBody');
@@ -831,13 +806,11 @@ function updateCartUI(){
   const totalItems = getTotalItems();
   const totalPrice = getTotalPrice();
   const vendorCount = Object.keys(cartGroups).length;
-
   if(countEl){
     if(totalItems>0){ countEl.style.display='inline-flex'; countEl.textContent=totalItems; }
     else{ countEl.style.display='none'; }
   }
   checkoutBtn.disabled = totalItems === 0;
-
   if(totalItems>0){
     bar.classList.add('visible');
     const fcCount = document.getElementById('fcCount');
@@ -847,17 +820,14 @@ function updateCartUI(){
   } else {
     bar.classList.remove('visible');
   }
-
   if(totalItems === 0){
     body.innerHTML = `<div class="cart-empty-state"><i data-lucide="shopping-bag"></i><p>Your basket is empty</p><small>Add items to get started</small></div>`;
     summaryEl.innerHTML = ''; cartFooter.style.display = 'none'; lucide.createIcons(); return;
   }
   cartFooter.style.display = 'block';
-
   let html = '';
   if(vendorCount > 1)
     html += `<div class="multi-restaurant-banner"><i data-lucide="alert-triangle"></i><span>You have items from <strong>${vendorCount} stores</strong>. Each will be placed as a separate order.</span></div>`;
-
   Object.entries(cartGroups).forEach(([vid, group])=>{
     const isExp = expandedGroups.has(vid);
     const items = group.items || [];
@@ -865,14 +835,12 @@ function updateCartUI(){
     const fee = parseFloat(group.deliveryFee||0);
     const total = sub + fee;
     const cnt = items.reduce((s,i)=>s+i.quantity, 0);
-
     const prevs = items.slice(0,4).map(item=>
       item.imageURL
         ? `<img class="preview-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">`
         : `<div class="preview-img-placeholder"><i data-lucide="image"></i></div>`
     ).join('');
     const more = items.length>4 ? `<div class="preview-more">+${items.length-4}</div>` : '';
-
     const itemsH = items.map((item, idx)=>{
       const img = item.imageURL
         ? `<img class="cart-item-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">`
@@ -895,11 +863,9 @@ function updateCartUI(){
         <div class="cart-item-total">R${(item.price*item.quantity).toFixed(2)}</div>
       </div>`;
     }).join('');
-
     const vImg = group.vendorImage
       ? `<img class="vendor-group-img" src="${group.vendorImage}" alt="${group.vendorName}" loading="lazy">`
       : `<div class="vendor-group-img" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="store" style="width:18px;height:18px;color:var(--dim);"></i></div>`;
-
     html += `<div class="vendor-group ${isExp?'expanded':''}" id="vgroup-${vid}">
       <div class="vendor-group-header" onclick="toggleVendorGroup('${vid}')">${vImg}
         <div class="vendor-group-info">
@@ -923,9 +889,7 @@ function updateCartUI(){
       </div>
     </div>`;
   });
-
   body.innerHTML = html;
-
   const ts = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0), 0);
   const tf = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0), 0);
   summaryEl.innerHTML = `<div class="cart-summary">
@@ -934,17 +898,14 @@ function updateCartUI(){
     ${vendorCount>1?`<div class="cart-summary-row"><span style="color:var(--dim);">${vendorCount} separate orders</span><span></span></div>`:''}
     <div class="cart-summary-row"><span>Total</span><span>R ${totalPrice.toFixed(2)}</span></div>
   </div>`;
-
   lucide.createIcons();
 }
-
 window.toggleVendorGroup = vid => {
   if(expandedGroups.has(vid)) expandedGroups.delete(vid); else expandedGroups.add(vid);
   const el = document.getElementById(`vgroup-${vid}`);
   if(el) el.classList.toggle('expanded', expandedGroups.has(vid));
   lucide.createIcons();
 };
-
 window.updateCartItemQty = async(vid, idx, qty)=>{
   if(!cartGroups[vid]) return;
   if(qty < 1){
@@ -956,7 +917,6 @@ window.updateCartItemQty = async(vid, idx, qty)=>{
   await saveCart(); updateCartUI();
   allProducts.forEach(p => refreshAction(p.id));
 };
-
 window.toggleCart = ()=>{
   const d = document.getElementById('cartDrawer');
   const o = document.getElementById('cartOverlay');
@@ -969,7 +929,6 @@ window.toggleCart = ()=>{
     updateCartUI();
   }
 };
-
 /* ── CHECKOUT DRAWER (identical logic to index.html) ── */
 window.openCheckoutDrawer = ()=>{
   if(getTotalItems() === 0) return;
@@ -978,18 +937,15 @@ window.openCheckoutDrawer = ()=>{
   document.getElementById('checkoutDrawer').classList.add('open');
   lucide.createIcons();
 };
-
 window.closeCheckoutDrawer = ()=>{
   if(coStep === 2) return;
   document.getElementById('checkoutDrawer').classList.remove('open');
 };
-
 window.coHandleBack = ()=>{
   if(coStep === 0){ closeCheckoutDrawer(); return; }
   if(coStep === 2) return;
   coAnimDir = 'back'; coStep--; renderCoStep(); lucide.createIcons();
 };
-
 function animateCoBody(){
   const body = document.getElementById('coBody');
   body.classList.remove('step-enter','step-enter-back');
@@ -997,13 +953,11 @@ function animateCoBody(){
   body.classList.add(coAnimDir === 'back' ? 'step-enter-back' : 'step-enter');
   setTimeout(()=>body.classList.remove('step-enter','step-enter-back'), 350);
 }
-
 function renderCoStep(){
   const body = document.getElementById('coBody');
   const footer = document.getElementById('coFooter');
   const titles = ['Review Order','Payment & Delivery','Order Placed!'];
   document.getElementById('coHeaderTitle').textContent = titles[coStep];
-
   for(let i=0; i<3; i++){
     const p = document.getElementById(`coPill${i}`);
     if(p){
@@ -1014,26 +968,22 @@ function renderCoStep(){
   }
   const bb = document.getElementById('coBackBtn');
   if(bb) bb.style.visibility = (coStep === 2) ? 'hidden' : 'visible';
-
   animateCoBody();
   if(coStep === 0) renderCoReview(body, footer);
   else if(coStep === 1) renderCoPayment(body, footer);
   else renderCoSuccess(body, footer);
 }
-
 function renderCoReview(body, footer){
   const ts = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0), 0);
   const tf = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0), 0);
   const total = ts + tf;
   const totalItems = getTotalItems();
   const vc = Object.keys(cartGroups).length;
-
   let vbs = '';
   Object.entries(cartGroups).forEach(([gVid, group])=>{
     const imgH = group.vendorImage
       ? `<img src="${group.vendorImage}" style="width:18px;height:18px;border-radius:4px;object-fit:cover;">`
       : `<i data-lucide="store" style="width:14px;height:14px;"></i>`;
-
     const items = (group.items||[]).map(item=>{
       const img = item.imageURL
         ? `<img class="co-order-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">`
@@ -1044,10 +994,8 @@ function renderCoReview(body, footer){
         <span class="co-order-price">R${(item.price*item.quantity).toFixed(2)}</span>
       </div>`;
     }).join('');
-
     const gs = (group.items||[]).reduce((s,i)=>s+i.price*i.quantity, 0);
     const fee = parseFloat(group.deliveryFee||0);
-
     vbs += `<div class="co-vendor-block">
       <div class="co-vendor-label">${imgH}<span>${group.vendorName||'Grocery Store'}</span></div>
       ${items}
@@ -1055,7 +1003,6 @@ function renderCoReview(body, footer){
       <div style="display:flex;justify-content:space-between;padding:2px 0;font-size:0.72rem;color:var(--dim);"><span>Delivery</span><span>${fee>0?`R${fee.toFixed(2)}`:'Free'}</span></div>
     </div>`;
   });
-
   body.innerHTML = `
     ${vc>1?`<div style="background:#fff8e1;border:1px solid #ffe082;border-radius:var(--radius-xs);padding:9px 12px;font-size:0.74rem;font-weight:600;color:#7a5800;display:flex;gap:7px;align-items:flex-start;"><i data-lucide="alert-triangle" style="width:13px;height:13px;flex-shrink:0;margin-top:1px;color:#f59e0b;"></i><span>${vc} stores · ${vc} separate orders will be placed</span></div>`:''}
     <div class="co-card">
@@ -1078,23 +1025,19 @@ function renderCoReview(body, footer){
       </div>
     </div>
   `;
-
-  footer.innerHTML = `<button class="co-confirm-btn" onclick="coGoNext()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
+  // ── CHANGED: "Continue to Payment" now redirects to payment.html with full cart data ──
+  footer.innerHTML = `<button class="co-confirm-btn" onclick="goToPaymentPage()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
 }
-
 function renderCoPayment(body, footer){
   const ts = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0), 0);
   const tf = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0), 0);
   const total = ts + tf;
-
   const pays = [
     {id:'cash', icon:'banknote', name:'Cash on Delivery', sub:'Pay when your order arrives'},
     {id:'card', icon:'credit-card', name:'Card on Delivery', sub:'Swipe or tap at the door'},
     {id:'wallet', icon:'smartphone', name:'Digital Wallet', sub:'SnapScan, Ozow & more'},
   ];
-
   const defaultAddr = coDeliveryAddress || userLocation.address || '';
-
   const addrH = `<div class="co-address-row">
     <div class="co-address-icon"><i data-lucide="map-pin"></i></div>
     <div>
@@ -1106,7 +1049,6 @@ function renderCoPayment(body, footer){
     placeholder="Enter delivery address…"
     value="${defaultAddr}"
     oninput="coDeliveryAddress=this.value;const m=document.getElementById('coAddrMain');if(m)m.textContent=this.value||'Enter delivery address below'">`;
-
   body.innerHTML = `
     <div class="co-card">
       <div class="co-card-header">
@@ -1148,9 +1090,7 @@ function renderCoPayment(body, footer){
     </div>
     <p class="co-terms">By placing your order you agree to our Terms of Service and Privacy Policy.</p>
   `;
-
   footer.innerHTML = `<button class="co-confirm-btn" id="coPlaceBtn" onclick="handleCheckout()"><i data-lucide="check-circle"></i> Place Order · R${total.toFixed(2)}</button>`;
-
   const eb = document.getElementById('coAddrEditBtn');
   if(eb) eb.addEventListener('click', ()=>{
     const inp = document.getElementById('coAddrInput');
@@ -1160,13 +1100,11 @@ function renderCoPayment(body, footer){
       if(isHidden) inp.focus();
     }
   });
-
   if(!defaultAddr){
     const inp = document.getElementById('coAddrInput');
     if(inp) inp.style.display = 'block';
   }
 }
-
 window.selectPayment = id => {
   selectedPayment = id;
   document.querySelectorAll('.co-pay-option').forEach(el=>{
@@ -1174,11 +1112,29 @@ window.selectPayment = id => {
   });
   lucide.createIcons();
 };
-
 window.coGoNext = ()=>{
   coAnimDir = 'forward'; coStep = 1; renderCoStep(); lucide.createIcons();
 };
-
+/* ── NEW FUNCTION: Redirect to payment.html with full cart data ── */
+window.goToPaymentPage = function(){
+  const totalItems = getTotalItems();
+  if(totalItems === 0){
+    showToast("Cart is empty");
+    return;
+  }
+  if(!currentUserId){
+    showToast("Please sign in to continue");
+    return;
+  }
+  // Save complete cart data + metadata to localStorage so payment.html can read it instantly
+  localStorage.setItem('checkoutCartGroups', JSON.stringify(cartGroups));
+  localStorage.setItem('checkoutTotalItems', totalItems.toString());
+  localStorage.setItem('checkoutTotalPrice', getTotalPrice().toFixed(2));
+  localStorage.setItem('checkoutUserId', currentUserId);
+  localStorage.setItem('checkoutTimestamp', Date.now().toString());
+  // Redirect to payment page (all cart data is now available in localStorage)
+  window.location.href = 'payment.html';
+};
 function renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, snapshottedOrderId){
   const rows = (snapshottedItems||[]).slice(0,6).map(i=>
     `<div class="co-success-item-row">
@@ -1186,7 +1142,6 @@ function renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, snaps
       <span class="co-success-item-price">R${(i.price*i.quantity).toFixed(2)}</span>
     </div>`
   ).join('');
-
   body.innerHTML = `<div class="co-success">
     <div class="co-success-ring"><i data-lucide="check"></i></div>
     <div class="co-success-title">Order Confirmed! 🛒</div>
@@ -1202,10 +1157,8 @@ function renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, snaps
       <span style="font-size:0.78rem;color:var(--text);">Estimated delivery: <strong>15–30 min</strong></span>
     </div>
   </div>`;
-
   footer.innerHTML = `<button class="co-track-btn" onclick="dismissCheckout()">Done</button>`;
 }
-
 window.dismissCheckout = ()=>{
   document.getElementById('checkoutDrawer').classList.remove('open');
   document.getElementById('cartDrawer').classList.remove('open');
@@ -1220,15 +1173,13 @@ window.dismissCheckout = ()=>{
   allProducts.forEach(p => refreshAction(p.id));
   showToast('🎉 Order placed! Track it in your orders.');
 };
-
 /* ── HANDLE CHECKOUT — writes one order per vendor to:
-     orders/{newKey}                   ← global orders list (same as index.html)
+     orders/{newKey} ← global orders list (same as index.html)
      vendors/{vendorId}/orders/{newKey} ← vendor-specific node (visible in vendor dash)
 ── */
 window.handleCheckout = async()=>{
   if(!currentUser){ showToast("Please sign in to place an order"); return; }
   if(getTotalItems() === 0){ showToast("Cart is empty"); return; }
-
   const deliveryAddress = coDeliveryAddress || userLocation.address || '';
   if(!deliveryAddress){
     showToast("Please set a delivery address");
@@ -1236,67 +1187,58 @@ window.handleCheckout = async()=>{
     if(inp) inp.style.display = 'block';
     return;
   }
-
   const btn = document.getElementById('coPlaceBtn');
   if(btn){
     btn.disabled = true;
     btn.innerHTML = '<i data-lucide="loader-2" style="animation:spin 1s linear infinite;width:17px;height:17px;"></i> Placing order…';
     lucide.createIcons();
   }
-
   try{
     const snapshottedItems = getAllCartItems();
     const snapshottedTotal = getTotalPrice();
     const firstOrderId = generateOrderNumber();
-
     // One order per vendor — mirrors index.html handleCheckout exactly
     const promises = Object.entries(cartGroups).map(async([gVid, group])=>{
       const sub = (group.items||[]).reduce((s,i)=>s+i.price*i.quantity, 0);
       const fee = parseFloat(group.deliveryFee||0);
       const orderNumber = generateOrderNumber();
       const timestamp = Date.now();
-
       const orderData = {
-        userId:          currentUserId,
-        vendorId:        gVid,
-        vendorKey:       gVid,
-        vendorName:      group.vendorName  || '',
-        vendorImage:     group.vendorImage || '',
-        customerName:    currentUser.displayName || currentUser.email?.split('@')[0] || 'Customer',
-        userEmail:       currentUser.email || '',
+        userId: currentUserId,
+        vendorId: gVid,
+        vendorKey: gVid,
+        vendorName: group.vendorName || '',
+        vendorImage: group.vendorImage || '',
+        customerName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Customer',
+        userEmail: currentUser.email || '',
         orderNumber,
-        items:           group.items,
-        subtotal:        sub,
-        deliveryFee:     fee,
-        total:           sub + fee,
-        paymentMethod:   selectedPayment,
+        items: group.items,
+        subtotal: sub,
+        deliveryFee: fee,
+        total: sub + fee,
+        paymentMethod: selectedPayment,
         deliveryAddress,
-        deliveryLat:     userLocation.lat,
-        deliveryLng:     userLocation.lng,
-        status:          'pending',
-        orderType:       'grocery',     // distinguishes grocery from restaurant orders
-        createdAt:       timestamp,
-        updatedAt:       timestamp,
+        deliveryLat: userLocation.lat,
+        deliveryLng: userLocation.lng,
+        status: 'pending',
+        orderType: 'grocery', // distinguishes grocery from restaurant orders
+        createdAt: timestamp,
+        updatedAt: timestamp,
       };
-
       // Shared key so both paths reference the same order record
       const newOrderRef = push(ref(db, 'orders'));
       const orderKey = newOrderRef.key;
-
       // Write to global orders list AND vendor-specific orders node simultaneously
       return Promise.all([
         set(newOrderRef, orderData),
         set(ref(db, `vendors/${gVid}/orders/${orderKey}`), orderData)
       ]);
     });
-
     await Promise.all(promises);
-
     // Clear cart from DB
     if(currentUserId){
       await set(ref(db, `carts/${currentUserId}`), {groups:{}, updatedAt: Date.now()});
     }
-
     // Show success step
     coAnimDir = 'forward'; coStep = 2;
     const body = document.getElementById('coBody');
@@ -1311,11 +1253,9 @@ window.handleCheckout = async()=>{
     animateCoBody();
     renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, firstOrderId);
     lucide.createIcons();
-
     // Clear local cart state
     cartGroups = {}; expandedGroups.clear(); updateCartUI();
     allProducts.forEach(p => refreshAction(p.id));
-
   } catch(e){
     console.error(e);
     showToast("Order failed. Please try again.");
@@ -1326,14 +1266,13 @@ window.handleCheckout = async()=>{
     }
   }
 };
-
 /* ── GROCERY PRODUCT FUNCTIONS ── */
 function addToCart(product, qty=1){
   const vendorId = product.vendorId || activeVendorId || 'grocery-default';
   if(!cartGroups[vendorId]){
     cartGroups[vendorId] = {
       vendorId,
-      vendorName:  product.vendorName  || activeVendorName || 'Grocery Store',
+      vendorName: product.vendorName || activeVendorName || 'Grocery Store',
       vendorImage: product.vendorImage || '',
       deliveryFee: 0,
       items: []
@@ -1344,24 +1283,23 @@ function addToCart(product, qty=1){
   if(existing){ existing.quantity += qty; }
   else{
     group.items.push({
-      id:            product.id,
-      name:          product.name,
-      price:         product.price,
-      quantity:      qty,
-      imageURL:      product.imageURL || '',
-      weight:        product.weight   || '',
-      category:      product.category || '',
-      vendorId:      product.vendorId,
-      vendorName:    product.vendorName,
-      brand:         product.brand    || '',
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: qty,
+      imageURL: product.imageURL || '',
+      weight: product.weight || '',
+      category: product.category || '',
+      vendorId: product.vendorId,
+      vendorName: product.vendorName,
+      brand: product.brand || '',
       originalPrice: product.originalPrice || null,
-      isNew:         product.isNew    || false,
-      featured:      product.featured || false,
+      isNew: product.isNew || false,
+      featured: product.featured || false,
     });
   }
   saveCart(); updateCartUI(); return true;
 }
-
 function removeFromCart(productId, delta=-1){
   for(const vid in cartGroups){
     const group = cartGroups[vid];
@@ -1375,7 +1313,6 @@ function removeFromCart(productId, delta=-1){
     saveCart(); updateCartUI(); break;
   }
 }
-
 function getProductQuantity(productId){
   for(const group of Object.values(cartGroups)){
     const item = group.items.find(i=>i.id===productId);
@@ -1383,7 +1320,6 @@ function getProductQuantity(productId){
   }
   return 0;
 }
-
 function refreshAction(productId){
   const safeId = productId.replace(/[^a-z0-9]/gi,'_');
   const el = document.getElementById(`act-${safeId}`); if(!el) return;
@@ -1392,7 +1328,6 @@ function refreshAction(productId){
   el.innerHTML = buildAction(p, qty, safeId);
   lucide.createIcons();
 }
-
 function buildAction(product, qty, safeId){
   if(product.status === 'unavailable'){
     if(qty > 0){
@@ -1413,14 +1348,12 @@ function buildAction(product, qty, safeId){
   }
   return `<button class="add-btn" onclick="addItem('${product.id}',event)"><i data-lucide="plus"></i></button>`;
 }
-
 window.addItem = function(productId, event){
   event?.stopPropagation();
   const p = allProducts.find(x=>x.id===productId);
   if(!p || p.status==='unavailable') return;
   addToCart(p, 1); refreshAction(productId); showToast(`${p.name} added 🛒`);
 };
-
 window.cQty = function(productId, delta, event){
   event?.stopPropagation();
   const p = allProducts.find(x=>x.id===productId); if(!p) return;
@@ -1431,7 +1364,6 @@ window.cQty = function(productId, delta, event){
   refreshAction(productId);
   showToast(`${p.name} ${delta>0?'added':'removed'}`);
 };
-
 /* ── HERO CYCLE ── */
 const HERO_EMOJIS = ['🛒','🥦','🥛','🥩','🍞','🧃','🍿','🧴','🌿','🍎'];
 let heroIdx = 0;
@@ -1441,11 +1373,9 @@ setInterval(()=>{
   el.style.transform = 'scale(0)';
   setTimeout(()=>{ el.textContent = HERO_EMOJIS[heroIdx]; el.style.transform = 'scale(1)'; }, 180);
 }, 3000);
-
 /* ── LOAD PRODUCTS ── */
 const urlParams = new URLSearchParams(window.location.search);
 const vendorParam = urlParams.get('vendor');
-
 function loadProducts(){
   const targRef = vendorParam ? ref(db,`vendors/${vendorParam}`) : ref(db,'vendors');
   onValue(targRef, snap=>{
@@ -1471,38 +1401,35 @@ function loadProducts(){
     finishLoad();
   });
 }
-
 function ingestMenu(vid, v){
   if(!v.menu) return;
   Object.entries(v.menu).forEach(([pid, item])=>{
     if(!item || !item.name) return;
     allProducts.push({
-      id:            `${vid}_${pid}`,
-      vendorId:      vid,
-      vendorName:    v.name        || 'Grocery Store',
-      vendorImage:   v.imageURL    || '',
-      name:          item.name,
-      brand:         item.brand    || '',
-      description:   item.description || '',
-      price:         parseFloat(item.price||0),
+      id: `${vid}_${pid}`,
+      vendorId: vid,
+      vendorName: v.name || 'Grocery Store',
+      vendorImage: v.imageURL || '',
+      name: item.name,
+      brand: item.brand || '',
+      description: item.description || '',
+      price: parseFloat(item.price||0),
       originalPrice: item.originalPrice ? parseFloat(item.originalPrice) : null,
-      weight:        item.weight   || item.allergens || '',
-      category:      item.category || 'Other',
-      imageURL:      (item.imageApproved && item.imageURL) ? item.imageURL : '',
-      status:        item.status   || 'available',
-      isNew:         !!item.isNew,
-      featured:      item.featured === true || item.featured === 'true',
+      weight: item.weight || item.allergens || '',
+      category: item.category || 'Other',
+      imageURL: (item.imageApproved && item.imageURL) ? item.imageURL : '',
+      status: item.status || 'available',
+      isNew: !!item.isNew,
+      featured: item.featured === true || item.featured === 'true',
     });
   });
 }
-
 function finishLoad(){
   document.getElementById('loadingShimmer').style.display = 'none';
   if(!allProducts.length){ document.getElementById('storeEmpty').style.display = 'block'; return; }
   buildCatGrid(); renderPopular(); renderAisles('all');
   allProducts.forEach(p => refreshAction(p.id));
 }
-
 function buildCatGrid(){
   const keysWithProducts = new Set(['all']);
   allProducts.forEach(p => keysWithProducts.add(getCatKey(p.category)));
@@ -1513,7 +1440,6 @@ function buildCatGrid(){
       <div class="cat-label">${c.label}</div>
     </div>`).join('');
 }
-
 window.selectCat = function(key){
   activeCat = key;
   document.querySelectorAll('.cat-tile').forEach(t=>t.classList.toggle('active', t.dataset.key===key));
@@ -1525,7 +1451,6 @@ window.selectCat = function(key){
   renderAisles(key);
   window.scrollTo({top:0, behavior:'smooth'});
 };
-
 function renderPopular(){
   const featured = allProducts.filter(p=>p.featured).slice(0,14);
   if(!featured.length) return;
@@ -1535,7 +1460,6 @@ function renderPopular(){
   featured.forEach(p=>row.appendChild(buildCard(p, true)));
   lucide.createIcons();
 }
-
 function renderAisles(catKey){
   const cont = document.getElementById('aisleContainer');
   cont.innerHTML = '';
@@ -1551,7 +1475,6 @@ function renderAisles(catKey){
   }
   lucide.createIcons();
 }
-
 function buildAisleRow(cat, products){
   const div = document.createElement('div');
   div.className = 'section';
@@ -1570,7 +1493,6 @@ function buildAisleRow(cat, products){
   });
   return div;
 }
-
 function buildAisleGrid(cat, products){
   const div = document.createElement('div');
   div.className = 'section';
@@ -1586,7 +1508,6 @@ function buildAisleGrid(cat, products){
   });
   return div;
 }
-
 function buildCard(product, flex=true){
   const card = document.createElement('div');
   card.className = 'product-card' + (product.status==='unavailable' ? ' unavailable' : '');
@@ -1595,21 +1516,17 @@ function buildCard(product, flex=true){
   const qty = getProductQuantity(product.id);
   const unavail = product.status === 'unavailable';
   const safeId = product.id.replace(/[^a-z0-9]/gi,'_');
-
   const imgH = product.imageURL
     ? `<img src="${product.imageURL}" alt="${product.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
     : '';
   const phH = `<div class="p-no-img" ${product.imageURL?'style="display:none;"':''}>${getEmoji(product.category)}</div>`;
-
   let badge = '';
   if(product.originalPrice && product.originalPrice > product.price) badge = '<div class="p-badge sale">SALE</div>';
   else if(product.isNew) badge = '<div class="p-badge new-badge">NEW</div>';
   else if(product.featured) badge = '<div class="p-badge">⭐ Top</div>';
-
   const unavailBadge = unavail ? '<div class="p-unavail-badge">Unavailable</div>' : '';
   const oldH = (product.originalPrice && product.originalPrice > product.price)
     ? `<div class="p-price-old">R${product.originalPrice.toFixed(2)}</div>` : '';
-
   card.innerHTML = `
     <div class="p-img-wrap">${imgH}${phH}${badge}${unavailBadge}</div>
     <div class="p-body">
@@ -1621,7 +1538,6 @@ function buildCard(product, flex=true){
         <div id="act-${safeId}">${buildAction(product, qty, safeId)}</div>
       </div>
     </div>`;
-
   card.onclick = e=>{
     if(e.target.closest('.add-btn,.qty-ctrl')) return;
     if(unavail){ showToast('This item is currently unavailable'); return; }
@@ -1629,14 +1545,12 @@ function buildCard(product, flex=true){
   };
   return card;
 }
-
 /* ── ITEM SHEET ── */
 window.openItemSheet = function(productId){
   const product = allProducts.find(p=>p.id===productId); if(!product) return;
   if(product.status === 'unavailable'){ showToast('This item is currently unavailable'); return; }
   activeSheetProduct = product;
   sheetQty = Math.max(1, getProductQuantity(productId) || 1);
-
   const imgWrap = document.getElementById('itemSheetImageWrap');
   if(product.imageURL){
     imgWrap.innerHTML = `<img class="item-sheet-image" src="${product.imageURL}" alt="${product.name}">
@@ -1647,12 +1561,10 @@ window.openItemSheet = function(productId){
     imgWrap.innerHTML = `<div class="item-sheet-no-image" style="background:${cat.bg};">${cat.emoji}</div>
       ${product.featured?'<span class="item-sheet-badge">⭐ Popular</span>':''}`;
   }
-
   document.getElementById('itemSheetName').textContent = product.name;
   const descEl = document.getElementById('itemSheetDesc');
   descEl.textContent = product.description || '';
   descEl.style.display = product.description ? '' : 'none';
-
   const chips = [];
   const cat = getCatDef(getCatKey(product.category));
   chips.push(`<span class="item-meta-chip category"><i data-lucide="tag"></i>${cat.label}</span>`);
@@ -1660,13 +1572,11 @@ window.openItemSheet = function(productId){
   if(product.weight) chips.push(`<span class="item-meta-chip weight"><i data-lucide="package"></i>${product.weight}</span>`);
   if(product.vendorName) chips.push(`<span class="item-meta-chip"><i data-lucide="store"></i>${product.vendorName}</span>`);
   document.getElementById('itemSheetMeta').innerHTML = chips.join('');
-
   document.getElementById('itemSheetPriceVal').textContent = product.price.toFixed(2);
   const oldEl = document.getElementById('itemSheetPriceOld');
   if(product.originalPrice && product.originalPrice > product.price){
     oldEl.textContent = `R${product.originalPrice.toFixed(2)}`; oldEl.style.display = 'block';
   } else { oldEl.style.display = 'none'; }
-
   updateSheetQtyUI();
   renderSuggested(product);
   document.getElementById('itemSheetBody').scrollTop = 0;
@@ -1675,7 +1585,6 @@ window.openItemSheet = function(productId){
   document.body.style.overflow = 'hidden';
   lucide.createIcons();
 };
-
 function updateSheetQtyUI(){
   if(!activeSheetProduct) return;
   document.getElementById('itemQtyMinus').disabled = sheetQty <= 1;
@@ -1683,9 +1592,7 @@ function updateSheetQtyUI(){
   document.getElementById('sheetBtnQty').textContent = sheetQty;
   document.getElementById('sheetBtnTotal').textContent = `R ${(activeSheetProduct.price * sheetQty).toFixed(2)}`;
 }
-
 window.changeSheetQty = function(delta){ sheetQty = Math.max(1, sheetQty + delta); updateSheetQtyUI(); };
-
 window.closeItemSheet = function(){
   const sheet = document.getElementById('itemSheet');
   sheet.classList.remove('open','is-dragging'); sheet.style.cssText = '';
@@ -1694,7 +1601,6 @@ window.closeItemSheet = function(){
   document.body.style.overflow = '';
   activeSheetProduct = null;
 };
-
 window.addFromSheet = function(){
   if(!activeSheetProduct) return;
   addToCart(activeSheetProduct, sheetQty);
@@ -1702,7 +1608,6 @@ window.addFromSheet = function(){
   showToast(`${activeSheetProduct.name} added 🛒`);
   closeItemSheet();
 };
-
 function renderSuggested(currentProduct){
   const pool = allProducts.filter(p=>p.id!==currentProduct.id && p.status!=='unavailable');
   const fresh=[], dairy=[], others=[];
@@ -1717,7 +1622,6 @@ function renderSuggested(currentProduct){
   if(sOther.length){ otherG.style.display='block'; document.getElementById('sugOtherList').innerHTML=sOther.map(p=>sugCard(p)).join(''); } else otherG.style.display='none';
   lucide.createIcons();
 }
-
 function sugCard(product){
   const inCart = getProductQuantity(product.id) > 0;
   const catDef = getCatDef(getCatKey(product.category));
@@ -1739,7 +1643,6 @@ function sugCard(product){
     </div>
   </div>`;
 }
-
 window.quickAddSuggested = function(productId, e){
   e.stopPropagation();
   const p = allProducts.find(x=>x.id===productId);
@@ -1750,7 +1653,6 @@ window.quickAddSuggested = function(productId, e){
   if(btn){ btn.classList.add('added'); btn.innerHTML = '<i data-lucide="check" style="width:11px;height:11px;"></i>'; lucide.createIcons(); }
   showToast(`${p.name} added 🛒`);
 };
-
 /* ── DRAG TO DISMISS SHEET ── */
 (function initDrag(){
   const sheet = document.getElementById('itemSheet');
@@ -1796,13 +1698,11 @@ window.quickAddSuggested = function(productId, e){
     }
   }, {passive:true});
 })();
-
 document.addEventListener('keydown', e=>{
   if(e.key === 'Escape'){
     if(document.getElementById('itemSheet').classList.contains('open')) closeItemSheet();
   }
 });
-
 /* ── SEARCH ── */
 window.toggleSearch = function(){
   const sec = document.getElementById('searchSectionBar');
@@ -1811,7 +1711,6 @@ window.toggleSearch = function(){
   if(hidden) setTimeout(()=>document.getElementById('searchInput').focus(), 100);
   else{ document.getElementById('searchInput').value = ''; handleSearch(''); }
 };
-
 let searchTimer;
 window.handleSearch = function(q){
   clearTimeout(searchTimer);
@@ -1844,7 +1743,6 @@ window.handleSearch = function(q){
     lucide.createIcons();
   }, 240);
 };
-
 /* ── AUTH & CART SYNC ── */
 onAuthStateChanged(auth, u=>{
   currentUser = u; currentUserId = u?.uid || null;
@@ -1859,7 +1757,6 @@ onAuthStateChanged(auth, u=>{
     cartGroups = {}; updateCartUI(); allProducts.forEach(p=>refreshAction(p.id));
   }
 });
-
 /* ── POST-PAYMENT REDIRECT CLEANUP ── */
 (function checkPostPaymentRedirect(){
   if(localStorage.getItem('vynixOpenOrdersTab') !== '1') return;
@@ -1872,7 +1769,6 @@ onAuthStateChanged(auth, u=>{
   localStorage.removeItem('vynixOpenOrdersTab');
   showToast('🎉 Order placed! Track it in your orders.');
 })();
-
 lucide.createIcons();
 loadProducts();
 </script>
