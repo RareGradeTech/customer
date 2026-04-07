@@ -1284,21 +1284,21 @@ function renderCoReview(body,footer){
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FIX: preparePaymentAndRedirect now includes full per-vendor group data so
-// payment.html knows which vendorId / vendorName each item belongs to.
+// KEY FIX: preparePaymentAndRedirect passes full per-vendor groups to payment.html
+// so payment.html can write one order per vendor correctly.
 // ─────────────────────────────────────────────────────────────────────────────
 window.preparePaymentAndRedirect = () => {
   const subtotal = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
   const delivery = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
 
-  // Build per-vendor group array so payment.html can write orders to each vendor node
-  const groups = Object.entries(cartGroups).map(([vid,group]) => ({
+  // Build the full per-vendor groups array — each entry has vendorId, vendorName, vendorImage, deliveryFee, items
+  const groups = Object.entries(cartGroups).map(([vid, group]) => ({
     vendorId:    vid,
     vendorKey:   vid,
     vendorName:  group.vendorName  || '',
     vendorImage: group.vendorImage || '',
     deliveryFee: parseFloat(group.deliveryFee || 0),
-    items:       group.items || []
+    items:       (group.items || []).map(i => ({ ...i }))
   }));
 
   const data = {
@@ -1306,10 +1306,11 @@ window.preparePaymentAndRedirect = () => {
     delivery,
     discount: appliedPromo ? 25 : 0,
     promo:    appliedPromo ? JSON.parse(JSON.stringify(appliedPromo)) : null,
-    items:    getAllCartItems(),
-    groups,                              // ← per-vendor breakdown
-    vendorKey: Object.keys(cartGroups)[0] || ''  // primary vendor (single-vendor case)
+    items:    getAllCartItems(),   // flat list for display
+    groups,                       // per-vendor breakdown — used to write separate orders
+    vendorKey: groups.length === 1 ? groups[0].vendorId : ''
   };
+
   localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
   window.location.href = 'payment.html';
 };
@@ -1403,10 +1404,9 @@ window.dismissCheckout = ()=>{
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FIX: handleCheckout now writes each order to BOTH:
-//   1. orders/{newKey}             ← flat user-facing history (same as menu.html)
-//   2. vendors/{vendorId}/orders/{newKey}  ← vendor-specific node (NEW)
-// This matches exactly how menu.html stores orders.
+// handleCheckout: writes one order per vendor to BOTH
+//   orders/{newKey}                   ← global orders list
+//   vendors/{vendorId}/orders/{newKey} ← vendor-specific node (visible in vendor dash)
 // ─────────────────────────────────────────────────────────────────────────────
 window.handleCheckout = async()=>{
   if(!currentUser){showToast("Please sign in to place an order");handleProfileClick();return;}
@@ -1429,7 +1429,7 @@ window.handleCheckout = async()=>{
       const fee = parseFloat(group.deliveryFee || 0);
       const vendor = allVendors.find(v => v.key === gVid);
 
-      // Recalculate delivery fee by coordinates when possible
+      // Recalculate delivery fee by actual coordinates when available
       let calculatedDeliveryFee = fee;
       if(vendor && vendor.lat && vendor.lng && userLocation.lat && userLocation.lng){
         const calc = calcDeliveryFeeByCoords(vendor.lat, vendor.lng, userLocation.lat, userLocation.lng, sub);
@@ -1437,47 +1437,47 @@ window.handleCheckout = async()=>{
       }
 
       const orderNumber = generateOrderNumber();
+      const timestamp = Date.now();
 
-      // Build the order payload — identical structure to menu.html
       const orderData = {
-        userId:           currentUserId,
-        vendorId:         gVid,
-        vendorKey:        gVid,                        // ← explicit vendor reference
-        vendorName:       group.vendorName   || '',
-        vendorImage:      group.vendorImage  || '',
-        vendorLat:        vendor?.lat        || null,
-        vendorLng:        vendor?.lng        || null,
-        customerName:     currentUser.displayName || currentUser.email?.split('@')[0] || 'Customer',
-        userEmail:        currentUser.email  || '',
+        userId:            currentUserId,
+        vendorId:          gVid,
+        vendorKey:         gVid,
+        vendorName:        group.vendorName   || '',
+        vendorImage:       group.vendorImage  || '',
+        vendorLat:         vendor?.lat        || null,
+        vendorLng:         vendor?.lng        || null,
+        customerName:      currentUser.displayName || currentUser.email?.split('@')[0] || 'Customer',
+        userEmail:         currentUser.email  || '',
         orderNumber,
-        items:            group.items,
-        subtotal:         sub,
-        deliveryFee:      calculatedDeliveryFee,
-        total:            sub + calculatedDeliveryFee,
-        paymentMethod:    selectedPayment,
+        items:             group.items,
+        subtotal:          sub,
+        deliveryFee:       calculatedDeliveryFee,
+        total:             sub + calculatedDeliveryFee,
+        paymentMethod:     selectedPayment,
         deliveryAddress,
-        deliveryLat:      userLocation.lat,
-        deliveryLng:      userLocation.lng,
-        status:           'pending',
-        createdAt:        Date.now(),
-        updatedAt:        Date.now(),
+        deliveryLat:       userLocation.lat,
+        deliveryLng:       userLocation.lng,
+        status:            'pending',
+        createdAt:         timestamp,
+        updatedAt:         timestamp,
         estimatedPrepTime: calcPrepTime()
       };
 
-      // Get a single key used for both write paths
+      // Get a shared key so both paths reference the same order
       const newOrderRef = push(ref(db, 'orders'));
       const orderKey    = newOrderRef.key;
 
-      // Write to flat orders node AND vendor-specific orders node in parallel
+      // Write to global orders + vendor-specific orders simultaneously
       return Promise.all([
-        set(newOrderRef,                                           orderData),  // orders/{key}
-        set(ref(db, `vendors/${gVid}/orders/${orderKey}`),         orderData)   // vendors/{gVid}/orders/{key}
+        set(newOrderRef,                                          orderData),
+        set(ref(db, `vendors/${gVid}/orders/${orderKey}`),        orderData)
       ]);
     });
 
     await Promise.all(promises);
 
-    // Optimistically prepend new orders for instant Orders-tab display
+    // Optimistic local update for instant UI feedback
     const snapshottedGroups = JSON.parse(JSON.stringify(cartGroups));
     const optimisticOrders = Object.entries(snapshottedGroups).map(([gVid, group]) => {
       const sub = (group.items||[]).reduce((s,i)=>s+i.price*i.quantity,0);
@@ -1493,7 +1493,7 @@ window.handleCheckout = async()=>{
 
     await clearCart();
 
-    // Show success screen with snapshotted data
+    // Show success screen
     coAnimDir='forward'; coStep=2;
     const body=document.getElementById('coBody'), footer=document.getElementById('coFooter');
     document.getElementById('coHeaderTitle').textContent='Order Placed!';
