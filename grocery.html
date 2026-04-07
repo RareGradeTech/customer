@@ -407,88 +407,6 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .checkout-btn:disabled{background:var(--border);cursor:not-allowed;color:var(--dim);transform:none;box-shadow:none;}
 .multi-restaurant-banner{background:#fff8e1;border:1px solid #ffe082;border-radius:var(--radius-xs);padding:9px 11px;font-size:0.73rem;font-weight:600;color:#7a5800;display:flex;align-items:flex-start;gap:7px;margin-bottom:2px;}
 .multi-restaurant-banner i{width:13px;height:13px;flex-shrink:0;margin-top:1px;color:#f59e0b;}
-/* ── CHECKOUT DRAWER ── */
-.checkout-drawer{position:absolute;inset:0;background:var(--bg);transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;z-index:10;overflow:hidden;}
-.checkout-drawer.open{transform:translateX(0);}
-.co-header{padding:13px 15px;background:var(--surface);border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:9px;flex-shrink:0;}
-.co-back-btn{width:30px;height:30px;border-radius:50%;background:var(--surface2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--dim);transition:var(--tr);flex-shrink:0;}
-.co-back-btn:hover{background:var(--border);transform:translateX(-2px);}
-.co-back-btn i{width:15px;height:15px;}
-.co-header-title{font-weight:800;font-size:0.95rem;flex:1;}
-.co-step-pills{display:flex;align-items:center;gap:4px;}
-.co-step-pill{width:5px;height:5px;border-radius:50%;background:var(--border);transition:var(--tr);}
-.co-step-pill.active{background:var(--accent);width:16px;border-radius:3px;}
-.co-step-pill.done{background:var(--accent-dark);}
-.co-body{flex:1;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:11px;}
-.co-body::-webkit-scrollbar{display:none;}
-.co-body.step-enter{animation:coIn 0.28s cubic-bezier(0.4,0,0.2,1);}
-.co-body.step-enter-back{animation:coBack 0.28s cubic-bezier(0.4,0,0.2,1);}
-.co-card{background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border-light);overflow:hidden;box-shadow:var(--shadow);}
-.co-card-header{display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--border-light);background:var(--surface);}
-.co-card-icon{width:28px;height:28px;border-radius:7px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.co-card-icon i{width:13px;height:13px;color:var(--accent-dark);}
-.co-card-label{font-size:0.79rem;font-weight:700;color:var(--text);flex:1;}
-.co-card-edit{font-size:0.7rem;font-weight:600;color:var(--accent);cursor:pointer;transition:var(--tr);padding:4px 8px;border-radius:6px;}
-.co-card-edit:hover{background:var(--accent-light);}
-.co-card-body{padding:11px 13px;}
-.co-addr-input{width:100%;margin-top:10px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-xs);font-family:inherit;font-size:0.82rem;background:var(--surface2);outline:none;transition:var(--tr);display:none;}
-.co-addr-input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 2px rgba(255,117,31,0.1);}
-.co-order-item{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid var(--border-light);}
-.co-order-item:last-child{border-bottom:none;}
-.co-order-img{width:36px;height:36px;border-radius:5px;object-fit:cover;flex-shrink:0;background:var(--surface2);border:1px solid var(--border-light);}
-.co-order-no-img{width:36px;height:36px;border-radius:5px;background:var(--surface2);border:1px solid var(--border-light);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
-.co-order-no-img i{width:13px;height:13px;color:#ccc;}
-.co-order-name{font-size:0.75rem;font-weight:600;flex:1;color:var(--text);line-height:1.3;}
-.co-order-qty{font-size:0.69rem;color:var(--dim);}
-.co-order-price{font-size:0.75rem;font-weight:700;color:var(--text);white-space:nowrap;}
-.co-vendor-block{margin-bottom:9px;}
-.co-vendor-block:last-child{margin-bottom:0;}
-.co-vendor-label{display:flex;align-items:center;gap:7px;font-size:0.69rem;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:5px;}
-.co-vendor-label img{width:17px;height:17px;border-radius:4px;object-fit:cover;}
-.co-address-row{display:flex;align-items:flex-start;gap:9px;padding:3px 0;}
-.co-address-icon{color:var(--accent);flex-shrink:0;margin-top:1px;}
-.co-address-icon i{width:15px;height:15px;}
-.co-address-main{font-size:0.81rem;font-weight:600;color:var(--text);line-height:1.4;}
-.co-address-sub{font-size:0.69rem;color:var(--dim);margin-top:2px;}
-.co-payment-options{display:flex;flex-direction:column;gap:7px;}
-.co-pay-option{display:flex;align-items:center;gap:9px;padding:10px 13px;border-radius:var(--radius-xs);border:1.5px solid var(--border);background:var(--surface);cursor:pointer;transition:var(--tr);}
-.co-pay-option:hover{border-color:var(--accent);transform:translateX(4px);}
-.co-pay-option.selected{border-color:var(--accent);background:var(--accent-light);}
-.co-pay-option:active{transform:scale(0.98);}
-.co-pay-icon{width:30px;height:30px;border-radius:7px;background:var(--surface2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.co-pay-option.selected .co-pay-icon{background:rgba(255,117,31,0.15);}
-.co-pay-icon i{width:14px;height:14px;color:var(--dim);}
-.co-pay-option.selected .co-pay-icon i{color:var(--accent-dark);}
-.co-pay-info{flex:1;}
-.co-pay-name{font-size:0.79rem;font-weight:700;color:var(--text);}
-.co-pay-sub{font-size:0.65rem;color:var(--dim);margin-top:1px;}
-.co-pay-check{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:var(--tr);}
-.co-pay-option.selected .co-pay-check{background:var(--accent);border-color:var(--accent);}
-.co-pay-option.selected .co-pay-check::after{content:'';display:block;width:5px;height:3px;border-left:1.5px solid white;border-bottom:1.5px solid white;transform:rotate(-45deg) translate(0,-1px);}
-.co-price-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:0.75rem;color:var(--text-secondary);}
-.co-price-row.total{font-size:0.88rem;font-weight:800;color:var(--text);padding-top:7px;border-top:1px solid var(--border);margin-top:3px;}
-.co-eta-badge{display:inline-flex;align-items:center;gap:5px;background:var(--accent-light);color:var(--accent-dark);padding:5px 11px;border-radius:100px;font-size:0.72rem;font-weight:700;}
-.co-eta-badge i{width:12px;height:12px;}
-.co-terms{font-size:0.65rem;color:var(--dim);text-align:center;line-height:1.5;padding:3px 0;}
-.co-confirm-btn{width:100%;background:var(--accent);color:white;border:none;padding:13px;border-radius:var(--radius-xs);font-family:inherit;font-weight:800;font-size:0.92rem;cursor:pointer;transition:var(--tr);display:flex;align-items:center;justify-content:center;gap:7px;}
-.co-confirm-btn:hover{background:var(--accent-dark);transform:translateY(-2px);box-shadow:0 4px 16px rgba(255,117,31,0.3);}
-.co-confirm-btn:active{transform:scale(0.98);}
-.co-confirm-btn:disabled{background:var(--border);cursor:not-allowed;color:var(--dim);transform:none;box-shadow:none;}
-.co-confirm-btn i{width:17px;height:17px;}
-.co-footer{padding:11px 13px;padding-bottom:calc(11px + var(--safe));background:var(--surface);border-top:1px solid var(--border-light);flex-shrink:0;display:flex;flex-direction:column;gap:7px;}
-.co-success{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px 18px;text-align:center;animation:fadeIn 0.4s ease;}
-.co-success-ring{width:74px;height:74px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
-.co-success-ring i{width:33px;height:33px;color:var(--accent);animation:successPop 0.5s cubic-bezier(0.34,1.26,0.64,1) forwards;}
-.co-success-title{font-size:1.2rem;font-weight:800;color:var(--text);margin-bottom:5px;letter-spacing:-0.02em;}
-.co-success-sub{font-size:0.82rem;color:var(--dim);line-height:1.6;margin-bottom:18px;}
-.co-success-id{font-size:0.7rem;color:var(--dim);margin-bottom:22px;font-family:monospace;background:var(--surface2);padding:4px 9px;border-radius:6px;}
-.co-success-items{width:100%;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border-light);overflow:hidden;margin-bottom:14px;}
-.co-success-item-row{display:flex;justify-content:space-between;padding:8px 13px;font-size:0.75rem;border-bottom:1px solid var(--border-light);}
-.co-success-item-row:last-child{border-bottom:none;}
-.co-success-item-name{font-weight:600;color:var(--text);}
-.co-success-item-price{color:var(--dim);}
-.co-track-btn{width:100%;background:var(--accent);color:white;border:none;padding:13px;border-radius:var(--radius-xs);font-family:inherit;font-weight:800;font-size:0.92rem;cursor:pointer;transition:var(--tr);}
-.co-track-btn:hover{background:var(--accent-dark);transform:translateY(-2px);box-shadow:0 4px 16px rgba(255,117,31,0.3);}
 </style>
 </head>
 <body>
@@ -691,21 +609,8 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
   </div>
   <div class="cart-footer" id="cartFooter" style="display:none;">
     <div id="cartSummary"></div>
-    <button class="checkout-btn" id="checkoutBtn" disabled onclick="openCheckoutDrawer()">Place Order</button>
-  </div>
-  <!-- CHECKOUT DRAWER -->
-  <div class="checkout-drawer" id="checkoutDrawer">
-    <div class="co-header">
-      <button class="co-back-btn" id="coBackBtn" onclick="coHandleBack()"><i data-lucide="arrow-left"></i></button>
-      <span class="co-header-title" id="coHeaderTitle">Review Order</span>
-      <div class="co-step-pills" id="coStepPills">
-        <div class="co-step-pill active" id="coPill0"></div>
-        <div class="co-step-pill" id="coPill1"></div>
-        <div class="co-step-pill" id="coPill2"></div>
-      </div>
-    </div>
-    <div class="co-body" id="coBody"></div>
-    <div class="co-footer" id="coFooter"></div>
+    <!-- Checkout button now redirects to payment.html -->
+    <button class="checkout-btn" id="checkoutBtn" disabled onclick="goToPaymentPage()">Proceed to Checkout</button>
   </div>
 </div>
 
@@ -713,7 +618,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -781,10 +686,6 @@ let activeSheetProduct = null;
 let sheetQty = 1;
 let activeVendorId = null;
 let activeVendorName = null;
-let coStep = 0;
-let selectedPayment = 'cash';
-let coDeliveryAddress = null;
-let coAnimDir = 'forward';
 
 /* ── TOAST ── */
 window.showToast = function(msg){
@@ -802,13 +703,38 @@ async function saveCart(){
 function getAllCartItems(){ const a=[]; Object.values(cartGroups).forEach(g=>{if(g.items)g.items.forEach(i=>a.push(i));}); return a; }
 function getTotalItems(){ return Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.quantity,0),0); }
 function getTotalPrice(){ return Object.values(cartGroups).reduce((s,g)=>{ const sub=(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0); return s+sub+parseFloat(g.deliveryFee||0); },0); }
-function calcPrepTime(){ const a=getAllCartItems(); if(!a.length)return 0; return Math.ceil(a.reduce((s,i)=>s+(i.prepTime||0),0)/a.length); }
 
-async function clearCart(){
-  cartGroups={}; expandedGroups.clear(); updateCartUI();
-  if(!currentUserId)return;
-  try{ await set(ref(db,`carts/${currentUserId}`),{groups:{},updatedAt:Date.now()}); }catch(e){console.error(e);}
-}
+/* ── GO TO PAYMENT PAGE (matches index.html logic) ── */
+window.goToPaymentPage = function() {
+  if(getTotalItems()===0) return;
+
+  const subtotal = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
+  const delivery = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
+
+  // Build per-vendor groups array — mirrors index.html preparePaymentAndRedirect exactly
+  const groups = Object.entries(cartGroups).map(([vid, group]) => ({
+    vendorId:    vid,
+    vendorKey:   vid,
+    vendorName:  group.vendorName  || '',
+    vendorImage: group.vendorImage || '',
+    deliveryFee: parseFloat(group.deliveryFee || 0),
+    items:       (group.items || []).map(i => ({ ...i }))
+  }));
+
+  const data = {
+    subtotal,
+    delivery,
+    discount:   0,
+    promo:      null,
+    items:      getAllCartItems(),   // flat list for display
+    groups,                         // per-vendor breakdown — used by payment.html to write orders
+    vendorKey:  groups.length === 1 ? groups[0].vendorId : '',
+    orderType:  'grocery'
+  };
+
+  localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
+  window.location.href = 'payment.html';
+};
 
 function updateCartUI(){
   const body=document.getElementById('cartBody'),countEl=document.getElementById('cartCount');
@@ -844,9 +770,9 @@ function updateCartUI(){
     html+=`<div class="vendor-group ${isExp?'expanded':''}" id="vgroup-${vid}"><div class="vendor-group-header" onclick="toggleVendorGroup('${vid}')">${vImg}<div class="vendor-group-info"><div class="vendor-group-name">${group.vendorName}</div><div class="vendor-group-meta">${cnt} item${cnt!==1?'s':''} · R${total.toFixed(2)}</div></div><div class="vendor-group-right"><span class="vendor-item-count">${cnt}</span><i data-lucide="chevron-down" class="vendor-group-chevron"></i></div></div><div class="vendor-item-previews">${prevs}${more}</div><div class="vendor-items-list">${itemsH}<div class="vendor-subtotal-row"><div><div class="vendor-subtotal-label">Subtotal</div>${fee>0?`<div class="vendor-subtotal-label">+ R${fee.toFixed(2)} delivery</div>`:'<div class="vendor-subtotal-label">Free delivery</div>'}</div><div class="vendor-subtotal-value">R${total.toFixed(2)}</div></div></div></div>`;
   });
   body.innerHTML=html;
-  const pt=calcPrepTime(),ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
+  const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
   const tf=Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
-  summaryEl.innerHTML=`${pt>0?`<div class="prep-time-badge"><i data-lucide="clock" style="width:11px;height:11px;"></i> ~${pt} min prep</div>`:''}<div class="cart-summary"><div class="cart-summary-row"><span>Subtotal (${totalItems} items)</span><span>R ${ts.toFixed(2)}</span></div><div class="cart-summary-row"><span>Delivery fee${vendorCount>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div>${vendorCount>1?`<div class="cart-summary-row"><span style="color:var(--dim);">${vendorCount} separate orders</span><span></span></div>`:''}<div class="cart-summary-row"><span>Total</span><span>R ${totalPrice.toFixed(2)}</span></div></div>`;
+  summaryEl.innerHTML=`<div class="cart-summary"><div class="cart-summary-row"><span>Subtotal (${totalItems} items)</span><span>R ${ts.toFixed(2)}</span></div><div class="cart-summary-row"><span>Delivery fee${vendorCount>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div>${vendorCount>1?`<div class="cart-summary-row"><span style="color:var(--dim);">${vendorCount} separate orders</span><span></span></div>`:''}<div class="cart-summary-row"><span>Total</span><span>R ${totalPrice.toFixed(2)}</span></div></div>`;
   lucide.createIcons();
 }
 
@@ -866,239 +792,6 @@ window.toggleCart = ()=>{
   const d=document.getElementById('cartDrawer'),o=document.getElementById('cartOverlay'),isOpen=d.classList.contains('open');
   if(isOpen){ d.classList.remove('open'); o.classList.remove('open'); document.body.style.overflow=''; }
   else{ if(Object.keys(cartGroups).length===1)expandedGroups.add(Object.keys(cartGroups)[0]); d.classList.add('open'); o.classList.add('open'); document.body.style.overflow='hidden'; updateCartUI(); }
-};
-
-/* ── CHECKOUT DRAWER ── */
-window.openCheckoutDrawer = ()=>{
-  if(getTotalItems()===0)return;
-  coStep=0; selectedPayment='cash'; coDeliveryAddress=null; coAnimDir='forward';
-  renderCoStep();
-  document.getElementById('checkoutDrawer').classList.add('open');
-  lucide.createIcons();
-};
-  /* ── PASS CART TO PAYMENT PAGE ── */
-function goToPaymentPage() {
-  // Prepare cart data for payment page
-  const cartData = {
-    items: getAllCartItems(),
-    subtotal: Object.values(cartGroups).reduce((s, g) => s + (g.items || []).reduce((ss, i) => ss + i.price * i.quantity, 0), 0),
-    delivery: Object.values(cartGroups).reduce((s, g) => s + parseFloat(g.deliveryFee || 0), 0),
-    total: getTotalPrice(),
-    vendorKey: Object.keys(cartGroups)[0] || null,
-    vendorName: Object.values(cartGroups)[0]?.vendorName || 'Grocery Store',
-    orderType: 'grocery'
-  };
-  
-  // Save to localStorage for payment page to read
-  localStorage.setItem('vynixCartForPayment', JSON.stringify(cartData));
-  
-  // Redirect to payment page
-  window.location.href = 'payment.html';
-}
-  
-window.closeCheckoutDrawer = ()=>{ if(coStep===2)return; document.getElementById('checkoutDrawer').classList.remove('open'); };
-window.coHandleBack = ()=>{
-  if(coStep===0){ closeCheckoutDrawer(); return; }
-  if(coStep===2)return;
-  coAnimDir='back'; coStep--; renderCoStep(); lucide.createIcons();
-};
-function animateCoBody(){
-  const body=document.getElementById('coBody');
-  body.classList.remove('step-enter','step-enter-back');
-  void body.offsetWidth;
-  body.classList.add(coAnimDir==='back'?'step-enter-back':'step-enter');
-  setTimeout(()=>body.classList.remove('step-enter','step-enter-back'),350);
-}
-function generateOrderNumber(){
-  return `VYX-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).substring(2,5).toUpperCase()}`;
-}
-function renderCoStep(){
-  const body=document.getElementById('coBody'),footer=document.getElementById('coFooter');
-  const titles=['Review Order','Payment & Delivery','Order Placed!'];
-  document.getElementById('coHeaderTitle').textContent=titles[coStep];
-  for(let i=0;i<3;i++){ const p=document.getElementById(`coPill${i}`); if(p){ p.className='co-step-pill'; if(i<coStep)p.classList.add('done'); else if(i===coStep)p.classList.add('active'); } }
-  const bb=document.getElementById('coBackBtn'); if(bb)bb.style.visibility=(coStep===2)?'hidden':'visible';
-  animateCoBody();
-  if(coStep===0)renderCoReview(body,footer);
-  else if(coStep===1)renderCoPayment(body,footer);
-  else renderCoSuccess(body,footer);
-}
-
-function renderCoReview(body,footer){
-  const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
-  const tf=Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
-  const total=ts+tf,totalItems=getTotalItems(),pt=calcPrepTime(),vc=Object.keys(cartGroups).length;
-  let vbs='';
-  Object.entries(cartGroups).forEach(([gVid,group])=>{
-    const imgH=group.vendorImage?`<img src="${group.vendorImage}" style="width:18px;height:18px;border-radius:4px;object-fit:cover;">`:`<i data-lucide="store" style="width:14px;height:14px;"></i>`;
-    const items=(group.items||[]).map(item=>{ const img=item.imageURL?`<img class="co-order-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">`:`<div class="co-order-no-img"><i data-lucide="image"></i></div>`; return`<div class="co-order-item">${img}<span class="co-order-name">${item.name}</span><span class="co-order-qty">×${item.quantity}</span><span class="co-order-price">R${(item.price*item.quantity).toFixed(2)}</span></div>`; }).join('');
-    const gs=(group.items||[]).reduce((s,i)=>s+i.price*i.quantity,0),fee=parseFloat(group.deliveryFee||0);
-    vbs+=`<div class="co-vendor-block"><div class="co-vendor-label">${imgH}<span>${group.vendorName||'Store'}</span></div>${items}<div style="display:flex;justify-content:space-between;padding:6px 0 2px;font-size:0.72rem;color:var(--dim);"><span>Subtotal</span><span>R${gs.toFixed(2)}</span></div><div style="display:flex;justify-content:space-between;padding:2px 0;font-size:0.72rem;color:var(--dim);"><span>Delivery</span><span>${fee>0?`R${fee.toFixed(2)}`:'Free'}</span></div></div>`;
-  });
-  body.innerHTML=`
-    ${vc>1?`<div style="background:#fff8e1;border:1px solid #ffe082;border-radius:var(--radius-xs);padding:9px 12px;font-size:0.74rem;font-weight:600;color:#7a5800;display:flex;gap:7px;align-items:flex-start;"><i data-lucide="alert-triangle" style="width:13px;height:13px;flex-shrink:0;margin-top:1px;color:#f59e0b;"></i><span>${vc} stores · ${vc} separate orders will be placed</span></div>`:``}
-    <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="shopping-bag"></i></div><span class="co-card-label">Order Items (${totalItems})</span><span class="co-card-edit" onclick="closeCheckoutDrawer()">Edit</span></div><div class="co-card-body">${vbs}</div></div>
-    <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="receipt"></i></div><span class="co-card-label">Price Breakdown</span></div><div class="co-card-body"><div class="co-price-row"><span>Subtotal</span><span>R${ts.toFixed(2)}</span></div><div class="co-price-row"><span>Delivery fee${vc>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div><div class="co-price-row total"><span>Total</span><span>R${total.toFixed(2)}</span></div></div></div>
-    ${pt>0?`<div style="padding:2px 0;"><div class="co-eta-badge"><i data-lucide="clock"></i> Estimated prep: ~${pt} min</div></div>`:''}
-  `;
-  footer.innerHTML=`<button class="co-confirm-btn" onclick="coGoNext()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
-}
-
-function renderCoPayment(body,footer){
-  const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
-  const tf=Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0),total=ts+tf;
-  const pays=[
-    {id:'cash',icon:'banknote',name:'Cash on Delivery',sub:'Pay when your order arrives'},
-    {id:'card',icon:'credit-card',name:'Card on Delivery',sub:'Swipe or tap at the door'},
-    {id:'wallet',icon:'smartphone',name:'Digital Wallet',sub:'SnapScan, Ozow & more'}
-  ];
-  const defaultAddr=coDeliveryAddress||'';
-  const addrH=`<div class="co-address-row">
-    <div class="co-address-icon"><i data-lucide="map-pin"></i></div>
-    <div>
-      <div class="co-address-main" id="coAddrMain">${defaultAddr||'Enter delivery address below'}</div>
-      <div class="co-address-sub">Delivery to this address</div>
-    </div>
-  </div>
-  <input type="text" class="co-addr-input" id="coAddrInput" placeholder="Enter delivery address…"
-    value="${defaultAddr||''}"
-    oninput="coDeliveryAddress=this.value;const m=document.getElementById('coAddrMain');if(m)m.textContent=this.value||'Enter delivery address below'">`;
-  body.innerHTML=`
-    <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="map-pin"></i></div><span class="co-card-label">Delivery Address</span><span class="co-card-edit" id="coAddrEditBtn">Change</span></div><div class="co-card-body">${addrH}</div></div>
-    <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="credit-card"></i></div><span class="co-card-label">Payment Method</span></div><div class="co-card-body"><div class="co-payment-options" id="coPayOptions">${pays.map(p=>`<div class="co-pay-option ${selectedPayment===p.id?'selected':''}" onclick="selectPayment('${p.id}')"><div class="co-pay-icon"><i data-lucide="${p.icon}"></i></div><div class="co-pay-info"><div class="co-pay-name">${p.name}</div><div class="co-pay-sub">${p.sub}</div></div><div class="co-pay-check"></div></div>`).join('')}</div></div></div>
-    <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="receipt"></i></div><span class="co-card-label">Order Total</span></div><div class="co-card-body"><div class="co-price-row"><span>Subtotal</span><span>R${ts.toFixed(2)}</span></div><div class="co-price-row"><span>Delivery fee${Object.keys(cartGroups).length>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div><div class="co-price-row total"><span>Total</span><span>R${total.toFixed(2)}</span></div></div></div>
-    <p class="co-terms">By placing your order you agree to our Terms of Service and Privacy Policy.</p>
-  `;
-  footer.innerHTML=`<button class="co-confirm-btn" id="coPlaceBtn" onclick="handleCheckout()"><i data-lucide="check-circle"></i> Place Order · R${total.toFixed(2)}</button>`;
-  const eb=document.getElementById('coAddrEditBtn');
-  if(eb)eb.addEventListener('click',()=>{ const inp=document.getElementById('coAddrInput'); if(inp){ const isHidden=inp.style.display==='none'||!inp.style.display; inp.style.display=isHidden?'block':'none'; if(isHidden)inp.focus(); } });
-}
-
-window.selectPayment = id=>{
-  selectedPayment=id;
-  document.querySelectorAll('.co-pay-option').forEach(el=>el.classList.toggle('selected',el.getAttribute('onclick').includes(`'${id}'`)));
-  lucide.createIcons();
-};
-
-function renderCoSuccess(body,footer,snapshottedItems,snapshottedTotal,snapshottedOrderId){
-  const rows=(snapshottedItems||[]).slice(0,6).map(i=>`<div class="co-success-item-row"><span class="co-success-item-name">${i.name} ×${i.quantity}</span><span class="co-success-item-price">R${(i.price*i.quantity).toFixed(2)}</span></div>`).join('');
-  body.innerHTML=`<div class="co-success">
-    <div class="co-success-ring"><i data-lucide="check"></i></div>
-    <div class="co-success-title">Order Confirmed!</div>
-    <div class="co-success-sub">Your order has been placed successfully.<br>The store is preparing your items.</div>
-    <div class="co-success-id">Order ${snapshottedOrderId||'—'}</div>
-    <div class="co-success-items">${rows}</div>
-    <div style="width:100%;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border-light);padding:9px 13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <span style="font-size:0.78rem;color:var(--dim);">Total charged</span>
-      <span style="font-size:0.92rem;font-weight:800;color:var(--text);">R${(snapshottedTotal||0).toFixed(2)}</span>
-    </div>
-    <div style="width:100%;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border-light);padding:9px 13px;display:flex;gap:8px;align-items:center;">
-      <i data-lucide="clock" style="width:14px;height:14px;color:var(--accent);flex-shrink:0;"></i>
-      <span style="font-size:0.78rem;color:var(--text);">Estimated delivery: <strong>25–40 min</strong></span>
-    </div>
-  </div>`;
-  footer.innerHTML=`<button class="co-track-btn" onclick="dismissCheckout()">Done</button>`;
-}
-
-window.dismissCheckout = ()=>{
-  document.getElementById('checkoutDrawer').classList.remove('open');
-  document.getElementById('cartDrawer').classList.remove('open');
-  document.getElementById('cartOverlay').classList.remove('open');
-  document.body.style.overflow='';
-  coStep=0; selectedPayment='cash'; coDeliveryAddress=null; coAnimDir='forward';
-  const coBody=document.getElementById('coBody'),coFooter=document.getElementById('coFooter');
-  if(coBody)coBody.innerHTML=''; if(coFooter)coFooter.innerHTML='';
-  cartGroups={}; expandedGroups.clear(); updateCartUI();
-  buildCatGrid(); renderAisles('all');
-  showToast('🎉 Order placed! Track it in your orders.');
-};
-
-  
-  
-  window.coGoNext = ()=>{ 
-  // Redirect to payment page with cart data
-  goToPaymentPage();
-};
-  
-
-
-// ─────────────────────────────────────────────────────────────────────────
-// handleCheckout: writes each order to BOTH nodes to match index.html and
-// menu.html:
-//   1. orders/{newKey}                    ← flat user history
-//   2. vendors/{vendorId}/orders/{newKey} ← vendor dashboard node
-// ─────────────────────────────────────────────────────────────────────────
-window.handleCheckout = async()=>{
-  if(!currentUser){ showToast("Please sign in to place an order"); return; }
-  if(getTotalItems()===0){ showToast("Cart is empty"); return; }
-  const btn=document.getElementById('coPlaceBtn');
-  if(btn){ btn.disabled=true; btn.innerHTML='<i data-lucide="loader-2" style="animation:spin 1s linear infinite;width:17px;height:17px;"></i> Placing order…'; lucide.createIcons(); }
-  try{
-    const deliveryAddress=coDeliveryAddress||'';
-    if(!deliveryAddress){
-      showToast("Please set a delivery address");
-      if(btn){ btn.disabled=false; btn.innerHTML='<i data-lucide="check-circle"></i> Place Order'; lucide.createIcons(); }
-      return;
-    }
-    const snapshottedItems=getAllCartItems();
-    const snapshottedTotal=getTotalPrice();
-    const firstOrderId=generateOrderNumber();
-
-    const promises=Object.entries(cartGroups).map(async([gVid,group])=>{
-      const sub=(group.items||[]).reduce((s,i)=>s+i.price*i.quantity,0);
-      const fee=parseFloat(group.deliveryFee||0);
-      const orderNumber=generateOrderNumber();
-
-      const orderData={
-        userId:            currentUserId,
-        vendorId:          gVid,
-        vendorKey:         gVid,                          // ← explicit vendor reference
-        vendorName:        group.vendorName  || 'Grocery Store',
-        vendorImage:       group.vendorImage || '',
-        customerName:      currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Customer',
-        userEmail:         currentUser?.email || '',
-        orderNumber,
-        storeType:         'grocery',                     // ← identifies as grocery order
-        items:             group.items || [],
-        subtotal:          sub,
-        deliveryFee:       fee,
-        total:             sub + fee,
-        paymentMethod:     selectedPayment,
-        deliveryAddress:   deliveryAddress,
-        status:            'pending',
-        createdAt:         Date.now(),
-        updatedAt:         Date.now(),
-        estimatedPrepTime: calcPrepTime()
-      };
-
-      // Allocate a single Firebase key used for BOTH write paths
-      const newOrderRef = push(ref(db, 'orders'));
-      const orderKey    = newOrderRef.key;
-
-      // Dual write: flat orders node + vendor-specific orders node
-      return Promise.all([
-        set(newOrderRef,                                          orderData),  // orders/{key}
-        set(ref(db, `vendors/${gVid}/orders/${orderKey}`),        orderData)   // vendors/{gVid}/orders/{key}
-      ]);
-    });
-
-    await Promise.all(promises);
-    await clearCart();
-
-    // Show success screen with snapshotted data
-    coAnimDir='forward'; coStep=2;
-    const body=document.getElementById('coBody'),footer=document.getElementById('coFooter');
-    document.getElementById('coHeaderTitle').textContent='Order Placed!';
-    for(let i=0;i<3;i++){ const p=document.getElementById(`coPill${i}`); if(p){ p.className='co-step-pill'; if(i<2)p.classList.add('done'); else if(i===2)p.classList.add('active'); } }
-    const bb=document.getElementById('coBackBtn'); if(bb)bb.style.visibility='hidden';
-    animateCoBody();
-    renderCoSuccess(body,footer,snapshottedItems,snapshottedTotal,firstOrderId);
-    lucide.createIcons();
-  }catch(e){
-    console.error(e);
-    showToast("Order failed. Please try again.");
-    if(btn){ btn.disabled=false; btn.innerHTML='<i data-lucide="check-circle"></i> Place Order'; lucide.createIcons(); }
-  }
 };
 
 /* ── GROCERY PRODUCT FUNCTIONS ── */
