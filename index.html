@@ -999,7 +999,6 @@ const MASTER_CATEGORIES = [
 ];
 const categoryEmojiMap = {};
 MASTER_CATEGORIES.forEach(c => { categoryEmojiMap[c.label] = c.emoji; });
-
 // ── DELIVERY FEE ENGINE ─────────────────────────────────────
 let deliveryFeeConfig = { ratePerKm: 10, minimumFee: 15, maximumFee: 120, freeThreshold: 0 };
 function loadDeliveryFeeConfig() {
@@ -1025,7 +1024,6 @@ function calcDeliveryFeeByCoords(vLat, vLng, uLat, uLng, orderTotal = 0) {
   const dist = haversineDistanceKm(vLat, vLng, uLat, uLng);
   return calcDeliveryFee(dist, orderTotal);
 }
-
 // ── PROMOTIONS ─────────────────────────────────────────────
 let promosCache = {};
 function loadPromos() {
@@ -1052,7 +1050,6 @@ function renderPromos() {
   marquee.innerHTML = html + html;
   lucide.createIcons();
 }
-
 // ── STATE ──────────────────────────────────────────────────
 let allVendors=[], cartGroups={}, expandedGroups=new Set();
 let currentStoreType='restaurant', currentFilter='all', searchTerm="";
@@ -1066,7 +1063,6 @@ let expandedOrders=new Set();
 let allUserOrders = [];
 let ordersModalOpen = false;
 let appliedPromo = null;
-
 // ── TOAST ──────────────────────────────────────────────────
 let toastTimer;
 window.showToast = (msg) => {
@@ -1082,26 +1078,22 @@ function showLocToast(msg) {
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 3200);
 }
-
 window.applyPromo = function(promoKey) {
   const promo = promosCache[promoKey];
   if (!promo) return;
   appliedPromo = promo;
   showToast(`🎟️ Promo "${promo.title}" added to your payment!`);
 };
-
 // ── CART HELPERS ───────────────────────────────────────────
 function getAllCartItems(){const a=[];Object.values(cartGroups).forEach(g=>{if(g.items)g.items.forEach(i=>a.push(i));});return a;}
 function getTotalItems(){return Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.quantity,0),0);}
 function getTotalPrice(){return Object.values(cartGroups).reduce((s,g)=>{const sub=(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0);return s+sub+parseFloat(g.deliveryFee||0);},0);}
 function calcPrepTime(){const a=getAllCartItems();if(!a.length)return 0;return Math.ceil(a.reduce((s,i)=>s+(i.prepTime||0),0)/a.length);}
-
 async function saveCart(){
   if(!currentUserId)return;
   try{await set(ref(db,`carts/${currentUserId}`),{groups:JSON.parse(JSON.stringify(cartGroups)),updatedAt:Date.now()});}
   catch(e){console.error(e);}
 }
-
 let cartJustCleared = false;
 async function clearCart(){
   appliedPromo = null;
@@ -1113,7 +1105,6 @@ async function clearCart(){
   try{await set(ref(db,`carts/${currentUserId}`),{groups:{},updatedAt:Date.now()});}
   catch(e){console.error(e);}
 }
-
 async function fetchMenuItemsMap(vid){
   try{
     const snap=await get(ref(db,`vendors/${vid}/menu`));
@@ -1156,7 +1147,6 @@ function subscribeToCart(){
     cartGroups={};updateCartUI();
   });
 }
-
 function updateCartUI(){
   const body=document.getElementById('cartBody'),countEl=document.getElementById('cartCount');
   const checkoutBtn=document.getElementById('checkoutBtn'),summaryEl=document.getElementById('cartSummary');
@@ -1203,7 +1193,6 @@ function updateCartUI(){
   summaryEl.innerHTML=`${pt>0?`<div class="prep-time-badge"><i data-lucide="clock" style="width:11px;height:11px;"></i> ~${pt} min prep</div>`:''}<div class="cart-summary"><div class="cart-summary-row"><span>Subtotal (${totalItems} items)</span><span>R ${ts.toFixed(2)}</span></div><div class="cart-summary-row"><span>Delivery fee${vendorCount>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div>${vendorCount>1?`<div class="cart-summary-row"><span style="color:var(--dim);">${vendorCount} separate orders</span><span></span></div>`:''}<div class="cart-summary-row"><span>Total</span><span>R ${totalPrice.toFixed(2)}</span></div></div>`;
   lucide.createIcons();
 }
-
 window.toggleVendorGroup = vid => {
   if(expandedGroups.has(vid))expandedGroups.delete(vid);else expandedGroups.add(vid);
   const el=document.getElementById(`vgroup-${vid}`);
@@ -1221,7 +1210,6 @@ window.toggleCart = ()=>{
   if(isOpen){d.classList.remove('open');o.classList.remove('open');document.body.style.overflow='';}
   else{if(Object.keys(cartGroups).length===1)expandedGroups.add(Object.keys(cartGroups)[0]);d.classList.add('open');o.classList.add('open');document.body.style.overflow='hidden';updateCartUI();}
 };
-
 window.openCheckoutDrawer = ()=>{
   if(getTotalItems()===0)return;
   coStep=0;selectedPayment='cash';coDeliveryAddress=null;coAnimDir='forward';
@@ -1262,7 +1250,6 @@ function renderCoStep(){
   else if(coStep===1)renderCoPayment(body,footer);
   else renderCoSuccess(body,footer);
 }
-
 function renderCoReview(body,footer){
   const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
   const tf=Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
@@ -1282,7 +1269,6 @@ function renderCoReview(body,footer){
   `;
   footer.innerHTML=`<button class="co-confirm-btn" onclick="preparePaymentAndRedirect()"><i data-lucide="arrow-right"></i> Continue to Payment</button>`;
 }
-
 // ─────────────────────────────────────────────────────────────────────────────
 // KEY FIX: preparePaymentAndRedirect passes full per-vendor groups to payment.html
 // so payment.html can write one order per vendor correctly.
@@ -1290,35 +1276,30 @@ function renderCoReview(body,footer){
 window.preparePaymentAndRedirect = () => {
   const subtotal = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
   const delivery = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
-
   // Build the full per-vendor groups array — each entry has vendorId, vendorName, vendorImage, deliveryFee, items
   const groups = Object.entries(cartGroups).map(([vid, group]) => ({
-    vendorId:    vid,
-    vendorKey:   vid,
-    vendorName:  group.vendorName  || '',
+    vendorId: vid,
+    vendorKey: vid,
+    vendorName: group.vendorName || '',
     vendorImage: group.vendorImage || '',
     deliveryFee: parseFloat(group.deliveryFee || 0),
-    items:       (group.items || []).map(i => ({ ...i }))
+    items: (group.items || []).map(i => ({ ...i }))
   }));
-
   const data = {
     subtotal,
     delivery,
     discount: appliedPromo ? 25 : 0,
-    promo:    appliedPromo ? JSON.parse(JSON.stringify(appliedPromo)) : null,
-    items:    getAllCartItems(),   // flat list for display
-    groups,                       // per-vendor breakdown — used to write separate orders
+    promo: appliedPromo ? JSON.parse(JSON.stringify(appliedPromo)) : null,
+    items: getAllCartItems(), // flat list for display
+    groups, // per-vendor breakdown — used to write separate orders
     vendorKey: groups.length === 1 ? groups[0].vendorId : ''
   };
-
   localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
   window.location.href = 'payment.html';
 };
-
 window.coGoNext = ()=>{
   coAnimDir='forward';coStep=1;renderCoStep();lucide.createIcons();
 };
-
 function renderCoPayment(body,footer){
   const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
   const tf=Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0),total=ts+tf;
@@ -1336,7 +1317,7 @@ function renderCoPayment(body,footer){
     oninput="coDeliveryAddress=this.value;const m=document.getElementById('coAddrMain');if(m)m.textContent=this.value||'Enter delivery address below'">`;
   body.innerHTML=`
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="map-pin"></i></div><span class="co-card-label">Delivery Address</span><span class="co-card-edit" id="coAddrEditBtn">Change</span></div><div class="co-card-body">${addrH}</div></div>
-    <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="credit-card"></i></div><span class="co-card-label">Payment Method</span></div><div class="co-card-body"><div class="co-payment-options" id="coPayOptions">${pays.map(p=>`<div class="co-pay-option ${selectedPayment===p.id?'selected':''}" onclick="selectPayment('${p.id}')"><div class="co-pay-icon"><i data-lucide="${p.icon}"></i></div><div class="co-pay-info"><div class="co-pay-name">${p.name}</div><div class="co-pay-sub">${p.sub}</div></div><div class="co-pay-check"></div></div>`).join('')}</div></div></div>
+    <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="credit-card"></i></div><span class="co-card-label">Payment Method</span></div><div class="co-card-body"><div class="co-payment-options" id="coPayOptions">${pays.map(p=>`<div class="co-pay-option ${selectedPayment===p.id?'selected':''}" onclick="selectPayment('${p.id}')"><div class="co-pay-icon"><i data-lucide="${p.icon}"></i></div><div class="co-pay-info"><div class="co-pay-name">${p.name}</div><div class="co-pay-sub">${p.sub}</div></div><div class="co-pay-check"></div></div>`).join('')}}</div></div></div>
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="receipt"></i></div><span class="co-card-label">Order Total</span></div><div class="co-card-body"><div class="co-price-row"><span>Subtotal</span><span>R${ts.toFixed(2)}</span></div><div class="co-price-row"><span>Delivery fee${Object.keys(cartGroups).length>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div><div class="co-price-row total"><span>Total</span><span>R${total.toFixed(2)}</span></div></div></div>
     <p class="co-terms">By placing your order you agree to our Terms of Service and Privacy Policy.</p>
   `;
@@ -1348,13 +1329,11 @@ function renderCoPayment(body,footer){
   });
   if(!defaultAddr){const inp=document.getElementById('coAddrInput');if(inp)inp.style.display='block';}
 }
-
 window.selectPayment = id=>{
   selectedPayment=id;
   document.querySelectorAll('.co-pay-option').forEach(el=>el.classList.toggle('selected',el.getAttribute('onclick').includes(`'${id}'`)));
   lucide.createIcons();
 };
-
 function renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, snapshottedOrderId){
   const rows=(snapshottedItems||[]).slice(0,6).map(i=>`<div class="co-success-item-row"><span class="co-success-item-name">${i.name} ×${i.quantity}</span><span class="co-success-item-price">R${(i.price*i.quantity).toFixed(2)}</span></div>`).join('');
   body.innerHTML=`<div class="co-success">
@@ -1374,7 +1353,6 @@ function renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, snaps
   </div>`;
   footer.innerHTML=`<button class="co-track-btn" onclick="dismissCheckout()">Done</button>`;
 }
-
 window.dismissCheckout = ()=>{
   document.getElementById('checkoutDrawer').classList.remove('open');
   document.getElementById('cartDrawer').classList.remove('open');
@@ -1402,11 +1380,10 @@ window.dismissCheckout = ()=>{
     if(typeof openSidebarOrders === 'function') openSidebarOrders();
   }
 };
-
 // ─────────────────────────────────────────────────────────────────────────────
 // handleCheckout: writes one order per vendor to BOTH
-//   orders/{newKey}                   ← global orders list
-//   vendors/{vendorId}/orders/{newKey} ← vendor-specific node (visible in vendor dash)
+// orders/{newKey} ← global orders list
+// vendors/{vendorId}/orders/{newKey} ← vendor-specific node (visible in vendor dash)
 // ─────────────────────────────────────────────────────────────────────────────
 window.handleCheckout = async()=>{
   if(!currentUser){showToast("Please sign in to place an order");handleProfileClick();return;}
@@ -1423,60 +1400,52 @@ window.handleCheckout = async()=>{
     const snapshottedItems = getAllCartItems();
     const snapshottedTotal = getTotalPrice();
     const firstOrderId = generateOrderNumber();
-
     const promises = Object.entries(cartGroups).map(async ([gVid, group]) => {
       const sub = (group.items||[]).reduce((s,i)=>s+i.price*i.quantity, 0);
       const fee = parseFloat(group.deliveryFee || 0);
       const vendor = allVendors.find(v => v.key === gVid);
-
       // Recalculate delivery fee by actual coordinates when available
       let calculatedDeliveryFee = fee;
       if(vendor && vendor.lat && vendor.lng && userLocation.lat && userLocation.lng){
         const calc = calcDeliveryFeeByCoords(vendor.lat, vendor.lng, userLocation.lat, userLocation.lng, sub);
         calculatedDeliveryFee = calc.fee;
       }
-
       const orderNumber = generateOrderNumber();
       const timestamp = Date.now();
-
       const orderData = {
-        userId:            currentUserId,
-        vendorId:          gVid,
-        vendorKey:         gVid,
-        vendorName:        group.vendorName   || '',
-        vendorImage:       group.vendorImage  || '',
-        vendorLat:         vendor?.lat        || null,
-        vendorLng:         vendor?.lng        || null,
-        customerName:      currentUser.displayName || currentUser.email?.split('@')[0] || 'Customer',
-        userEmail:         currentUser.email  || '',
+        userId: currentUserId,
+        vendorId: gVid,
+        vendorKey: gVid,
+        vendorName: group.vendorName || '',
+        vendorImage: group.vendorImage || '',
+        vendorLat: vendor?.lat || null,
+        vendorLng: vendor?.lng || null,
+        customerName: currentUser.displayName || currentUser.email?.split('@')[0] || 'Customer',
+        userEmail: currentUser.email || '',
         orderNumber,
-        items:             group.items,
-        subtotal:          sub,
-        deliveryFee:       calculatedDeliveryFee,
-        total:             sub + calculatedDeliveryFee,
-        paymentMethod:     selectedPayment,
+        items: group.items,
+        subtotal: sub,
+        deliveryFee: calculatedDeliveryFee,
+        total: sub + calculatedDeliveryFee,
+        paymentMethod: selectedPayment,
         deliveryAddress,
-        deliveryLat:       userLocation.lat,
-        deliveryLng:       userLocation.lng,
-        status:            'pending',
-        createdAt:         timestamp,
-        updatedAt:         timestamp,
+        deliveryLat: userLocation.lat,
+        deliveryLng: userLocation.lng,
+        status: 'pending',
+        createdAt: timestamp,
+        updatedAt: timestamp,
         estimatedPrepTime: calcPrepTime()
       };
-
       // Get a shared key so both paths reference the same order
       const newOrderRef = push(ref(db, 'orders'));
-      const orderKey    = newOrderRef.key;
-
+      const orderKey = newOrderRef.key;
       // Write to global orders + vendor-specific orders simultaneously
       return Promise.all([
-        set(newOrderRef,                                          orderData),
-        set(ref(db, `vendors/${gVid}/orders/${orderKey}`),        orderData)
+        set(newOrderRef, orderData),
+        set(ref(db, `vendors/${gVid}/orders/${orderKey}`), orderData)
       ]);
     });
-
     await Promise.all(promises);
-
     // Optimistic local update for instant UI feedback
     const snapshottedGroups = JSON.parse(JSON.stringify(cartGroups));
     const optimisticOrders = Object.entries(snapshottedGroups).map(([gVid, group]) => {
@@ -1490,9 +1459,7 @@ window.handleCheckout = async()=>{
     });
     allUserOrders = [...optimisticOrders, ...allUserOrders];
     renderOrders(allUserOrders, "mobileOrdersList");
-
     await clearCart();
-
     // Show success screen
     coAnimDir='forward'; coStep=2;
     const body=document.getElementById('coBody'), footer=document.getElementById('coFooter');
@@ -1508,7 +1475,6 @@ window.handleCheckout = async()=>{
     if(btn){btn.disabled=false;btn.innerHTML='<i data-lucide="check-circle"></i> Place Order';lucide.createIcons();}
   }
 };
-
 // ── FILTERS & VENDORS ────────────────────────────────────────
 function buildCategoryFilters(){
   const c=document.getElementById('categoryFilters');
@@ -1584,7 +1550,6 @@ window.setStoreType = (type,btn)=>{
   searchTerm="";document.getElementById('searchInput').value="";
   currentFilter="all";buildCategoryFilters();toggleSidebar();applyFilters();
 };
-
 // ── AUTH ─────────────────────────────────────────────────────
 onAuthStateChanged(auth,user=>{
   currentUser=user;currentUserId=user?user.uid:null;
@@ -1672,11 +1637,11 @@ function renderProfileAddresses(){
 window.setDefaultAddress = async(id)=>{if(!currentUserId)return;userProfile.addresses.forEach(a=>a.isDefault=(a.id===id));await set(ref(db,`users/${currentUserId}`),userProfile);renderProfileAddresses();};
 window.deleteAddress = async(id)=>{if(!currentUserId)return;if(confirm("Delete this address?")){userProfile.addresses=userProfile.addresses.filter(a=>a.id!==id);if(userProfile.addresses.length>0&&!userProfile.addresses.some(a=>a.isDefault))userProfile.addresses[0].isDefault=true;await set(ref(db,`users/${currentUserId}`),userProfile);renderProfileAddresses();}};
 window.addNewAddress = ()=>{const addr=prompt("Enter delivery address:");if(addr&&currentUserId){const newAddr={id:Date.now().toString(),address:addr,isDefault:userProfile.addresses.length===0};userProfile.addresses.push(newAddr);set(ref(db,`users/${currentUserId}`),userProfile);renderProfileAddresses();}};
-
 // ── STATUS HELPERS ──
 function getStatusClass(status){const map={'pending':'pending','confirmed':'confirmed','preparing':'preparing','out_for_delivery':'out-for-delivery','delivered':'delivered','cancelled':'cancelled'};return map[status]||'pending';}
 function getStatusLabel(status){const map={'pending':'Pending','confirmed':'Confirmed','preparing':'Preparing','out_for_delivery':'On the way','delivered':'Delivered','cancelled':'Cancelled'};return map[status]||status.charAt(0).toUpperCase()+status.slice(1);}
-
+// ── UPDATED buildDeliveryBlock ───────────────────────────────────────────────
+// Uses real driverName from order data (set by driver portal) + real phone for tel: call
 function buildDeliveryBlock(o) {
   const statusOrder = ['pending','confirmed','preparing','out_for_delivery','delivered'];
   const activeStatuses = ['pending','confirmed','preparing','out_for_delivery'];
@@ -1693,12 +1658,18 @@ function buildDeliveryBlock(o) {
   const currentIdx = statusOrder.indexOf(o.status);
   const progressPct = isCompleted ? 100 : Math.round((Math.max(currentIdx,0) / (statusOrder.length-1)) * 100);
   const etaMins = isCompleted ? 0 : Math.max(5, 40 - (currentIdx * 8));
-  const drivers = ['Sipho M.','Thabo K.','Lerato N.','Kgosi D.','Nomsa B.'];
-  const vehicles = ['Motorcycle','Bicycle','Car','Motorcycle','Bicycle'];
-  const ratings = ['4.9','4.7','4.8','4.6','5.0'];
-  const driverIdx = Math.abs((o.id||'a').charCodeAt(0)) % drivers.length;
-  const driverName = drivers[driverIdx], vehicle = vehicles[driverIdx], rating = ratings[driverIdx];
   const distanceKm = (1.2 + ((o.id||'').charCodeAt(1)||5) % 30 * 0.1).toFixed(1);
+
+  // ── DRIVER LINK FROM DRIVER PORTAL ─────────────────────
+  // driverName is set by driver when they accept (see driver portal code)
+  // driverPhone will be set by driver portal (driverData.phone)
+  let driverName = o.driverName || 'Driver on the way';
+  let vehicle = 'Vehicle';
+  let rating = '4.8';
+  const callAction = o.driverPhone 
+    ? `window.location.href='tel:${o.driverPhone}'` 
+    : `showToast('Calling ${driverName}…')`;
+
   const stepperHTML = steps.map((step, idx) => {
     const isDone = idx < currentIdx || isCompleted;
     const isStepActive = idx === currentIdx && !isCompleted;
@@ -1709,6 +1680,7 @@ function buildDeliveryBlock(o) {
         <div class="tracking-step-time">${isDone||isStepActive ? step.time : 'Waiting…'}</div>
       </div></div>`;
   }).join('');
+
   const etaBarHTML = !isCancelled ? `
     <div style="padding:0 13px 11px;">
       <div style="display:flex;justify-content:space-between;font-size:0.67rem;color:var(--dim);font-weight:600;margin-bottom:5px;"><span>📍 Restaurant</span><span>🏠 Your Door</span></div>
@@ -1719,13 +1691,28 @@ function buildDeliveryBlock(o) {
         <div style="flex:1;background:var(--surface2);border-radius:var(--radius-xs);padding:7px 9px;text-align:center;border:1px solid var(--border-light);"><div style="font-weight:800;font-size:0.82rem;">R${parseFloat(o.total||0).toFixed(0)}</div><div style="font-size:0.59rem;color:var(--dim);margin-top:1px;">Total</div></div>
       </div>
     </div>` : '';
+
   let driverHTML = '';
-  if(o.status==='out_for_delivery'){driverHTML=`<div style="margin:0 13px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:11px;"><div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;font-weight:800;color:white;">${driverName.charAt(0)}</div><div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:0.82rem;">${driverName}</div><div style="font-size:0.67rem;color:var(--dim);margin-top:1px;">${vehicle} · On the way to you</div><div style="display:flex;align-items:center;gap:3px;font-size:0.67rem;font-weight:600;color:var(--yellow);margin-top:3px;"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${rating} rating</div></div><div style="display:flex;gap:7px;flex-shrink:0;"><button onclick="showToast('Calling ${driverName}…')" style="width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);" title="Call driver"><i data-lucide="phone" style="width:15px;height:15px;"></i></button><button onclick="showToast('Opening chat with ${driverName}…')" style="width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);" title="Message driver"><i data-lucide="message-circle" style="width:15px;height:15px;"></i></button></div></div>`;}
+  if(o.status==='out_for_delivery'){
+    driverHTML=`<div style="margin:0 13px 13px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;display:flex;align-items:center;gap:11px;">
+      <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--accent-light),var(--accent));display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;font-weight:800;color:white;">${driverName.charAt(0)||'D'}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:0.82rem;">${driverName}</div>
+        <div style="font-size:0.67rem;color:var(--dim);margin-top:1px;">${vehicle} · On the way to you</div>
+        <div style="display:flex;align-items:center;gap:3px;font-size:0.67rem;font-weight:600;color:var(--yellow);margin-top:3px;"><i data-lucide="star" style="width:10px;height:10px;fill:currentColor;"></i> ${rating} rating</div>
+      </div>
+      <div style="display:flex;gap:7px;flex-shrink:0;">
+        <button onclick="${callAction}" style="width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);" title="Call driver"><i data-lucide="phone" style="width:15px;height:15px;"></i></button>
+        <button onclick="showToast('Opening chat with ${driverName}…')" style="width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--accent);" title="Message driver"><i data-lucide="message-circle" style="width:15px;height:15px;"></i></button>
+      </div>
+    </div>`;
+  }
   else if(o.status==='preparing'){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:rgba(255,117,31,0.06);border-radius:var(--radius-sm);border:1px solid rgba(255,117,31,0.18);display:flex;align-items:center;gap:9px;"><i data-lucide="chef-hat" style="width:18px;height:18px;color:var(--accent);flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:var(--text);">Kitchen is preparing your order</div><div style="font-size:0.67rem;color:var(--dim);margin-top:2px;">A driver will be assigned shortly</div></div></div>`;}
   else if(o.status==='confirmed'){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#e3f2fd;border-radius:var(--radius-sm);border:1px solid #90caf9;display:flex;align-items:center;gap:9px;"><i data-lucide="thumbs-up" style="width:18px;height:18px;color:#1565c0;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#1565c0;">Order confirmed by restaurant</div><div style="font-size:0.67rem;color:#1565c0;opacity:0.75;margin-top:2px;">Getting ready to start cooking</div></div></div>`;}
   else if(o.status==='pending'){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#fff8e1;border-radius:var(--radius-sm);border:1px solid #ffe082;display:flex;align-items:center;gap:9px;"><i data-lucide="clock" style="width:18px;height:18px;color:#c07000;flex-shrink:0;animation:spin 3s linear infinite;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#c07000;">Waiting for restaurant to confirm</div><div style="font-size:0.67rem;color:#c07000;opacity:0.75;margin-top:2px;">This usually takes 1–3 minutes</div></div></div>`;}
-  else if(isCompleted){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#e8f5e9;border-radius:var(--radius-sm);border:1px solid #a5d6a7;display:flex;align-items:center;gap:9px;"><i data-lucide="package-check" style="width:18px;height:18px;color:#2e7d32;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#2e7d32;">Order delivered successfully</div><div style="font-size:0.67rem;color:#2e7d32;opacity:0.75;margin-top:2px;">Delivered by ${driverName} · ${vehicle}</div></div></div>`;}
+  else if(isCompleted){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#e8f5e9;border-radius:var(--radius-sm);border:1px solid #a5d6a7;display:flex;align-items:center;gap:9px;"><i data-lucide="package-check" style="width:18px;height:18px;color:#2e7d32;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#2e7d32;">Order delivered successfully</div><div style="font-size:0.67rem;color:#2e7d32;opacity:0.75;margin-top:2px;">Delivered by ${driverName}</div></div></div>`;}
   else if(isCancelled){driverHTML=`<div style="margin:0 13px 13px;padding:10px 13px;background:#ffebee;border-radius:var(--radius-sm);border:1px solid #ef9a9a;display:flex;align-items:center;gap:9px;"><i data-lucide="x-circle" style="width:18px;height:18px;color:#c62828;flex-shrink:0;"></i><div><div style="font-size:0.78rem;font-weight:700;color:#c62828;">Order cancelled</div><div style="font-size:0.67rem;color:#c62828;opacity:0.75;margin-top:2px;">Contact support if you were charged</div></div></div>`;}
+
   const sectionTitle = isCancelled ? 'Order Status' : (isCompleted ? 'Delivery Summary' : '🚀 Live Delivery Tracking');
   return `<div style="margin-top:11px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border-light);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
     <div style="padding:8px 13px;background:linear-gradient(90deg,${isCompleted?'#e8f5e9':'var(--accent-light)'},transparent);font-size:0.67rem;font-weight:800;color:${isCompleted?'#2e7d32':'var(--accent-dark)'};text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border-light);display:flex;align-items:center;gap:5px;">
@@ -1736,7 +1723,6 @@ function buildDeliveryBlock(o) {
     ${driverHTML}
   </div>`;
 }
-
 function renderOrders(orders, containerId='sidebarOrdersList'){
   const c=document.getElementById(containerId);if(!c)return;
   if(!orders||!orders.length){c.innerHTML=`<div class="empty-state"><i data-lucide="receipt"></i><p>No orders yet</p><small>Your order history will appear here</small></div>`;lucide.createIcons();return;}
@@ -1788,7 +1774,6 @@ function renderOrders(orders, containerId='sidebarOrdersList'){
   }).join('');
   lucide.createIcons();
 }
-
 window.toggleOrder = (id)=>{
   if(expandedOrders.has(id))expandedOrders.delete(id);else expandedOrders.add(id);
   const card=document.getElementById(`ocard-${id}`);
@@ -1806,7 +1791,6 @@ window.reorderItems = async(orderId,vendorId,event)=>{
     await saveCart();updateCartUI();closeSidebarDataModal();toggleCart();showToast("Items added to cart ✓");
   }catch(e){console.error(e);showToast("Reorder failed");}
 };
-
 // ── ORDERS SUBSCRIPTION ──
 function subscribeToOrders(){
   if(!currentUserId) return;
@@ -1841,7 +1825,6 @@ function subscribeToOrders(){
     }
   });
 }
-
 // ── FAVORITES ──
 function renderFavorites(){
   const c = document.getElementById('sidebarFavoritesList'); if(!c) return;
@@ -1873,7 +1856,6 @@ function generateFavCardHTML(v){
     ${vCats.length>0?`<div class="fav-categories">${catTags}</div>`:''}
     <div class="fav-meta-row"><span class="fav-meta">${catDisp} • ${deliveryFeeDisplay}</span><span class="fav-likes-count"><i data-lucide="heart" style="width:11px;height:11px;"></i>${v.likes||0}</span></div></div></div>`;
 }
-
 // ── PROFILE MODAL ──
 window.switchTab = (tab,btn)=>{
   document.querySelectorAll('.profile-tab-item').forEach(t=>t.classList.remove('active'));
@@ -1896,7 +1878,6 @@ window.toggleSetting = async(key)=>{
   if(el)el.classList.toggle('active',!!s[key]);
   try{await set(ref(db,`users/${currentUserId}`),userProfile);}catch(e){console.error(e);}
 };
-
 // ── SIDEBAR DATA MODAL ──
 window.openSidebarOrders = ()=>{
   if(!currentUser){showToast("Sign in to view your orders");handleProfileClick();return;}
@@ -1941,7 +1922,6 @@ window.closeSidebarDataModal = ()=>{
   document.getElementById('sidebarDataModal').classList.remove('active');
   document.body.style.overflow='';
 };
-
 // ── VENDOR CARDS ──
 window.toggleLike = async(vid,event)=>{
   event.stopPropagation();
@@ -1975,7 +1955,6 @@ function loadVendors(){
   });
 }
 function loadLikeCounts(){onValue(ref(db,"vendorLikes"),snap=>{if(snap.exists()){const d=snap.val();allVendors.forEach(v=>{if(d[v.key])v.likes=d[v.key].count||0;});applyFilters();renderFavorites();}});}
-
 function generateCardHTML(v){
   const isLiked=userLikes.has(v.key),vCats=getVendorCategories(v);
   const catDisp=vCats.length>0?vCats.join(' · '):v.cuisine;
@@ -1998,7 +1977,6 @@ function generateCardHTML(v){
     ${vCats.length>0?`<div class="r-categories">${catTags}</div>`:''}
     <div class="r-meta-row"><span class="r-meta">${catDisp} • ${deliveryFeeDisplay}</span><span class="likes-count"><i data-lucide="heart" style="width:11px;height:11px;"></i>${v.likes||0}</span></div></div></div>`;
 }
-
 function applyFilters(){
   let filtered=allVendors.filter(v=>v.storeType===currentStoreType);
   if(userLocation.lat&&userLocation.lng){filtered=filtered.map(v=>{if(v.lat&&v.lng)return{...v,distance:calculateDistance(userLocation.lat,userLocation.lng,v.lat,v.lng)};return{...v,distance:null};}).filter(v=>v.distance===null||v.distance<=searchRadius);}
@@ -2013,7 +1991,6 @@ function applyFilters(){
   ps.style.display=pop.length?"block":"none";document.getElementById("restaurantsGrid").innerHTML=pop.map(generateCardHTML).join('');
   lucide.createIcons();updateFilterArrows();
 }
-
 window.filterCategory = (cat,btn)=>{document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=cat;applyFilters();};
 window.handleSearch = (v)=>{
   searchTerm=v;
@@ -2034,7 +2011,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   const c=document.getElementById('categoryFilters');
   if(c)c.addEventListener('scroll',updateFilterArrows);
 });
-
 // ── BOTTOM NAV ──
 window.bottomNavClick = function(idx) {
   for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el) el.classList.toggle('active', i===idx);}
@@ -2067,7 +2043,6 @@ window.bottomNavClick = function(idx) {
   }
   else if(idx === 3){ handleProfileClick(); }
 };
-
 // ── INIT ──
 lucide.createIcons();
 generateShimmerCards(6);
@@ -2077,7 +2052,6 @@ loadVendors();
 loadDeliveryFeeConfig();
 updateCartUI();
 if(navigator.geolocation)setTimeout(()=>detectCurrentLocation(),1000);
-
 // Post-payment redirect handling
 (function checkPostPaymentRedirect() {
     if (localStorage.getItem('vynixOpenOrdersTab') !== '1') return;
