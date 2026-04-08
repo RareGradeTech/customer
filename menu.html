@@ -116,12 +116,16 @@
         .search-input-wrap i { width: 16px; height: 16px; color: var(--dim); flex-shrink: 0; }
         .search-input { flex: 1; border: none; background: transparent; font-family: inherit; font-size: 0.82rem; color: var(--text); outline: none; }
         .search-input::placeholder { color: var(--dim); }
+
+        /* ── CATEGORY TABS ── */
         .category-tabs { background: var(--surface); padding: 8px 0; position: sticky; top: var(--header-height); z-index: 100; border-bottom: 1px solid var(--border-light); }
-        .tabs-scroll { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 0 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .tab-btn { flex: 0 0 auto; padding: 6px 14px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 100px; font-weight: 600; font-size: 0.75rem; color: var(--dim); cursor: pointer; transition: var(--transition); white-space: nowrap; touch-action: manipulation; }
+        .tabs-scroll { display: flex; gap: 6px; padding: 0 14px; overflow-x: auto; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
+        .tabs-scroll::-webkit-scrollbar { display: none; }
+        .tab-btn { flex: 0 0 auto; padding: 6px 14px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 100px; font-weight: 600; font-size: 0.75rem; color: var(--dim); cursor: pointer; transition: var(--transition); white-space: nowrap; touch-action: manipulation; font-family: inherit; }
         .tab-btn.active { background: var(--accent); border-color: var(--accent); color: white; box-shadow: 0 2px 8px rgba(255,117,31,0.3); }
         .tab-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
         .tab-btn:active { opacity: 0.75; transform: scale(0.95); }
+
         .menu-content { padding: 0 0 80px; flex: 1; }
         @media (max-width: 767px) { .menu-content { padding-bottom: 160px; } }
         .menu-section { margin-bottom: 4px; background: var(--bg); }
@@ -444,7 +448,6 @@
     </div>
 </div>
 <div id="toast">Message</div>
-
 <!-- ITEM DETAIL SHEET -->
 <div class="item-backdrop" id="itemBackdrop" onclick="closeItemSheet()"></div>
 <div class="item-sheet" id="itemSheet" role="dialog" aria-modal="true" aria-labelledby="itemSheetName">
@@ -480,7 +483,6 @@
         </button>
     </div>
 </div>
-
 <!-- PROFILE MODAL -->
 <div class="modal-overlay" id="profileOverlay" onclick="closeProfileModal()"></div>
 <div id="profileModal">
@@ -490,7 +492,6 @@
     </div>
     <div id="profileModalBody"></div>
 </div>
-
 <!-- MAIN APP -->
 <div class="app-container">
     <header class="header">
@@ -507,7 +508,6 @@
             </button>
         </div>
     </header>
-
     <div class="restaurant-hero" id="restaurantHero" style="display:none;">
         <div class="restaurant-banner-wrap">
             <img class="restaurant-image" id="restaurantImage" src="" alt="">
@@ -528,21 +528,17 @@
             <div class="restaurant-tags" id="restaurantTags"></div>
         </div>
     </div>
-
     <div class="search-section" id="searchSection" style="display:none;">
         <div class="search-input-wrap">
             <i data-lucide="search"></i>
             <input type="text" class="search-input" id="searchInput" placeholder="Search menu..." oninput="handleSearch(this.value)">
         </div>
     </div>
-
-    <!-- FULLY FUNCTIONAL FOOD CATEGORIES -->
     <div class="category-tabs" id="categoryTabs" style="display:none;">
         <div class="tabs-scroll no-scrollbar" id="tabsContainer">
-            <!-- Populated dynamically by JS -->
+            <button class="tab-btn active" data-cat="all" onclick="filterCategory('all', this)">All</button>
         </div>
     </div>
-
     <main class="menu-content" id="menuMain">
         <div class="empty-state" id="emptyState">
             <i data-lucide="package-open"></i>
@@ -556,13 +552,11 @@
         </div>
         <div id="menuContainer"></div>
     </main>
-
     <div class="orders-view" id="ordersView">
         <div class="orders-view-title"><i data-lucide="receipt" style="width:18px;height:18px;color:var(--accent);"></i> Your Orders</div>
         <div id="ordersListContainer"></div>
     </div>
 </div>
-
 <!-- FLOATING CART BAR -->
 <div class="floating-cart-bar" id="floatingCartBar" onclick="toggleCart()">
     <div class="floating-cart-inner">
@@ -576,10 +570,8 @@
         </div>
     </div>
 </div>
-
 <!-- CART OVERLAY -->
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
-
 <!-- CART DRAWER -->
 <div class="cart-drawer" id="cartDrawer">
     <div class="cart-header">
@@ -594,7 +586,6 @@
         <button class="checkout-btn" id="checkoutBtn" disabled onclick="goToPaymentPage()">Continue to Payment</button>
     </div>
 </div>
-
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav" id="bottomNav">
     <button class="bottom-nav-item active" id="bnav0" onclick="bottomNavClick(0)"><i data-lucide="home"></i><span>Home</span></button>
@@ -602,12 +593,10 @@
     <button class="bottom-nav-item" id="bnav2" onclick="bottomNavClick(2)"><i data-lucide="search"></i><span>Search</span></button>
     <button class="bottom-nav-item" id="bnav3" onclick="bottomNavClick(3)"><i data-lucide="user"></i><span>Profile</span></button>
 </nav>
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, get, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
   authDomain: "test-17881.firebaseapp.com",
@@ -616,18 +605,13 @@ const firebaseConfig = {
   messagingSenderId: "1057428047643",
   appId: "1:1057428047643:web:f3801c0d933225a5cd35be"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
-
 const urlParams = new URLSearchParams(window.location.search);
 const vendorId = urlParams.get('vendor');
-if (!vendorId) { 
-    showToast("No restaurant selected"); 
-    setTimeout(() => window.location.href = 'index.html', 2000); 
-}
+if (!vendorId) { showToast("No restaurant selected"); setTimeout(() => window.location.href = 'index.html', 2000); }
 
 // ── STATE ──
 let cart = [];
@@ -647,37 +631,66 @@ let expandedOrders = new Set();
 let userProfile = { name:'', phone:'', addresses:[], settings:{notif:true,loc:true,sms:false,promo:true} };
 let cartJustCleared = false;
 
+// ── SCROLL SPY: update active tab based on scroll position ──
+let scrollSpyEnabled = true;
+let scrollSpyTimeout = null;
+
+function initScrollSpy() {
+    const menuMain = document.getElementById('menuMain');
+    if (!menuMain) return;
+    menuMain.addEventListener('scroll', onMenuScroll, { passive: true });
+    window.addEventListener('scroll', onMenuScroll, { passive: true });
+}
+
+function onMenuScroll() {
+    if (!scrollSpyEnabled) return;
+    const sections = document.querySelectorAll('.menu-section[data-category]');
+    if (!sections.length) return;
+
+    // Header height + sticky tabs height
+    const headerH = document.getElementById('categoryTabs');
+    const offset = (headerH ? headerH.getBoundingClientRect().bottom : 112) + 10;
+
+    let currentCat = null;
+    sections.forEach(section => {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= offset) {
+            currentCat = section.getAttribute('data-category');
+        }
+    });
+
+    if (currentCat && currentCat !== currentCategory) {
+        currentCategory = currentCat;
+        // Update tab highlight without triggering a re-render
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            const isActive = btn.getAttribute('data-cat') === currentCat;
+            btn.classList.toggle('active', isActive);
+        });
+        // Scroll the active tab into view in the tab bar
+        const activeTab = document.querySelector(`.tab-btn[data-cat="${CSS.escape(currentCat)}"]`);
+        if (activeTab) {
+            activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+    }
+}
+
 // ── SUGGESTED ──
 const SIDE_KW = ['side','sides','fries','salad','salads','soup','starter','starters','appetizer','bread','rice','chips','coleslaw'];
 const DRINK_KW = ['drink','drinks','beverage','juice','soda','water','milkshake','smoothie','coffee','tea','beer','cola'];
-
 function bucketOf(item) {
     const hay = ((item.category||'') + ' ' + (item.name||'')).toLowerCase();
     if (DRINK_KW.some(k => hay.includes(k))) return 'drink';
     if (SIDE_KW.some(k => hay.includes(k))) return 'side';
     return 'other';
 }
-
 const BUCKET_COLOR = { drink:'#1565c0', side:'#2e7d32', other:'#6d4c41' };
-
 function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
-
 function getSuggested(currentItem) {
     const pool = allMenuItems.filter(i => i.id !== currentItem.id && i.status === 'available');
     const sides = [], drinks = [], others = [];
-    pool.forEach(i => { 
-        const b = bucketOf(i); 
-        if(b==='drink') drinks.push(i); 
-        else if(b==='side') sides.push(i); 
-        else others.push(i); 
-    });
-    return { 
-        sides: shuffle(sides).slice(0,8), 
-        drinks: shuffle(drinks).slice(0,8), 
-        others: shuffle(others).slice(0,8) 
-    };
+    pool.forEach(i => { const b = bucketOf(i); if(b==='drink') drinks.push(i); else if(b==='side') sides.push(i); else others.push(i); });
+    return { sides: shuffle(sides).slice(0,8), drinks: shuffle(drinks).slice(0,8), others: shuffle(others).slice(0,8) };
 }
-
 function sugCard(item) {
     const inCart = cart.some(c => c.itemId === item.id);
     const color = BUCKET_COLOR[bucketOf(item)];
@@ -697,7 +710,6 @@ function sugCard(item) {
         </div>
     </div>`;
 }
-
 function renderSuggested(currentItem) {
     const { sides, drinks, others } = getSuggested(currentItem);
     const block = document.getElementById('suggestedBlock');
@@ -706,30 +718,16 @@ function renderSuggested(currentItem) {
     const sidesG = document.getElementById('sugSidesGroup');
     const drinksG = document.getElementById('sugDrinksGroup');
     const otherG = document.getElementById('sugOtherGroup');
-    if (sides.length) { 
-        sidesG.style.display='block'; 
-        document.getElementById('sugSidesList').innerHTML=sides.map(sugCard).join(''); 
-    } else sidesG.style.display='none';
-    if (drinks.length) { 
-        drinksG.style.display='block'; 
-        document.getElementById('sugDrinksList').innerHTML=drinks.map(sugCard).join(''); 
-    } else drinksG.style.display='none';
-    if (others.length) { 
-        otherG.style.display='block'; 
-        document.getElementById('sugOtherList').innerHTML=others.map(sugCard).join(''); 
-    } else otherG.style.display='none';
+    if (sides.length) { sidesG.style.display='block'; document.getElementById('sugSidesList').innerHTML=sides.map(sugCard).join(''); } else sidesG.style.display='none';
+    if (drinks.length) { drinksG.style.display='block'; document.getElementById('sugDrinksList').innerHTML=drinks.map(sugCard).join(''); } else drinksG.style.display='none';
+    if (others.length) { otherG.style.display='block'; document.getElementById('sugOtherList').innerHTML=others.map(sugCard).join(''); } else otherG.style.display='none';
     lucide.createIcons();
 }
-
 window.quickAddSuggested = async (itemId, e) => {
     e.stopPropagation();
     await addToCartById(itemId);
     const btn = document.getElementById(`sbtn-${itemId}`);
-    if (btn) { 
-        btn.classList.add('added'); 
-        btn.innerHTML='<i data-lucide="check" style="width:11px;height:11px;"></i>'; 
-        lucide.createIcons(); 
-    }
+    if (btn) { btn.classList.add('added'); btn.innerHTML='<i data-lucide="check" style="width:11px;height:11px;"></i>'; lucide.createIcons(); }
 };
 
 // ── DRAG TO CLOSE ──
@@ -787,26 +785,13 @@ async function loadMenu() {
     showShimmer();
     try {
         const vendorSnap = await get(ref(db, `vendors/${vendorId}`));
-        if (vendorSnap.exists()) { 
-            vendorInfo = vendorSnap.val(); 
-            displayVendorInfo(vendorInfo); 
-        }
-        else { 
-            showToast("Restaurant not found"); 
-            setTimeout(()=>window.location.href='index.html',2000); 
-            return; 
-        }
+        if (vendorSnap.exists()) { vendorInfo = vendorSnap.val(); displayVendorInfo(vendorInfo); }
+        else { showToast("Restaurant not found"); setTimeout(()=>window.location.href='index.html',2000); return; }
         const menuSnap = await get(ref(db, `vendors/${vendorId}/menu`));
         if (menuSnap.exists()) processAndDisplayMenu(menuSnap.val());
         else showEmptyState();
-    } catch(e) { 
-        console.error(e); 
-        showToast("Failed to load menu"); 
-        showEmptyState(); 
-    }
-    finally { 
-        setTimeout(hideShimmer,500); 
-    }
+    } catch(e) { console.error(e); showToast("Failed to load menu"); showEmptyState(); }
+    finally { setTimeout(hideShimmer,500); }
 }
 
 function displayVendorInfo(v) {
@@ -826,76 +811,38 @@ function displayVendorInfo(v) {
 }
 
 function processAndDisplayMenu(data) {
-    allMenuItems = []; 
-    categories = new Set(['all']);
-    
-    if (!data||typeof data!=='object') { 
-        showEmptyState(); 
-        return; 
-    }
-    
+    allMenuItems = []; categories = new Set(['all']);
+    if (!data||typeof data!=='object') { showEmptyState(); return; }
     Object.entries(data).forEach(([id,item]) => {
         if (item && item.name) {
             const cat = item.category || 'Other';
             categories.add(cat);
-            allMenuItems.push({ 
-                id, 
-                name: item.name, 
-                category: cat, 
-                price: parseFloat(item.price)||0, 
-                description: item.description||'', 
-                imageURL: item.imageURL||'', 
-                imageApproved: item.imageApproved===true, 
-                calories: item.calories||'', 
-                prepTime: item.prepTime||'', 
-                featured: item.featured||false, 
-                status: item.status||'unavailable' 
-            });
+            allMenuItems.push({ id, name: item.name, category: cat, price: parseFloat(item.price)||0, description: item.description||'', imageURL: item.imageURL||'', imageApproved: item.imageApproved===true, calories: item.calories||'', prepTime: item.prepTime||'', featured: item.featured||false, status: item.status||'unavailable' });
         }
     });
-    
-    if (!allMenuItems.length) { 
-        showEmptyState(); 
-        return; 
-    }
-    
+    if (!allMenuItems.length) { showEmptyState(); return; }
     allMenuItems.sort((a,b) => (b.featured?1:0)-(a.featured?1:0));
-    
-    // FULLY FUNCTIONAL CATEGORIES – rebuild tabs every time
-    const tabsHTML = Array.from(categories).map(cat => {
-        const displayName = cat === 'all' ? 'All' : cat;
-        return `<button class="tab-btn ${cat==='all'?'active':''}" onclick="filterCategory('${cat.replace(/'/g,"\\'")}',this)">${displayName}</button>`;
-    }).join('');
-    
-    document.getElementById('tabsContainer').innerHTML = tabsHTML;
+
+    // Build tab buttons with data-cat attribute
+    document.getElementById('tabsContainer').innerHTML = Array.from(categories).map(cat =>
+        `<button class="tab-btn ${cat==='all'?'active':''}" data-cat="${cat}" onclick="filterCategory('${cat.replace(/'/g,"\\'")}',this)">${cat==='all'?'All':cat}</button>`
+    ).join('');
+
     document.getElementById('categoryTabs').style.display = 'block';
-    
     renderMenuItems(allMenuItems, false);
+    // Start scroll spy after render
+    setTimeout(initScrollSpy, 300);
 }
 
-function getItemCartQty(itemId) { 
-    const i=cart.find(c=>c.itemId===itemId); 
-    return i?i.quantity:0; 
-}
+function getItemCartQty(itemId) { const i=cart.find(c=>c.itemId===itemId); return i?i.quantity:0; }
 
 function renderMenuItems(items, animate=true) {
     const container = document.getElementById('menuContainer'), noResults = document.getElementById('noResults');
-    if (!items.length) { 
-        container.innerHTML=''; 
-        noResults.classList.add('active'); 
-        return; 
-    }
+    if (!items.length) { container.innerHTML=''; noResults.classList.add('active'); return; }
     noResults.classList.remove('active');
-    
-    const grouped = items.reduce((acc,item) => { 
-        const c=item.category||'Other'; 
-        if(!acc[c])acc[c]=[]; 
-        acc[c].push(item); 
-        return acc; 
-    },{});
-    
+    const grouped = items.reduce((acc,item) => { const c=item.category||'Other'; if(!acc[c])acc[c]=[]; acc[c].push(item); return acc; },{});
     container.innerHTML = Object.entries(grouped).map(([cat,citems]) => `
-        <div class="menu-section">
+        <div class="menu-section" data-category="${cat}" id="section-${encodeURIComponent(cat)}">
             <div class="section-header"><h3 class="section-title">${cat}</h3><span class="section-count">${citems.length} item${citems.length>1?'s':''}</span></div>
             <div class="menu-list${animate?' animating':''}">
                 ${citems.map(item => {
@@ -929,16 +876,13 @@ function renderMenuItems(items, animate=true) {
                 }).join('')}
             </div>
         </div>`).join('');
-    
     lucide.createIcons();
     if (animate) setTimeout(()=>{ document.querySelectorAll('.menu-list.animating').forEach(el=>el.classList.remove('animating')); },300);
 }
 
 function refreshControl(itemId) {
-    const el = document.getElementById(`add-control-${itemId}`); 
-    if(!el) return;
-    const item = allMenuItems.find(i=>i.id===itemId); 
-    if(!item) return;
+    const el = document.getElementById(`add-control-${itemId}`); if(!el) return;
+    const item = allMenuItems.find(i=>i.id===itemId); if(!item) return;
     const qty = getItemCartQty(itemId);
     const unavailable = item.status !== 'available';
     if (unavailable) {
@@ -949,81 +893,112 @@ function refreshControl(itemId) {
     lucide.createIcons();
 }
 
-function showEmptyState() { 
-    document.getElementById('emptyState').classList.add('active'); 
-    document.getElementById('categoryTabs').style.display='none'; 
-}
+function showEmptyState() { document.getElementById('emptyState').classList.add('active'); document.getElementById('categoryTabs').style.display='none'; }
 
 function getFilteredItems() {
     let items = allMenuItems;
     if (currentCategory!=='all') items = items.filter(i=>i.category===currentCategory);
-    if (searchQuery) items = items.filter(i=> 
-        i.name.toLowerCase().includes(searchQuery) || 
-        (i.description && i.description.toLowerCase().includes(searchQuery))
-    );
+    if (searchQuery) items = items.filter(i=>i.name.toLowerCase().includes(searchQuery)||(i.description&&i.description.toLowerCase().includes(searchQuery)));
     return items;
 }
 
-// FULLY FUNCTIONAL CATEGORY FILTER
+// ── CATEGORY FILTER: scroll to section OR filter ──
 window.filterCategory = (cat, btn) => {
-    // Remove active from all tabs
+    // Update button active state
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    // Activate clicked tab
     btn.classList.add('active');
-    currentCategory = cat;
-    renderMenuItems(getFilteredItems(), true);
+
+    // If search is active, do filter-based approach
+    if (searchQuery) {
+        currentCategory = cat;
+        renderMenuItems(getFilteredItems(), true);
+        return;
+    }
+
+    if (cat === 'all') {
+        // Scroll to top of menu
+        currentCategory = 'all';
+        // Pause scroll spy briefly so it doesn't immediately re-activate wrong tab
+        scrollSpyEnabled = false;
+        window.scrollTo({ top: document.getElementById('menuMain').offsetTop - 112, behavior: 'smooth' });
+        clearTimeout(scrollSpyTimeout);
+        scrollSpyTimeout = setTimeout(() => { scrollSpyEnabled = true; }, 800);
+        return;
+    }
+
+    // Scroll to the section for this category
+    const sectionId = `section-${encodeURIComponent(cat)}`;
+    const section = document.getElementById(sectionId);
+    if (section) {
+        currentCategory = cat;
+        scrollSpyEnabled = false;
+
+        // Calculate offset: header + sticky tabs
+        const tabsEl = document.getElementById('categoryTabs');
+        const tabsBottom = tabsEl ? tabsEl.getBoundingClientRect().bottom : 112;
+        const sectionTop = section.getBoundingClientRect().top;
+        const scrollTarget = window.scrollY + sectionTop - tabsBottom - 4;
+
+        window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+
+        // Re-enable scroll spy after scroll animation ends (~600ms)
+        clearTimeout(scrollSpyTimeout);
+        scrollSpyTimeout = setTimeout(() => { scrollSpyEnabled = true; }, 800);
+    } else {
+        // Section not in DOM (search mode) — filter
+        currentCategory = cat;
+        renderMenuItems(getFilteredItems(), true);
+    }
 };
 
-window.handleSearch = val => { 
-    searchQuery = val.toLowerCase().trim(); 
-    renderMenuItems(getFilteredItems(), false); 
+window.handleSearch = val => {
+    searchQuery = val.toLowerCase().trim();
+    if (searchQuery) {
+        // In search mode: disable scroll spy, filter all categories
+        scrollSpyEnabled = false;
+        currentCategory = 'all';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-cat') === 'all'));
+        renderMenuItems(getFilteredItems(), false);
+    } else {
+        // Leaving search: re-render full menu and re-enable scroll spy
+        renderMenuItems(allMenuItems, false);
+        setTimeout(() => { scrollSpyEnabled = true; initScrollSpy(); }, 300);
+    }
 };
 
 window.toggleSearch = () => {
     const s = document.getElementById('searchSection'), vis = s.style.display!=='none';
     s.style.display = vis?'none':'block';
     if (!vis) setTimeout(()=>document.getElementById('searchInput').focus(),100);
-    else { 
-        document.getElementById('searchInput').value=''; 
-        searchQuery=''; 
-        handleSearch(''); 
+    else {
+        document.getElementById('searchInput').value='';
+        searchQuery='';
+        renderMenuItems(allMenuItems, false);
+        setTimeout(() => { scrollSpyEnabled = true; }, 300);
     }
     lucide.createIcons();
 };
 
-window.goBack = () => { 
-    window.location.href = 'index.html'; 
-};
+window.goBack = () => { window.location.href = 'index.html'; };
 
 // ── ITEM SHEET ──
 window.openItemSheet = itemId => {
-    const item = allMenuItems.find(i=>i.id===itemId); 
-    if(!item) return;
-    if (item.status !== 'available') { 
-        showToast("This item is currently unavailable"); 
-        return; 
-    }
-    activeSheetItem = item; 
-    sheetQty = Math.max(1, getItemCartQty(item.id));
-    
+    const item = allMenuItems.find(i=>i.id===itemId); if(!item) return;
+    if (item.status !== 'available') { showToast("This item is currently unavailable"); return; }
+    activeSheetItem = item; sheetQty = Math.max(1, getItemCartQty(item.id));
     const imgWrap = document.getElementById('itemSheetImageWrap');
     imgWrap.innerHTML = (item.imageURL&&item.imageApproved)?`<img class="item-sheet-image" src="${item.imageURL}" alt="${item.name}">${item.featured?'<span class="item-sheet-badge">Popular</span>':''}`:`<div class="item-sheet-no-image"><i data-lucide="image"></i></div>`;
-    
     document.getElementById('itemSheetName').textContent = item.name;
     const descEl = document.getElementById('itemSheetDesc');
-    descEl.textContent = item.description||''; 
-    descEl.style.display = item.description?'':'none';
-    
+    descEl.textContent = item.description||''; descEl.style.display = item.description?'':'none';
     const chips = [];
     if (item.category) chips.push(`<span class="item-meta-chip category"><i data-lucide="tag"></i>${item.category}</span>`);
     if (item.calories) chips.push(`<span class="item-meta-chip calories"><i data-lucide="flame"></i>${item.calories} cal</span>`);
     if (item.prepTime) chips.push(`<span class="item-meta-chip prep"><i data-lucide="clock"></i>${item.prepTime} min prep</span>`);
     document.getElementById('itemSheetMeta').innerHTML = chips.join('');
-    
     document.getElementById('itemSheetPriceVal').textContent = item.price.toFixed(2);
     updateSheetQty();
     renderSuggested(item);
-    
     document.getElementById('itemSheetBody').scrollTop = 0;
     document.getElementById('itemBackdrop').classList.add('open');
     document.getElementById('itemSheet').classList.add('open');
@@ -1038,111 +1013,56 @@ function updateSheetQty() {
     document.getElementById('sheetBtnQty').textContent = sheetQty;
     document.getElementById('sheetBtnTotal').textContent = `R ${(activeSheetItem.price*sheetQty).toFixed(2)}`;
 }
-
-window.changeSheetQty = delta => { 
-    sheetQty = Math.max(1,sheetQty+delta); 
-    updateSheetQty(); 
-};
-
+window.changeSheetQty = delta => { sheetQty = Math.max(1,sheetQty+delta); updateSheetQty(); };
 window.closeItemSheet = () => {
     const sheet = document.getElementById('itemSheet');
-    sheet.classList.remove('open','is-dragging'); 
-    sheet.style.cssText = '';
+    sheet.classList.remove('open','is-dragging'); sheet.style.cssText = '';
     document.getElementById('itemBackdrop').classList.remove('open');
     document.getElementById('itemBackdrop').style.cssText = '';
-    document.body.style.overflow = ''; 
-    activeSheetItem = null;
+    document.body.style.overflow = ''; activeSheetItem = null;
 };
-
 window.addFromSheet = async () => {
     if (!activeSheetItem) return;
     const item = activeSheetItem;
     const existing = cart.find(i=>i.itemId===item.id);
     if (existing) existing.quantity = sheetQty;
     else cart.push({ itemId:item.id, name:item.name, price:item.price, imageURL:item.imageURL||'', prepTime:parseInt(item.prepTime)||0, quantity:sheetQty, vendorId, addedAt:Date.now() });
-    
     syncCartToGroups();
     if (currentUserId) await saveCart();
-    refreshControl(item.id); 
-    updateCartUI();
-    showToast(`${item.name} added to cart`); 
-    closeItemSheet();
+    refreshControl(item.id); updateCartUI();
+    showToast(`${item.name} added to cart`); closeItemSheet();
 };
 
 // ── CART ──
-function getAllCartItems() { 
-    const all=[]; 
-    Object.values(allGroups).forEach(g=>{ 
-        if(g.items) g.items.forEach(i=>all.push(i)); 
-    }); 
-    return all; 
-}
-
-function getTotalItems() { 
-    return Object.values(allGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.quantity,0),0); 
-}
-
-function getTotalPrice() { 
-    return Object.values(allGroups).reduce((s,g)=>{ 
-        const sub=(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0); 
-        return s+sub+parseFloat(g.deliveryFee||0); 
-    },0); 
-}
-
-function calcPrepTime() { 
-    const all=getAllCartItems(); 
-    if(!all.length) return 0; 
-    return Math.ceil(all.reduce((s,i)=>s+(i.prepTime||0),0)/all.length); 
-}
+function getAllCartItems() { const all=[]; Object.values(allGroups).forEach(g=>{ if(g.items) g.items.forEach(i=>all.push(i)); }); return all; }
+function getTotalItems() { return Object.values(allGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.quantity,0),0); }
+function getTotalPrice() { return Object.values(allGroups).reduce((s,g)=>{ const sub=(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0); return s+sub+parseFloat(g.deliveryFee||0); },0); }
+function calcPrepTime() { const all=getAllCartItems(); if(!all.length) return 0; return Math.ceil(all.reduce((s,i)=>s+(i.prepTime||0),0)/all.length); }
 
 window.addToCartById = async itemId => {
-    const menuItem = allMenuItems.find(i=>i.id===itemId); 
-    if(!menuItem) return;
-    if (menuItem.status !== 'available') { 
-        showToast("Item unavailable"); 
-        return; 
-    }
+    const menuItem = allMenuItems.find(i=>i.id===itemId); if(!menuItem) return;
+    if (menuItem.status !== 'available') { showToast("Item unavailable"); return; }
     const existing = cart.find(i=>i.itemId===itemId);
     if (existing) existing.quantity += 1;
-    else cart.push({ 
-        itemId:menuItem.id, 
-        name:menuItem.name, 
-        price:menuItem.price, 
-        imageURL:menuItem.imageURL||'', 
-        prepTime:parseInt(menuItem.prepTime)||0, 
-        quantity:1, 
-        vendorId, 
-        addedAt:Date.now() 
-    });
-    
+    else cart.push({ itemId:menuItem.id, name:menuItem.name, price:menuItem.price, imageURL:menuItem.imageURL||'', prepTime:parseInt(menuItem.prepTime)||0, quantity:1, vendorId, addedAt:Date.now() });
     syncCartToGroups();
     if (currentUserId) await saveCart();
-    refreshControl(itemId); 
-    updateCartUI();
+    refreshControl(itemId); updateCartUI();
     showToast(`${menuItem.name} added`);
 };
-
 window.addToCart = window.addToCartById;
 
 window.changeItemQty = async (itemId,delta) => {
-    const existing = cart.find(i=>i.itemId===itemId); 
-    if(!existing) return;
+    const existing = cart.find(i=>i.itemId===itemId); if(!existing) return;
     existing.quantity += delta;
     if (existing.quantity<=0) cart = cart.filter(i=>i.itemId!==itemId);
     syncCartToGroups();
     if (currentUserId) await saveCart();
-    refreshControl(itemId); 
-    updateCartUI();
+    refreshControl(itemId); updateCartUI();
 };
 
 function syncCartToGroups() {
-    if (cart.length>0) allGroups[vendorId] = { 
-        vendorId, 
-        vendorName:vendorInfo?.name||'', 
-        vendorImage:vendorInfo?.imageURL||'', 
-        deliveryFee:parseFloat(vendorInfo?.deliveryFee||0), 
-        items:cart 
-    };
+    if (cart.length>0) allGroups[vendorId] = { vendorId, vendorName:vendorInfo?.name||'', vendorImage:vendorInfo?.imageURL||'', deliveryFee:parseFloat(vendorInfo?.deliveryFee||0), items:cart };
     else delete allGroups[vendorId];
 }
 
@@ -1151,17 +1071,8 @@ async function saveCart() {
     try {
         const snap = await get(ref(db,`carts/${currentUserId}`));
         let existingGroups = {};
-        if (snap.exists()) { 
-            const d=snap.val(); 
-            existingGroups=d.groups?{...d.groups}:{};
-        }
-        if (cart.length>0) existingGroups[vendorId] = { 
-            vendorId, 
-            vendorName:vendorInfo?.name||'', 
-            vendorImage:vendorInfo?.imageURL||'', 
-            deliveryFee:parseFloat(vendorInfo?.deliveryFee||0), 
-            items:cart 
-        };
+        if (snap.exists()) { const d=snap.val(); existingGroups=d.groups?{...d.groups}:{}; }
+        if (cart.length>0) existingGroups[vendorId] = { vendorId, vendorName:vendorInfo?.name||'', vendorImage:vendorInfo?.imageURL||'', deliveryFee:parseFloat(vendorInfo?.deliveryFee||0), items:cart };
         else delete existingGroups[vendorId];
         await set(ref(db,`carts/${currentUserId}`), { groups:existingGroups, updatedAt:Date.now() });
         allGroups = existingGroups;
@@ -1169,15 +1080,10 @@ async function saveCart() {
 }
 
 async function clearCart() {
-    cart = []; 
-    allGroups = {}; 
-    expandedGroups.clear(); 
-    cartJustCleared = true;
+    cart = []; allGroups = {}; expandedGroups.clear(); cartJustCleared = true;
     updateCartUI();
     if (!currentUserId) return;
-    try { 
-        await set(ref(db,`carts/${currentUserId}`), { groups:{}, updatedAt:Date.now() }); 
-    } catch(e) { console.error(e); }
+    try { await set(ref(db,`carts/${currentUserId}`), { groups:{}, updatedAt:Date.now() }); } catch(e) { console.error(e); }
 }
 
 async function loadCart() {
@@ -1186,57 +1092,28 @@ async function loadCart() {
         const snap = await get(ref(db,`carts/${currentUserId}`));
         if (snap.exists()) {
             const d = snap.val();
-            if (d.groups) { 
-                allGroups={...d.groups}; 
-                cart=allGroups[vendorId]?.items||[]; 
-            }
-            else { 
-                allGroups={}; 
-                cart=[]; 
-            }
-            updateCartUI(); 
-            renderMenuItems(getFilteredItems(),false);
+            if (d.groups) { allGroups={...d.groups}; cart=allGroups[vendorId]?.items||[]; }
+            else { allGroups={}; cart=[]; }
+            updateCartUI(); renderMenuItems(getFilteredItems(),false);
         }
     } catch(e) { console.error("Load cart error:",e); }
 }
 
 function updateCartUI() {
-    const body=document.getElementById('cartBody'), 
-          countEl=document.getElementById('cartCount'),
-          checkoutBtn=document.getElementById('checkoutBtn'), 
-          summaryEl=document.getElementById('cartSummary'),
-          cartFooter=document.getElementById('cartFooter'), 
-          bar=document.getElementById('floatingCartBar');
-    
-    const totalItems=getTotalItems(), 
-          totalPrice=getTotalPrice(), 
-          vendorCount=Object.keys(allGroups).length;
-    
+    const body=document.getElementById('cartBody'), countEl=document.getElementById('cartCount');
+    const checkoutBtn=document.getElementById('checkoutBtn'), summaryEl=document.getElementById('cartSummary');
+    const cartFooter=document.getElementById('cartFooter'), bar=document.getElementById('floatingCartBar');
+    const totalItems=getTotalItems(), totalPrice=getTotalPrice(), vendorCount=Object.keys(allGroups).length;
     countEl.style.display = totalItems>0?'block':'none';
     if (totalItems>0) countEl.textContent = totalItems;
     checkoutBtn.disabled = totalItems===0;
-    
-    if (totalItems>0) { 
-        bar.classList.add('visible'); 
-        document.getElementById('floatingCartCount').textContent=totalItems; 
-        document.getElementById('floatingCartTotal').textContent=`R ${totalPrice.toFixed(2)}`; 
-    }
+    if (totalItems>0) { bar.classList.add('visible'); document.getElementById('floatingCartCount').textContent=totalItems; document.getElementById('floatingCartTotal').textContent=`R ${totalPrice.toFixed(2)}`; }
     else bar.classList.remove('visible');
-    
-    if (totalItems===0) { 
-        body.innerHTML=`<div class="cart-empty-state"><i data-lucide="shopping-bag"></i><p>Your cart is empty</p><small>Add items to get started</small></div>`; 
-        summaryEl.innerHTML=''; 
-        cartFooter.style.display='none'; 
-        lucide.createIcons(); 
-        return; 
-    }
-    
+    if (totalItems===0) { body.innerHTML=`<div class="cart-empty-state"><i data-lucide="shopping-bag"></i><p>Your cart is empty</p><small>Add items to get started</small></div>`; summaryEl.innerHTML=''; cartFooter.style.display='none'; lucide.createIcons(); return; }
     cartFooter.style.display = 'block';
     expandedGroups.add(vendorId);
-    
     let groupsHtml = '';
     if (vendorCount>1) groupsHtml += `<div class="multi-restaurant-banner"><i data-lucide="alert-triangle"></i><span>Items from <strong>${vendorCount} restaurants</strong>. Each placed as a separate order.</span></div>`;
-    
     Object.entries(allGroups).forEach(([gVendorId,group]) => {
         const isExpanded=expandedGroups.has(gVendorId), items=group.items||[];
         const sub=items.reduce((s,i)=>s+i.price*i.quantity,0), fee=parseFloat(group.deliveryFee||0), cnt=items.reduce((s,i)=>s+i.quantity,0);
@@ -1247,50 +1124,33 @@ function updateCartUI() {
             const one=item.quantity===1;
             return`<div class="cart-item">${img}<div class="cart-item-info"><div class="cart-item-name">${item.name}</div><div class="cart-item-price">R${item.price.toFixed(2)} ea</div></div><div class="cart-quantity-control"><button class="cart-qty-btn" onclick="updateCartItemQty('${gVendorId}',${idx},${item.quantity-1})"><i data-lucide="${one?'trash-2':'minus'}" style="width:12px;height:12px;${one?'color:var(--danger);':''}"></i></button><span class="cart-qty-value">${item.quantity}</span><button class="cart-qty-btn" onclick="updateCartItemQty('${gVendorId}',${idx},${item.quantity+1})"><i data-lucide="plus" style="width:12px;height:12px;"></i></button></div><div class="cart-item-total">R${(item.price*item.quantity).toFixed(2)}</div></div>`;
         }).join('');
-        
         const vImg=group.vendorImage?`<img class="vendor-group-img" src="${group.vendorImage}" alt="${group.vendorName}" loading="lazy">`:`<div class="vendor-group-img" style="display:flex;align-items:center;justify-content:center;"><i data-lucide="store" style="width:20px;height:20px;color:var(--dim);"></i></div>`;
         const isHere=gVendorId===vendorId;
-        
         groupsHtml += `<div class="vendor-group ${isExpanded?'expanded':''}" id="vgroup-${gVendorId}" style="${isHere?'border-color:var(--accent);':''}">
             <div class="vendor-group-header" onclick="toggleVendorGroup('${gVendorId}')">${vImg}<div class="vendor-group-info"><div class="vendor-group-name">${group.vendorName||'Restaurant'}${isHere?' <span style="font-size:0.62rem;background:var(--accent-light);color:var(--accent-dark);padding:1px 6px;border-radius:100px;font-weight:700;margin-left:4px;">Here</span>':''}</div><div class="vendor-group-meta">${cnt} item${cnt!==1?'s':''} · R${(sub+fee).toFixed(2)}</div></div><div class="vendor-group-right"><span class="vendor-item-count">${cnt}</span><i data-lucide="chevron-down" class="vendor-group-chevron"></i></div></div>
             <div class="vendor-item-previews">${prevs}${more}</div>
             <div class="vendor-items-list">${itemsH}<div class="vendor-subtotal-row"><div><div class="vendor-subtotal-label">Subtotal</div>${fee>0?`<div class="vendor-subtotal-label">+ R${fee.toFixed(2)} delivery</div>`:'<div class="vendor-subtotal-label">Free delivery</div>'}</div><div class="vendor-subtotal-value">R${(sub+fee).toFixed(2)}</div></div></div>
         </div>`;
     });
-    
     body.innerHTML = groupsHtml;
-    
-    const pt=calcPrepTime(), 
-          ts=Object.values(allGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0), 
-          tf=Object.values(allGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
-    
+    const pt=calcPrepTime(), ts=Object.values(allGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0), tf=Object.values(allGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
     summaryEl.innerHTML=`${pt>0?`<div class="prep-time-badge"><i data-lucide="clock" style="width:11px;height:11px;"></i> ~${pt} min prep</div>`:''}<div class="cart-summary"><div class="cart-summary-row"><span>Subtotal (${totalItems} items)</span><span>R ${ts.toFixed(2)}</span></div><div class="cart-summary-row"><span>Delivery fee${vendorCount>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div>${vendorCount>1?`<div class="cart-summary-row"><span style="color:var(--dim);">${vendorCount} separate orders</span><span></span></div>`:''}<div class="cart-summary-row"><span>Total</span><span>R ${totalPrice.toFixed(2)}</span></div></div>`;
     lucide.createIcons();
 }
 
 window.toggleVendorGroup = gVendorId => {
-    if (expandedGroups.has(gVendorId)) expandedGroups.delete(gVendorId); 
-    else expandedGroups.add(gVendorId);
-    const el = document.getElementById(`vgroup-${gVendorId}`); 
-    if(el) el.classList.toggle('expanded',expandedGroups.has(gVendorId));
+    if (expandedGroups.has(gVendorId)) expandedGroups.delete(gVendorId); else expandedGroups.add(gVendorId);
+    const el = document.getElementById(`vgroup-${gVendorId}`); if(el) el.classList.toggle('expanded',expandedGroups.has(gVendorId));
     lucide.createIcons();
 };
 
 window.updateCartItemQty = async (gVendorId,idx,qty) => {
     if (!allGroups[gVendorId]) return;
     const itemId = allGroups[gVendorId].items[idx]?.itemId||null;
-    if (qty<1) { 
-        allGroups[gVendorId].items.splice(idx,1); 
-        if(allGroups[gVendorId].items.length===0){delete allGroups[gVendorId];expandedGroups.delete(gVendorId);} 
-    }
+    if (qty<1) { allGroups[gVendorId].items.splice(idx,1); if(allGroups[gVendorId].items.length===0){delete allGroups[gVendorId];expandedGroups.delete(gVendorId);} }
     else allGroups[gVendorId].items[idx].quantity = qty;
-    
     cart = allGroups[vendorId]?.items||[];
-    if (currentUserId) { 
-        try { 
-            await set(ref(db,`carts/${currentUserId}`),{groups:allGroups,updatedAt:Date.now()}); 
-        } catch(e){console.error(e);} 
-    }
+    if (currentUserId) { try { await set(ref(db,`carts/${currentUserId}`),{groups:allGroups,updatedAt:Date.now()}); } catch(e){console.error(e);} }
     if (itemId&&gVendorId===vendorId) refreshControl(itemId);
     updateCartUI();
 };
@@ -1298,35 +1158,23 @@ window.updateCartItemQty = async (gVendorId,idx,qty) => {
 window.toggleCart = () => {
     const d=document.getElementById('cartDrawer'), o=document.getElementById('cartOverlay'), isOpen=d.classList.contains('open');
     if (isOpen) {
-        d.classList.remove('open'); 
-        o.classList.remove('open'); 
-        document.body.style.overflow='';
+        d.classList.remove('open'); o.classList.remove('open'); document.body.style.overflow='';
     } else {
         Object.keys(allGroups).forEach(gid=>expandedGroups.add(gid));
-        d.classList.add('open'); 
-        o.classList.add('open'); 
-        document.body.style.overflow='hidden'; 
-        updateCartUI();
+        d.classList.add('open'); o.classList.add('open'); document.body.style.overflow='hidden'; updateCartUI();
     }
 };
 
-// ── PAYMENT REDIRECT ──
 window.goToPaymentPage = function(){
-  const totalItems = getTotalItems();
-  if(totalItems === 0){
-    showToast("Cart is empty");
-    return;
-  }
-  if(!currentUserId){
-    showToast("Please sign in to continue");
-    return;
-  }
-  localStorage.setItem('checkoutCartGroups', JSON.stringify(allGroups));
-  localStorage.setItem('checkoutTotalItems', totalItems.toString());
-  localStorage.setItem('checkoutTotalPrice', getTotalPrice().toFixed(2));
-  localStorage.setItem('checkoutUserId', currentUserId);
-  localStorage.setItem('checkoutTimestamp', Date.now().toString());
-  window.location.href = 'payment.html';
+    const totalItems = getTotalItems();
+    if(totalItems === 0){ showToast("Cart is empty"); return; }
+    if(!currentUserId){ showToast("Please sign in to continue"); return; }
+    localStorage.setItem('checkoutCartGroups', JSON.stringify(allGroups));
+    localStorage.setItem('checkoutTotalItems', totalItems.toString());
+    localStorage.setItem('checkoutTotalPrice', getTotalPrice().toFixed(2));
+    localStorage.setItem('checkoutUserId', currentUserId);
+    localStorage.setItem('checkoutTimestamp', Date.now().toString());
+    window.location.href = 'payment.html';
 };
 
 // ── ORDERS ──
@@ -1356,8 +1204,7 @@ function switchToOrdersTab() {
     document.getElementById('categoryTabs').style.display = 'none';
     document.getElementById('searchSection').style.display = 'none';
     const ov = document.getElementById('ordersView');
-    ov.style.display = 'block'; 
-    ov.classList.add('active');
+    ov.style.display = 'block'; ov.classList.add('active');
     renderOrdersList();
     window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1368,8 +1215,7 @@ function switchToMenuTab() {
     document.getElementById('restaurantHero').style.display = 'block';
     if (allMenuItems.length) document.getElementById('categoryTabs').style.display = 'block';
     const ov = document.getElementById('ordersView');
-    ov.style.display = 'none'; 
-    ov.classList.remove('active');
+    ov.style.display = 'none'; ov.classList.remove('active');
 }
 
 function getStatusClass(s){const m={pending:'pending',confirmed:'confirmed',preparing:'preparing',out_for_delivery:'out-for-delivery',delivered:'delivered',cancelled:'cancelled'};return m[s]||'pending';}
@@ -1409,7 +1255,6 @@ function renderOrdersList() {
         container.innerHTML=`<div class="orders-empty-state"><i data-lucide="receipt"></i><p>No orders yet</p><small>Your order history will appear here</small></div>`;
         lucide.createIcons(); return;
     }
-    // ... (orders rendering code remains exactly the same as original)
     container.innerHTML = allUserOrders.map(o => {
         const date=new Date(o.createdAt||Date.now());
         const dateStr=date.toLocaleDateString('en-ZA',{day:'numeric',month:'short',year:'numeric'});
@@ -1571,16 +1416,15 @@ window.closeProfileModal = () => {
     document.body.style.overflow = '';
 };
 
-// ── BOTTOM NAV ──
-// MODIFIED: Home button now redirects to index.html on mobile (as requested)
+// ── BOTTOM NAV ── (Home redirects to index.html on mobile)
 window.bottomNavClick = function(idx) {
-    for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el)el.classList.toggle('active',i===idx);}
-    
-    if(idx===0){
-        // REDIRECT TO INDEX.HTML WHEN HOME IS CLICKED (mobile)
+    if (idx === 0) {
+        // Home → always go to index page
         window.location.href = 'index.html';
-    } 
-    else if(idx===1){
+        return;
+    }
+    for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el)el.classList.toggle('active',i===idx);}
+    if(idx===1){
         document.getElementById('menuMain').style.display = 'none';
         document.getElementById('restaurantHero').style.display = 'none';
         document.getElementById('categoryTabs').style.display = 'none';
@@ -1589,15 +1433,13 @@ window.bottomNavClick = function(idx) {
         ov.style.display='block'; ov.classList.add('active');
         renderOrdersList();
         window.scrollTo({top:0,behavior:'smooth'});
-    } 
-    else if(idx===2){
-        // Stay on menu and open search
+    } else if(idx===2){
+        // Make sure menu is visible first
         switchToMenuTab();
         setTimeout(()=>{ toggleSearch(); },50);
-    } 
-    else if(idx===3){
+    } else if(idx===3){
         openProfileModal();
-        // Reset home button active state after opening profile
+        // Keep menu tab visually active when profile opens
         for(let i=0;i<4;i++){const el=document.getElementById(`bnav${i}`);if(el)el.classList.toggle('active',i===0);}
     }
 };
@@ -1605,11 +1447,8 @@ window.bottomNavClick = function(idx) {
 // ── TOAST ──
 let toastTimer;
 window.showToast = (msg) => {
-    const t = document.getElementById('toast'); 
-    t.textContent=msg; 
-    t.classList.add('show');
-    clearTimeout(toastTimer); 
-    toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+    const t = document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
 };
 
 // ── AUTH ──
@@ -1626,17 +1465,13 @@ function loadUserProfile(uid) {
 }
 
 onAuthStateChanged(auth, user => {
-    currentUser = user; 
-    currentUserId = user?user.uid:null;
+    currentUser = user; currentUserId = user?user.uid:null;
     if(user){
         loadUserProfile(user.uid);
         loadCart();
         subscribeToOrders();
     } else {
-        cart=[]; 
-        allGroups={}; 
-        allUserOrders=[]; 
-        updateCartUI();
+        cart=[]; allGroups={}; allUserOrders=[]; updateCartUI();
     }
 });
 
