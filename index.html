@@ -12,14 +12,21 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
 <style>
 :root {
---bg: #f8f9fa; --surface: #ffffff; --surface2: #f1f3f5;
---border: #e9ecef; --border-light: #f0f0f0;
+--bg: #f0f2f5; 
+--glass-bg: rgba(255, 255, 255, 0.7);
+--glass-border: rgba(255, 255, 255, 0.4);
+--surface: rgba(255, 255, 255, 0.85); 
+--surface2: rgba(255, 255, 255, 0.5);
+--border: rgba(0, 0, 0, 0.05); 
+--border-light: rgba(255, 255, 255, 0.3);
 --text: #1a1d23; --text-secondary: #4a4a4a; --dim: #6c757d;
---accent: #ff751f; --accent-dark: #e0661c; --accent-light: #ffe8d6;
+--accent: #ff751f; --accent-dark: #e0661c; --accent-light: rgba(255, 117, 31, 0.1);
 --yellow: #ffc107; --danger: #ff3b30; --heart: #ff2d55;
---radius: 20px; --radius-sm: 12px; --radius-xs: 6px;
+--radius: 24px; --radius-sm: 16px; --radius-xs: 8px;
 --radius-pill: 100px;
---shadow: 0 4px 20px rgba(0,0,0,0.08); --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+--shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+--shadow-lg: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+--blur: blur(12px);
 --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 --transition-slow: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 --sidebar-width: 280px; --header-height: 64px;
@@ -30,7 +37,8 @@
 html { touch-action: manipulation; }
 body {
 font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-background: var(--bg);
+background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+background-attachment: fixed;
 color: var(--text);
 line-height: 1.5;
 overflow: hidden;
@@ -89,7 +97,7 @@ overflow: hidden;
 /* ── APP LAYOUT ───────────────────────────────────────── */
 .app-container { display:flex;height:100vh;height:100dvh;width:100vw;position:relative; }
 .sidebar {
-width:var(--sidebar-width);background:var(--surface);border-right:1px solid var(--border);
+width:var(--sidebar-width);background:var(--glass-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-right:1px solid var(--glass-border);
 display:flex;flex-direction:column;z-index:2000;position:fixed;top:0;bottom:0;left:0;
 transform:translateX(-100%);transition:var(--transition-slow);box-shadow:var(--shadow-lg);
 }
@@ -113,7 +121,7 @@ opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(
 .sidebar-overlay.open { opacity:1;pointer-events:auto; }
 .main-wrapper { flex:1;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;position:relative;width:100%; }
 /* ── HEADER ──────────────────────────────── */
-.header { display:flex;flex-direction:column;background:var(--surface);position:sticky;top:0;z-index:1000;box-shadow:0 1px 0 var(--border); }
+.header { display:flex;flex-direction:column;background:var(--glass-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);position:sticky;top:0;z-index:1000;border-bottom:1px solid var(--glass-border);box-shadow:var(--shadow); }
 .header-topbar { display:flex;align-items:center;justify-content:space-between;padding:10px 16px;height:var(--header-height);gap:10px; }
 .header-topbar-left { display:flex;align-items:center;gap:10px; }
 .menu-btn { width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;border-radius:50%;cursor:pointer;color:var(--text);flex-shrink:0;transition:var(--transition); }
@@ -144,12 +152,38 @@ opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(
 .detect-pill-btn.loading { animation:spin 1s linear infinite;color:var(--accent); }
 .detect-pill-btn i { width:16px;height:16px; }
 .search-pill { flex:1;position:relative;min-width:0; }
-.search-pill-input { width:100%;padding:10px 16px 10px 38px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-pill);font-size:0.88rem;font-family:inherit;outline:none;transition:var(--transition);min-height:42px;color:var(--text); }
+.search-pill-input { width:100%;padding:10px 16px 10px 38px;background:rgba(255,255,255,0.5);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--glass-border);border-radius:var(--radius-pill);font-size:0.88rem;font-family:inherit;outline:none;transition:var(--transition);min-height:42px;color:var(--text); }
 .search-pill-input:focus { background:white;border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,117,31,0.12); }
 .search-pill-input::placeholder { color:var(--dim); }
 .search-pill-icon { position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--dim);pointer-events:none; }
 .search-pill-icon i { width:16px;height:16px; }
 .mobile-search-bar { background: var(--surface);border-bottom: 1px solid var(--border);padding: 8px 16px;display: none;z-index: 999;box-shadow: 0 1px 0 var(--border); }
+:focus-visible { outline: 3px solid rgba(255,117,31,0.3); outline-offset: 2px; }
+.visually-hidden { position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+.discovery-helper { background:rgba(255, 117, 31, 0.05); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur); border:1px solid rgba(255, 117, 31, 0.2); border-radius:var(--radius); padding:16px; margin-bottom:14px; box-shadow:var(--shadow); display:flex; align-items:flex-start; justify-content:space-between; gap:14px; }
+.discovery-helper-copy h3 { font-size:1rem; font-weight:800; margin-bottom:4px; color:var(--accent-dark); }
+.discovery-helper-copy p { color:var(--text-secondary); font-size:0.85rem; max-width:620px; }
+.discovery-helper-actions { display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+.discovery-helper-btn { border:none; border-radius:var(--radius-pill); min-height:40px; padding:0 14px; font-family:inherit; font-weight:700; cursor:pointer; transition:var(--transition); }
+.discovery-helper-btn.primary { background:var(--accent); color:white; box-shadow: 0 4px 15px rgba(255, 117, 31, 0.3); }
+.discovery-helper-btn.secondary { background:rgba(255,255,255,0.5); color:var(--text); border:1px solid var(--glass-border); backdrop-filter:var(--blur); }
+.discovery-helper-btn:hover { transform:translateY(-2px); box-shadow:var(--shadow-lg); }
+.discovery-toolbar { background:var(--glass-bg); backdrop-filter:var(--blur); -webkit-backdrop-filter:var(--blur); border:1px solid var(--glass-border); border-radius:var(--radius); padding:12px 14px; margin-bottom:16px; box-shadow:var(--shadow); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.discovery-summary { display:flex; flex-direction:column; gap:3px; }
+.discovery-summary strong { font-size:0.96rem; }
+.discovery-summary span { color:var(--dim); font-size:0.8rem; }
+.discovery-controls { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.toolbar-chip { display:inline-flex; align-items:center; gap:8px; min-height:38px; padding:0 12px; border-radius:var(--radius-pill); border:1.5px solid var(--border); background:var(--surface2); font-weight:700; color:var(--text); }
+.toolbar-chip.toggle.active { background:var(--accent-light); border-color:var(--accent); color:var(--accent-dark); }
+.toolbar-select { min-height:38px; border-radius:var(--radius-pill); border:1.5px solid var(--border); padding:0 12px; background:white; font-family:inherit; font-weight:700; color:var(--text); }
+.toolbar-link-btn { min-height:38px; border:none; background:transparent; color:var(--accent); font-family:inherit; font-weight:800; cursor:pointer; }
+.toolbar-link-btn:hover { color:var(--accent-dark); }
+.results-hint { color:var(--dim); font-size:0.84rem; margin:-2px 0 16px; }
+.results-hint strong { color:var(--text); }
+.empty-state-actions { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:16px; flex-wrap:wrap; }
+.empty-state-btn { min-height:40px; border:none; border-radius:var(--radius-pill); padding:0 14px; background:var(--accent); color:white; font-family:inherit; font-weight:800; cursor:pointer; }
+.empty-state-btn.secondary { background:white; color:var(--text); border:1.5px solid var(--border); }
+.promo-empty { background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius); padding:20px; color:var(--dim); text-align:center; }
 /* ── CATEGORY PILLS ───────────────────────────────────── */
 .categories-row { padding:0 0 10px;background:var(--surface);border-bottom:1px solid var(--border); }
 .categories-container { display:flex;align-items:center;position:relative; }
@@ -160,7 +194,7 @@ opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(
 .cat-arrow.left { margin-left:8px; }
 .cat-arrow.right { margin-right:8px; }
 .cat-arrow.hidden { opacity:0;pointer-events:none; }
-.cat-btn { flex:0 0 auto;padding:7px 14px;border-radius:var(--radius-pill);background:var(--surface2);border:1.5px solid var(--border);font-weight:600;font-size:0.8rem;color:var(--dim);cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:5px;white-space:nowrap;min-height:36px;touch-action:manipulation; }
+.cat-btn { flex:0 0 auto;padding:7px 14px;border-radius:var(--radius-pill);background:rgba(255,255,255,0.4);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border:1px solid var(--glass-border);font-weight:600;font-size:0.8rem;color:var(--text-secondary);cursor:pointer;transition:var(--transition);display:flex;align-items:center;gap:5px;white-space:nowrap;min-height:36px;touch-action:manipulation; }
 .cat-btn.active { background:var(--text);color:white;border-color:var(--text); }
 .cat-btn:hover:not(.active) { transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,0.1);border-color:var(--dim); }
 .cat-btn:active { transform:scale(0.95); }
@@ -203,7 +237,7 @@ opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(
 .section-title { font-size:1.15rem;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:6px; }
 .restaurants-grid { display:grid;grid-template-columns:1fr;gap:16px; }
 @media (min-width:480px){.restaurants-grid{grid-template-columns:repeat(2,1fr);}}
-.r-card { background:var(--surface);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:var(--transition);box-shadow:var(--shadow);border:1px solid var(--border);display:flex;flex-direction:column;position:relative; }
+.r-card { background:var(--glass-bg);backdrop-filter:var(--blur);-webkit-backdrop-filter:var(--blur);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:var(--transition);box-shadow:var(--shadow);border:1px solid var(--glass-border);display:flex;flex-direction:column;position:relative; }
 .r-card:hover { transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,0.12); }
 .r-card:active:not(.closed) { transform:scale(0.98); }
 .r-card.closed { cursor:not-allowed;opacity:0.6;pointer-events:none; }
@@ -233,10 +267,16 @@ opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(
 #emptyState { display:none;text-align:center;padding:60px 20px;color:var(--dim);animation:fadeIn 0.4s ease; }
 #emptyState i { width:60px;height:60px;margin-bottom:18px;opacity:0.4; }
 #emptyState p:first-of-type { font-size:1.05rem;font-weight:600;margin-bottom:8px;color:var(--text); }
+@media (max-width:767px){
+  .discovery-helper, .discovery-toolbar { padding:14px; }
+  .discovery-helper { flex-direction:column; }
+  .discovery-helper-actions, .discovery-controls { width:100%; justify-content:flex-start; }
+  .toolbar-select { flex:1; min-width:170px; }
+}
 /* ── MODALS ───────────────────────────────────────────── */
 .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:3000;display:none;opacity:0;transition:var(--transition);backdrop-filter:blur(4px); }
 .modal-overlay.active { display:block;opacity:1; }
-.modal { position:fixed;display:none;background:var(--surface);z-index:3001;box-shadow:0 -10px 40px rgba(0,0,0,0.2); }
+.modal { position:fixed;display:none;background:rgba(255, 255, 255, 0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:3001;box-shadow:var(--shadow-lg);border:1px solid var(--glass-border); }
 .modal.active { display:flex; }
 @media (max-width:767px){
 .modal{left:0;right:0;bottom:0;border-radius:var(--radius) var(--radius) 0 0;flex-direction:column;max-height:85vh;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);}
@@ -285,7 +325,7 @@ opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(
 /* ── CART DRAWER ──────────────────────────────────────── */
 .cart-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1999;opacity:0;visibility:hidden;transition:var(--transition); }
 .cart-overlay.open { opacity:1;visibility:visible; }
-.cart-drawer { position:fixed;right:0;top:0;bottom:0;width:100%;max-width:400px;background:var(--bg);z-index:2000;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;box-shadow:var(--shadow-lg); }
+.cart-drawer { position:fixed;right:0;top:0;bottom:0;width:100%;max-width:400px;background:rgba(255, 255, 255, 0.8);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);z-index:2000;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;box-shadow:var(--shadow-lg);border-left:1px solid var(--glass-border); }
 .cart-drawer.open { transform:translateX(0); }
 .cart-header { padding:14px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0; }
 .cart-header h3 { font-weight:800;font-size:1rem; }
@@ -771,6 +811,16 @@ pointer-events: none;visibility: hidden;
 </header>
 <main class="main">
 <div id="homeView">
+<section class="discovery-helper" id="discoveryHelper" aria-live="polite">
+<div class="discovery-helper-copy">
+<h3 id="discoveryHelperTitle">Set your location for better results</h3>
+<p id="discoveryHelperText">Find nearby restaurants faster, compare delivery options, and refine results by cuisine, rating, and delivery speed.</p>
+</div>
+<div class="discovery-helper-actions">
+<button class="discovery-helper-btn primary" onclick="detectCurrentLocation()">Use current location</button>
+<button class="discovery-helper-btn secondary" onclick="resetDiscoveryFilters()">Reset filters</button>
+</div>
+</section>
 <section class="promos-section" id="promosSection">
 <div class="promos-header">
 <span class="promos-title">🔥 Deals &amp; Specials</span>
@@ -778,10 +828,33 @@ pointer-events: none;visibility: hidden;
 </div>
 <div class="promos-scroll" id="promosScroll"></div>
 </section>
+<section class="discovery-toolbar" aria-label="Discovery controls">
+<div class="discovery-summary">
+<strong id="resultsCountLabel">0 stores available</strong>
+<span id="resultsSummaryText">Set your location or refine your search to explore stores.</span>
+</div>
+<div class="discovery-controls">
+<button class="toolbar-chip toggle" id="openNowToggle" onclick="toggleOpenNowFilter()" aria-pressed="false"><i data-lucide="clock-3"></i> Open now</button>
+<label class="visually-hidden" for="sortSelect">Sort results</label>
+<select class="toolbar-select" id="sortSelect" onchange="setSortMode(this.value)">
+<option value="recommended">Sort: Recommended</option>
+<option value="nearest">Sort: Nearest</option>
+<option value="rating">Sort: Top rated</option>
+<option value="delivery">Sort: Lowest delivery fee</option>
+<option value="fastest">Sort: Fastest delivery</option>
+</select>
+<button class="toolbar-link-btn" onclick="resetDiscoveryFilters()">Clear filters</button>
+</div>
+</section>
+<div class="results-hint" id="resultsHint">Showing the most relevant stores for your current location and filters.</div>
 <div id="emptyState">
 <i data-lucide="package-open"></i>
-<p>No stores found nearby.</p>
-<p style="font-size:0.87rem;">Try increasing your search radius or changing location.</p>
+<p id="emptyStateTitle">No stores found nearby.</p>
+<p id="emptyStateText" style="font-size:0.87rem;">Try increasing your search radius or changing location.</p>
+<div class="empty-state-actions">
+<button class="empty-state-btn" onclick="openLocationModal()">Update location</button>
+<button class="empty-state-btn secondary" onclick="resetDiscoveryFilters()">Clear filters</button>
+</div>
 </div>
 <div id="featuredSection" style="margin-bottom:28px;">
 <h2 class="section-title">Nearby Top Rated <span style="color:var(--yellow);">★</span></h2>
@@ -1034,10 +1107,15 @@ function loadPromos() {
 }
 function renderPromos() {
   const scroll = document.getElementById('promosScroll');
+  const promoKeys = Object.keys(promosCache);
+  if(!promoKeys.length){
+    scroll.innerHTML = `<div class="promo-empty">Deals and promotions will appear here as soon as they are available.</div>`;
+    return;
+  }
   scroll.innerHTML = `<div class="promo-marquee" id="promoMarquee"></div>`;
   const marquee = document.getElementById('promoMarquee');
   let html = '';
-  Object.keys(promosCache).forEach(key => {
+  promoKeys.forEach(key => {
     const p = promosCache[key];
     html += `<div class="promo-card ${p.colorClass||'promo-green'}" onclick="applyPromo('${key}')">
       <img class="promo-card-bg" src="${p.img||'https://via.placeholder.com/300x120?text=Promo'}" alt="${p.title}" loading="lazy">
@@ -1057,6 +1135,7 @@ let currentUser=null, currentUserId=null, userLikes=new Set();
 let vendorInfoCache={}, isConverting=false;
 let userLocation={lat:null,lng:null,address:null};
 let searchRadius=10, selectedRadius=10;
+let sortMode='recommended', openNowOnly=false;
 let coStep=0, selectedPayment='cash', coDeliveryAddress=null, coAnimDir='forward';
 let userProfile={name:'',phone:'',addresses:[],settings:{notif:true,loc:true,sms:false,promo:true}};
 let expandedOrders=new Set();
@@ -1514,16 +1593,92 @@ window.detectCurrentLocation = async()=>{
     finally{btn.classList.remove('loading');}
   },(err)=>{btn.classList.remove('loading');showToast(err.code===err.PERMISSION_DENIED?"Location permission denied":"Unable to get location");},{enableHighAccuracy:true,timeout:10000,maximumAge:0});
 };
+function persistDiscoveryPreferences(){
+  localStorage.setItem('vynixDiscoveryPrefs', JSON.stringify({
+    currentStoreType,
+    currentFilter,
+    searchTerm,
+    searchRadius,
+    selectedRadius,
+    sortMode,
+    openNowOnly,
+    locationAddress:userLocation.address||''
+  }));
+}
+function hydrateDiscoveryPreferences(){
+  try{
+    const raw = localStorage.getItem('vynixDiscoveryPrefs');
+    if(!raw) return;
+    const prefs = JSON.parse(raw);
+    if(prefs.currentStoreType) currentStoreType = prefs.currentStoreType;
+    if(prefs.currentFilter) currentFilter = prefs.currentFilter;
+    if(typeof prefs.searchTerm === 'string') searchTerm = prefs.searchTerm;
+    if(Number.isFinite(parseInt(prefs.searchRadius))) searchRadius = parseInt(prefs.searchRadius);
+    if(Number.isFinite(parseInt(prefs.selectedRadius))) selectedRadius = parseInt(prefs.selectedRadius);
+    if(prefs.sortMode) sortMode = prefs.sortMode;
+    openNowOnly = !!prefs.openNowOnly;
+    if(prefs.locationAddress) userLocation.address = prefs.locationAddress;
+  }catch(e){ console.warn('Could not hydrate discovery preferences', e); }
+}
+function syncDiscoveryControls(){
+  const si=document.getElementById('searchInput'),mi=document.getElementById('mobileSearchInput');
+  const sort=document.getElementById('sortSelect');
+  const openBtn=document.getElementById('openNowToggle');
+  if(si) si.value=searchTerm;
+  if(mi) mi.value=searchTerm;
+  if(sort) sort.value=sortMode;
+  if(openBtn){
+    openBtn.classList.toggle('active', openNowOnly);
+    openBtn.setAttribute('aria-pressed', String(openNowOnly));
+  }
+  document.querySelectorAll('.radius-option').forEach(o=>o.classList.toggle('selected',parseInt(o.dataset.value)===selectedRadius));
+  const locationText = userLocation.address || 'Set location…';
+  const locationDisplay = document.getElementById('locationDisplay');
+  const modalInput = document.getElementById('modalLocationInput');
+  const profileValue = document.getElementById('profileLocationValue');
+  if(locationDisplay) locationDisplay.textContent = locationText;
+  if(modalInput && userLocation.address) modalInput.value = userLocation.address;
+  if(profileValue) profileValue.textContent = userLocation.address || 'Not set yet';
+}
+function updateDiscoveryHelper(){
+  const title=document.getElementById('discoveryHelperTitle');
+  const text=document.getElementById('discoveryHelperText');
+  if(!title||!text) return;
+  if(!userLocation.address){
+    title.textContent='Set your location for better results';
+    text.textContent='Find nearby restaurants faster, compare delivery options, and refine results by cuisine, rating, and delivery speed.';
+    return;
+  }
+  title.textContent=`Browsing near ${userLocation.address}`;
+  text.textContent=`Your current search radius is ${searchRadius} km. Use sorting, quick filters, and search to narrow down the best matches.`;
+}
 function setUserLocation(lat,lng,address){
   userLocation={lat,lng,address};
-  document.getElementById('locationDisplay').textContent=address;
-  document.getElementById('modalLocationInput').value=address;
   const plv=document.getElementById('profileLocationValue');if(plv)plv.textContent=address;
   const pli=document.getElementById('profileLocationInput');if(pli)pli.value=address;
+  syncDiscoveryControls();
+  updateDiscoveryHelper();
+  persistDiscoveryPreferences();
   showLocToast(`📍 ${address}`);
   applyFilters();
 }
-window.updateRadius = (r)=>{searchRadius=parseInt(r);showLocToast(`Radius set to ${r} km`);applyFilters();};
+window.updateRadius = (r)=>{searchRadius=parseInt(r);selectedRadius=parseInt(r);syncDiscoveryControls();updateDiscoveryHelper();persistDiscoveryPreferences();showLocToast(`Radius set to ${r} km`);applyFilters();};
+window.setSortMode = (value)=>{sortMode=value;syncDiscoveryControls();persistDiscoveryPreferences();applyFilters();};
+window.toggleOpenNowFilter = ()=>{openNowOnly=!openNowOnly;syncDiscoveryControls();persistDiscoveryPreferences();applyFilters();};
+window.resetDiscoveryFilters = ()=>{
+  currentFilter='all';
+  searchTerm='';
+  searchRadius=10;
+  selectedRadius=10;
+  sortMode='recommended';
+  openNowOnly=false;
+  buildCategoryFilters();
+  syncDiscoveryControls();
+  updateDiscoveryHelper();
+  persistDiscoveryPreferences();
+  applyFilters();
+  showToast('Discovery filters reset');
+};
 let debounceTimer;
 document.getElementById('modalLocationInput').addEventListener('input',e=>{
   clearTimeout(debounceTimer);const q=e.target.value;
@@ -1548,7 +1703,13 @@ window.setStoreType = (type,btn)=>{
   document.getElementById('foodFilters').style.display=type==='restaurant'?'block':'none';
   document.getElementById('searchInput').placeholder=`Search for ${type}…`;
   searchTerm="";document.getElementById('searchInput').value="";
-  currentFilter="all";buildCategoryFilters();toggleSidebar();applyFilters();
+  currentFilter="all";
+  buildCategoryFilters();
+  syncDiscoveryControls();
+  updateDiscoveryHelper();
+  persistDiscoveryPreferences();
+  toggleSidebar();
+  applyFilters();
 };
 // ── AUTH ─────────────────────────────────────────────────────
 onAuthStateChanged(auth,user=>{
@@ -1979,24 +2140,108 @@ function generateCardHTML(v){
 }
 function applyFilters(){
   let filtered=allVendors.filter(v=>v.storeType===currentStoreType);
-  if(userLocation.lat&&userLocation.lng){filtered=filtered.map(v=>{if(v.lat&&v.lng)return{...v,distance:calculateDistance(userLocation.lat,userLocation.lng,v.lat,v.lng)};return{...v,distance:null};}).filter(v=>v.distance===null||v.distance<=searchRadius);}
-  if(currentStoreType==='restaurant'&&currentFilter!=='all')filtered=filtered.filter(v=>vendorMatchesCategory(v,currentFilter));
-  if(searchTerm.trim()){const t=searchTerm.toLowerCase().trim();filtered=filtered.filter(v=>v.name.toLowerCase().includes(t));}
-  const es=document.getElementById("emptyState"),fs=document.getElementById("featuredSection"),ps=document.getElementById("popularSection");
-  if(!filtered.length){es.style.display="block";fs.style.display="none";ps.style.display="none";return;}
-  es.style.display="none";
-  filtered.sort((a,b)=>{if(a.isOpen!==b.isOpen)return a.isOpen?-1:1;if(a.distance!==null&&b.distance!==null)return a.distance-b.distance;if(a.distance!==null)return -1;if(b.distance!==null)return 1;return parseFloat(b.rating)-parseFloat(a.rating);});
+  if(userLocation.lat&&userLocation.lng){
+    filtered=filtered.map(v=>{if(v.lat&&v.lng)return{...v,distance:calculateDistance(userLocation.lat,userLocation.lng,v.lat,v.lng)};return{...v,distance:null};}).filter(v=>v.distance===null||v.distance<=searchRadius);
+  }
+  if(currentStoreType==='restaurant'&&currentFilter!=='all') filtered=filtered.filter(v=>vendorMatchesCategory(v,currentFilter));
+  if(openNowOnly) filtered=filtered.filter(v=>v.isOpen);
+  if(searchTerm.trim()){
+    const t=searchTerm.toLowerCase().trim();
+    filtered=filtered.filter(v=>{
+      const categories=getVendorCategories(v).join(' ').toLowerCase();
+      return v.name.toLowerCase().includes(t) || (v.cuisine||'').toLowerCase().includes(t) || categories.includes(t);
+    });
+  }
+
+  const es=document.getElementById('emptyState'),fs=document.getElementById('featuredSection'),ps=document.getElementById('popularSection');
+  const resultsCountLabel=document.getElementById('resultsCountLabel');
+  const resultsSummaryText=document.getElementById('resultsSummaryText');
+  const resultsHint=document.getElementById('resultsHint');
+  const emptyStateTitle=document.getElementById('emptyStateTitle');
+  const emptyStateText=document.getElementById('emptyStateText');
+
+  const summaryParts=[];
+  summaryParts.push(userLocation.address ? `Near ${userLocation.address}` : 'Across all available areas');
+  if(currentStoreType!=='restaurant') summaryParts.push(currentStoreType);
+  if(currentFilter!=='all') summaryParts.push(currentFilter);
+  if(openNowOnly) summaryParts.push('open now');
+  if(searchTerm.trim()) summaryParts.push(`matching “${searchTerm.trim()}”`);
+
+  const deliveryFeeForSort = (vendor)=>{
+    if(vendor.lat&&vendor.lng&&userLocation.lat&&userLocation.lng){
+      const distance = calculateDistance(userLocation.lat,userLocation.lng,vendor.lat,vendor.lng);
+      const { fee } = calcDeliveryFee(distance,0);
+      return fee;
+    }
+    return parseFloat(vendor.deliveryFee||0);
+  };
+  const etaToNumber = (eta)=>{
+    const m = String(eta||'').match(/\d+/);
+    return m ? parseInt(m[0]) : 999;
+  };
+
+  filtered.sort((a,b)=>{
+    if(sortMode==='nearest'){
+      if(a.distance!==null&&b.distance!==null) return a.distance-b.distance;
+      if(a.distance!==null) return -1;
+      if(b.distance!==null) return 1;
+    }
+    if(sortMode==='rating'){
+      const diff = parseFloat(b.rating)-parseFloat(a.rating);
+      if(diff!==0) return diff;
+    }
+    if(sortMode==='delivery'){
+      const diff = deliveryFeeForSort(a)-deliveryFeeForSort(b);
+      if(diff!==0) return diff;
+    }
+    if(sortMode==='fastest'){
+      const diff = etaToNumber(a.eta)-etaToNumber(b.eta);
+      if(diff!==0) return diff;
+    }
+    if(a.isOpen!==b.isOpen) return a.isOpen?-1:1;
+    if(a.distance!==null&&b.distance!==null) return a.distance-b.distance;
+    if(a.distance!==null) return -1;
+    if(b.distance!==null) return 1;
+    return parseFloat(b.rating)-parseFloat(a.rating);
+  });
+
+  const totalCount = filtered.length;
+  if(resultsCountLabel) resultsCountLabel.textContent = `${totalCount} store${totalCount===1?'':'s'} available`;
+  if(resultsSummaryText) resultsSummaryText.textContent = summaryParts.join(' · ');
+  if(resultsHint) resultsHint.innerHTML = totalCount
+    ? `Showing <strong>${Math.min(totalCount,3)}</strong> featured result${Math.min(totalCount,3)===1?'':'s'} first, followed by the remaining matches.`
+    : 'No stores match the current location, filters, and search settings.';
+
+  if(!filtered.length){
+    if(emptyStateTitle) emptyStateTitle.textContent = searchTerm.trim() ? `No results for “${searchTerm.trim()}”` : 'No stores found nearby.';
+    if(emptyStateText) emptyStateText.textContent = userLocation.address
+      ? `Try widening the ${searchRadius} km radius, turning off “Open now”, or clearing filters for ${userLocation.address}.`
+      : 'Set a delivery location, increase the search radius, or clear filters to explore more stores.';
+    es.style.display='block';
+    fs.style.display='none';
+    ps.style.display='none';
+    persistDiscoveryPreferences();
+    lucide.createIcons();
+    return;
+  }
+
+  es.style.display='none';
   const feat=filtered.slice(0,3),pop=filtered.slice(3);
-  fs.style.display=feat.length?"block":"none";document.getElementById("featuredGrid").innerHTML=feat.map(generateCardHTML).join('');
-  ps.style.display=pop.length?"block":"none";document.getElementById("restaurantsGrid").innerHTML=pop.map(generateCardHTML).join('');
-  lucide.createIcons();updateFilterArrows();
+  fs.style.display=feat.length?'block':'none';
+  document.getElementById('featuredGrid').innerHTML=feat.map(generateCardHTML).join('');
+  ps.style.display=pop.length?'block':'none';
+  document.getElementById('restaurantsGrid').innerHTML=pop.map(generateCardHTML).join('');
+  persistDiscoveryPreferences();
+  lucide.createIcons();
+  updateFilterArrows();
 }
-window.filterCategory = (cat,btn)=>{document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=cat;applyFilters();};
+window.filterCategory = (cat,btn)=>{document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentFilter=cat;persistDiscoveryPreferences();applyFilters();};
 window.handleSearch = (v)=>{
   searchTerm=v;
   const si=document.getElementById('searchInput'),mi=document.getElementById('mobileSearchInput');
   if(document.activeElement!==si&&si)si.value=v;
   if(document.activeElement!==mi&&mi)mi.value=v;
+  persistDiscoveryPreferences();
   applyFilters();
 };
 window.scrollFilters = (d)=>{document.getElementById('categoryFilters').scrollBy({left:d,behavior:'smooth'});};
@@ -2010,6 +2255,19 @@ function updateFilterArrows(){
 document.addEventListener('DOMContentLoaded',()=>{
   const c=document.getElementById('categoryFilters');
   if(c)c.addEventListener('scroll',updateFilterArrows);
+  document.addEventListener('keydown', (e)=>{
+    if(e.key !== 'Escape') return;
+    closeLocationModal();
+    closeProfileModal();
+    closeAuthModals();
+    closeSidebarDataModal();
+    const cartDrawer = document.getElementById('cartDrawer');
+    const checkoutDrawer = document.getElementById('checkoutDrawer');
+    if(cartDrawer && cartDrawer.classList.contains('open')) toggleCart();
+    if(checkoutDrawer && checkoutDrawer.classList.contains('open') && coStep !== 2) closeCheckoutDrawer();
+    const sidebar = document.getElementById('sidebar');
+    if(sidebar && sidebar.classList.contains('open')) toggleSidebar();
+  });
 });
 // ── BOTTOM NAV ──
 window.bottomNavClick = function(idx) {
@@ -2044,14 +2302,23 @@ window.bottomNavClick = function(idx) {
   else if(idx === 3){ handleProfileClick(); }
 };
 // ── INIT ──
+hydrateDiscoveryPreferences();
 lucide.createIcons();
 generateShimmerCards(6);
 buildCategoryFilters();
+syncDiscoveryControls();
+updateDiscoveryHelper();
 loadPromos();
 loadVendors();
 loadDeliveryFeeConfig();
 updateCartUI();
-if(navigator.geolocation)setTimeout(()=>detectCurrentLocation(),1000);
+if(currentStoreType && document.querySelector(`.nav-btn[onclick*="${currentStoreType}"]`)){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const activeBtn = document.querySelector(`.nav-btn[onclick*="${currentStoreType}"]`);
+  if(activeBtn) activeBtn.classList.add('active');
+}
+if(currentStoreType!=='restaurant') document.getElementById('foodFilters').style.display='none';
+if(navigator.geolocation && !userLocation.address)setTimeout(()=>detectCurrentLocation(),1000);
 // Post-payment redirect handling
 (function checkPostPaymentRedirect() {
     if (localStorage.getItem('vynixOpenOrdersTab') !== '1') return;
