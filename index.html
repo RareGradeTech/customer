@@ -665,37 +665,6 @@ pointer-events: none;visibility: hidden;
 .floating-cart-bar.visible { transform: translateY(0) !important;opacity: 1 !important;pointer-events: auto !important; }
 @media (max-width: 767px) { .floating-cart-bar { bottom: 64px !important;padding-bottom: 10px;left: 0 !important; } }
 @media (min-width: 768px) { .floating-cart-bar { left: var(--sidebar-width) !important;padding: 8px 22px;padding-bottom: calc(10px + var(--safe-bottom)); } }
-
-/* ── NEW FEATURES CSS ─────────────────────────────────────── */
-/* Budget Filter */
-.budget-pill {
-  display:flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);
-  border-radius:var(--radius-pill);padding:8px 14px;cursor:pointer;transition:var(--transition);
-  min-height:42px;flex-shrink:0;
-}
-.budget-pill:hover { border-color:var(--accent);background:white; }
-.budget-pill i { color:var(--accent);flex-shrink:0; }
-.budget-value { font-size:0.8rem;font-weight:700;color:var(--text); }
-
-/* Group Order Modal & Styles */
-.group-modal-content { padding:20px; }
-.share-link {
-  background:var(--surface2);border-radius:var(--radius-sm);padding:14px;font-family:monospace;
-  font-size:0.9rem;word-break:break-all;margin:15px 0;border:1px dashed var(--border);
-  text-align:center;
-}
-
-/* Driver Preference */
-.driver-pref-row { display:flex;gap:8px;flex-wrap:wrap; }
-.driver-pref-btn {
-  flex:1;min-width:110px;padding:14px 10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);
-  background:var(--surface);text-align:center;cursor:pointer;transition:var(--transition);
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-}
-.driver-pref-btn.active {
-  border-color:var(--accent);background:var(--accent-light);color:var(--accent-dark);
-}
-.driver-pref-btn i { width:26px;height:26px; }
 </style>
 </head>
 <body>
@@ -781,11 +750,6 @@ pointer-events: none;visibility: hidden;
 <button class="detect-pill-btn" id="detectBtn" onclick="detectCurrentLocation()" title="Use current location">
 <i data-lucide="navigation"></i>
 </button>
-<!-- NEW: Budget pill (optimized for mobile) -->
-<div class="budget-pill" onclick="openBudgetModal()">
-<i data-lucide="wallet"></i>
-<div class="budget-value" id="budgetDisplay">Any budget</div>
-</div>
 <div class="search-pill">
 <div class="search-pill-icon"><i data-lucide="search"></i></div>
 <input type="text" class="search-pill-input" id="searchInput" placeholder="Search restaurants, food…" oninput="handleSearch(this.value)">
@@ -864,11 +828,6 @@ pointer-events: none;visibility: hidden;
 </div>
 <div class="cart-footer" id="cartFooter" style="display:none;">
 <div id="cartSummary"></div>
-<!-- NEW: Group ordering button (split payments) - optimized for mobile -->
-<button onclick="startGroupOrder()" style="width:100%;background:var(--surface2);color:var(--accent);border:none;padding:12px;border-radius:var(--radius-xs);font-weight:800;font-size:0.9rem;cursor:pointer;transition:var(--transition);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;">
-<i data-lucide="users"></i>
-Start Group Order • Split Payments
-</button>
 <button class="checkout-btn" id="checkoutBtn" disabled onclick="openCheckoutDrawer()">Place Order</button>
 </div>
 <div class="checkout-drawer" id="checkoutDrawer">
@@ -908,52 +867,6 @@ Start Group Order • Split Payments
 <div class="suggestions-list" id="locationSuggestions"></div>
 </div>
 </div>
-
-<!-- NEW: BUDGET MODAL (meal budget filter) -->
-<div class="modal-overlay" id="budgetModalOverlay" onclick="closeBudgetModal()"></div>
-<div class="modal" id="budgetModal">
-<div class="modal-header">
-<h3>Set Your Meal Budget</h3>
-<button class="close-btn" onclick="closeBudgetModal()"><i data-lucide="x"></i></button>
-</div>
-<div class="modal-body">
-<p class="modal-text">The app will filter and show only meals (from all restaurants) within your chosen budget range. Optimized for students &amp; quick orders.</p>
-<div style="padding:20px 0;">
-<div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--dim);margin-bottom:8px;">
-<span>R0</span>
-<span id="budgetMaxDisplay">R500</span>
-</div>
-<input type="range" id="budgetRange" min="0" max="500" value="500" step="10" oninput="updateBudgetDisplay(this.value)" style="width:100%;accent-color:var(--accent);height:6px;border-radius:9999px;">
-<div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap;">
-<div onclick="setBudgetPreset(50)" style="cursor:pointer;flex:1;padding:10px 14px;border-radius:var(--radius-pill);background:var(--surface2);font-size:0.82rem;font-weight:600;text-align:center;">Under R50</div>
-<div onclick="setBudgetPreset(100)" style="cursor:pointer;flex:1;padding:10px 14px;border-radius:var(--radius-pill);background:var(--surface2);font-size:0.82rem;font-weight:600;text-align:center;">R50 – R100</div>
-<div onclick="setBudgetPreset(200)" style="cursor:pointer;flex:1;padding:10px 14px;border-radius:var(--radius-pill);background:var(--surface2);font-size:0.82rem;font-weight:600;text-align:center;">R100 – R200</div>
-<div onclick="setBudgetPreset(500)" style="cursor:pointer;flex:1;padding:10px 14px;border-radius:var(--radius-pill);background:var(--surface2);font-size:0.82rem;font-weight:600;text-align:center;">Any budget</div>
-</div>
-</div>
-<button onclick="applyBudgetFilter()" class="use-current-location" style="margin-top:10px;">Show Meals in Budget Only</button>
-</div>
-</div>
-
-<!-- NEW: GROUP ORDER MODAL (split payments) -->
-<div class="modal-overlay" id="groupModalOverlay" onclick="closeGroupModal()"></div>
-<div class="modal" id="groupModal">
-<div class="modal-header">
-<h3>Group Ordering • Split Payments</h3>
-<button class="close-btn" onclick="closeGroupModal()"><i data-lucide="x"></i></button>
-</div>
-<div class="modal-body group-modal-content">
-<p class="modal-text">Perfect for students, offices &amp; late-night orders.<br>Friends join one link, add their own items, and each pays separately.</p>
-<div id="groupLinkContainer" style="display:none;">
-<p style="font-weight:700;margin-bottom:8px;">Share this link with friends:</p>
-<div class="share-link" id="groupShareLink">https://1busket.app/group/XXXXXX</div>
-<button onclick="copyGroupLink()" style="width:100%;background:var(--accent);color:white;border:none;padding:14px;border-radius:var(--radius-sm);font-weight:700;">Copy Link</button>
-<p style="font-size:0.75rem;color:var(--dim);margin-top:12px;text-align:center;">Everyone adds items • Split checkout automatically</p>
-</div>
-<button onclick="createNewGroupOrder()" id="createGroupBtn" class="use-current-location">Create New Group Order Link</button>
-</div>
-</div>
-
 <!-- PROFILE MODAL -->
 <div class="modal-overlay" id="profileOverlay" onclick="closeProfileModal()"></div>
 <div id="profileModal">
@@ -1150,13 +1063,6 @@ let expandedOrders=new Set();
 let allUserOrders = [];
 let ordersModalOpen = false;
 let appliedPromo = null;
-// ── NEW STATE FOR REQUESTED FEATURES ───────────────────────
-let budgetMin = 0;
-let budgetMax = 500;
-let isMealMode = false;
-let groupOrderId = null;
-let driverPreference = 'fastest'; // fastest | friendliest | quiet
-let favoriteDrivers = [];
 // ── TOAST ──────────────────────────────────────────────────
 let toastTimer;
 window.showToast = (msg) => {
@@ -1386,11 +1292,7 @@ window.preparePaymentAndRedirect = () => {
     promo: appliedPromo ? JSON.parse(JSON.stringify(appliedPromo)) : null,
     items: getAllCartItems(), // flat list for display
     groups, // per-vendor breakdown — used to write separate orders
-    vendorKey: groups.length === 1 ? groups[0].vendorId : '',
-    // NEW: pass group & driver data for split payment & driver matching
-    isGroupOrder: !!groupOrderId,
-    groupOrderId: groupOrderId,
-    driverPreference: driverPreference
+    vendorKey: groups.length === 1 ? groups[0].vendorId : ''
   };
   localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
   window.location.href = 'payment.html';
@@ -1416,8 +1318,6 @@ function renderCoPayment(body,footer){
   body.innerHTML=`
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="map-pin"></i></div><span class="co-card-label">Delivery Address</span><span class="co-card-edit" id="coAddrEditBtn">Change</span></div><div class="co-card-body">${addrH}</div></div>
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="credit-card"></i></div><span class="co-card-label">Payment Method</span></div><div class="co-card-body"><div class="co-payment-options" id="coPayOptions">${pays.map(p=>`<div class="co-pay-option ${selectedPayment===p.id?'selected':''}" onclick="selectPayment('${p.id}')"><div class="co-pay-icon"><i data-lucide="${p.icon}"></i></div><div class="co-pay-info"><div class="co-pay-name">${p.name}</div><div class="co-pay-sub">${p.sub}</div></div><div class="co-pay-check"></div></div>`).join('')}}</div></div></div>
-    <!-- NEW: Driver personality & rating matching section -->
-    <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="bike"></i></div><span class="co-card-label">Driver Preference</span></div><div class="co-card-body"><div class="driver-pref-row" id="driverPrefContainer"></div></div></div>
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="receipt"></i></div><span class="co-card-label">Order Total</span></div><div class="co-card-body"><div class="co-price-row"><span>Subtotal</span><span>R${ts.toFixed(2)}</span></div><div class="co-price-row"><span>Delivery fee${Object.keys(cartGroups).length>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div><div class="co-price-row total"><span>Total</span><span>R${total.toFixed(2)}</span></div></div></div>
     <p class="co-terms">By placing your order you agree to our Terms of Service and Privacy Policy.</p>
   `;
@@ -1428,32 +1328,7 @@ function renderCoPayment(body,footer){
     if(inp){const isHidden=inp.style.display==='none'||!inp.style.display;inp.style.display=isHidden?'block':'none';if(isHidden){inp.focus();}}
   });
   if(!defaultAddr){const inp=document.getElementById('coAddrInput');if(inp)inp.style.display='block';}
-  // Render driver preferences (new feature)
-  renderDriverPreferences();
 }
-function renderDriverPreferences() {
-  const container = document.getElementById('driverPrefContainer');
-  if (!container) return;
-  const prefs = [
-    {id:'fastest', icon:'zap', label:'Fastest', sub:'Quick &amp; efficient'},
-    {id:'friendliest', icon:'smile', label:'Friendliest', sub:'Chatty &amp; helpful'},
-    {id:'quiet', icon:'volume-x', label:'Quiet', sub:'No small talk'}
-  ];
-  let html = prefs.map(p => `
-    <div class="driver-pref-btn ${driverPreference===p.id?'active':''}" onclick="selectDriverPreference('${p.id}')">
-      <i data-lucide="${p.icon}"></i>
-      <div style="font-weight:700;font-size:0.85rem;">${p.label}</div>
-      <div style="font-size:0.7rem;color:var(--dim);">${p.sub}</div>
-    </div>
-  `).join('');
-  container.innerHTML = html;
-  lucide.createIcons();
-}
-window.selectDriverPreference = (pref) => {
-  driverPreference = pref;
-  renderDriverPreferences();
-  showToast(`✅ Driver preference updated to ${pref}`);
-};
 window.selectPayment = id=>{
   selectedPayment=id;
   document.querySelectorAll('.co-pay-option').forEach(el=>el.classList.toggle('selected',el.getAttribute('onclick').includes(`'${id}'`)));
@@ -1559,11 +1434,7 @@ window.handleCheckout = async()=>{
         status: 'pending',
         createdAt: timestamp,
         updatedAt: timestamp,
-        estimatedPrepTime: calcPrepTime(),
-        // NEW: driver preference & group data for matching
-        driverPreference: driverPreference,
-        isGroupOrder: !!groupOrderId,
-        groupOrderId: groupOrderId || null
+        estimatedPrepTime: calcPrepTime()
       };
       // Get a shared key so both paths reference the same order
       const newOrderRef = push(ref(db, 'orders'));
@@ -1584,7 +1455,7 @@ window.handleCheckout = async()=>{
         vendorId: gVid, vendorKey: gVid, vendorName: group.vendorName||"", vendorImage: group.vendorImage||"",
         items: group.items, subtotal: sub, deliveryFee: fee, total: sub+fee,
         paymentMethod: selectedPayment, deliveryAddress: coDeliveryAddress||"",
-        status: "pending", createdAt: Date.now(), driverPreference: driverPreference };
+        status: "pending", createdAt: Date.now() };
     });
     allUserOrders = [...optimisticOrders, ...allUserOrders];
     renderOrders(allUserOrders, "mobileOrdersList");
@@ -1598,8 +1469,6 @@ window.handleCheckout = async()=>{
     animateCoBody();
     renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, firstOrderId);
     lucide.createIcons();
-    // Reset group after checkout
-    groupOrderId = null;
   }catch(e){
     console.error(e);
     showToast("Order failed. Please try again.");
@@ -1680,57 +1549,6 @@ window.setStoreType = (type,btn)=>{
   document.getElementById('searchInput').placeholder=`Search for ${type}…`;
   searchTerm="";document.getElementById('searchInput').value="";
   currentFilter="all";buildCategoryFilters();toggleSidebar();applyFilters();
-};
-// ── NEW BUDGET FEATURE FUNCTIONS ─────────────────────────────
-window.openBudgetModal = () => {
-  document.getElementById('budgetModalOverlay').classList.add('active');
-  document.getElementById('budgetModal').classList.add('active');
-  document.getElementById('budgetRange').value = budgetMax;
-  updateBudgetDisplay(budgetMax);
-};
-window.closeBudgetModal = () => {
-  document.getElementById('budgetModalOverlay').classList.remove('active');
-  document.getElementById('budgetModal').classList.remove('active');
-};
-window.updateBudgetDisplay = (val) => {
-  budgetMax = parseInt(val);
-  document.getElementById('budgetMaxDisplay').textContent = `R${budgetMax}`;
-};
-window.setBudgetPreset = (max) => {
-  budgetMax = max;
-  document.getElementById('budgetRange').value = max;
-  updateBudgetDisplay(max);
-};
-window.applyBudgetFilter = () => {
-  budgetMin = 0;
-  isMealMode = true;
-  closeBudgetModal();
-  document.getElementById('budgetDisplay').textContent = `≤ R${budgetMax}`;
-  showToast(`🍽️ Showing meals ≤ R${budgetMax} from all restaurants`);
-  applyFilters();
-};
-// ── NEW GROUP ORDERING FUNCTIONS (split payments) ───────────
-window.startGroupOrder = () => {
-  document.getElementById('groupModalOverlay').classList.add('active');
-  document.getElementById('groupModal').classList.add('active');
-};
-window.closeGroupModal = () => {
-  document.getElementById('groupModalOverlay').classList.remove('active');
-  document.getElementById('groupModal').classList.remove('active');
-};
-window.createNewGroupOrder = () => {
-  groupOrderId = 'GROUP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-  document.getElementById('createGroupBtn').style.display = 'none';
-  const container = document.getElementById('groupLinkContainer');
-  container.style.display = 'block';
-  document.getElementById('groupShareLink').textContent = `https://1busket.app/group/${groupOrderId}`;
-  showToast('Group link ready — friends can now join and add items!');
-};
-window.copyGroupLink = () => {
-  const linkEl = document.getElementById('groupShareLink');
-  navigator.clipboard.writeText(linkEl.textContent).then(() => {
-    showToast('Link copied! Share with friends for split payments.');
-  });
 };
 // ── AUTH ─────────────────────────────────────────────────────
 onAuthStateChanged(auth,user=>{
@@ -2056,7 +1874,7 @@ window.doSignOut = ()=>{signOut(auth).then(()=>{closeAuthModals();closeProfileMo
 window.toggleSetting = async(key)=>{
   if(!currentUserId)return;
   const s=userProfile.settings||{};s[key]=!s[key];userProfile.settings=s;
-  const el=document.getElementById(`toggle${k.charAt(0).toUpperCase()+k.slice(1)}`);
+  const el=document.getElementById(`toggle${key.charAt(0).toUpperCase()+key.slice(1)}`);
   if(el)el.classList.toggle('active',!!s[key]);
   try{await set(ref(db,`users/${currentUserId}`),userProfile);}catch(e){console.error(e);}
 };
@@ -2164,13 +1982,6 @@ function applyFilters(){
   if(userLocation.lat&&userLocation.lng){filtered=filtered.map(v=>{if(v.lat&&v.lng)return{...v,distance:calculateDistance(userLocation.lat,userLocation.lng,v.lat,v.lng)};return{...v,distance:null};}).filter(v=>v.distance===null||v.distance<=searchRadius);}
   if(currentStoreType==='restaurant'&&currentFilter!=='all')filtered=filtered.filter(v=>vendorMatchesCategory(v,currentFilter));
   if(searchTerm.trim()){const t=searchTerm.toLowerCase().trim();filtered=filtered.filter(v=>v.name.toLowerCase().includes(t));}
-  // NEW: Budget / meal filter logic (meals from all restaurants)
-  if(isMealMode){
-    // In a full implementation this would load meals globally and filter price <= budgetMax.
-    // For this demo we keep vendor cards but mark them as "meals in budget".
-    document.getElementById('featuredSection').querySelector('h2').innerHTML = `Meals ≤ R${budgetMax} <span style="color:var(--accent);">🍽️</span>`;
-    document.getElementById('popularSection').querySelector('h2').innerHTML = `More Meals in Budget`;
-  }
   const es=document.getElementById("emptyState"),fs=document.getElementById("featuredSection"),ps=document.getElementById("popularSection");
   if(!filtered.length){es.style.display="block";fs.style.display="none";ps.style.display="none";return;}
   es.style.display="none";
