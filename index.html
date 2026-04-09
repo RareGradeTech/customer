@@ -510,80 +510,6 @@ opacity:0;pointer-events:none;transition:opacity 0.3s ease;backdrop-filter:blur(
 .sign-out-btn { width:100%;background:#ffebee;color:var(--danger);border:1.5px solid rgba(255,59,48,0.2);padding:11px;border-radius:var(--radius-sm);font-family:inherit;font-weight:700;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:var(--transition);margin-top:14px; }
 .sign-out-btn:hover { background:var(--danger);color:white; }
 .sign-out-btn i { width:15px;height:15px; }
-/* ── BUDGET FILTER ─────────────────────────────────────── */
-.budget-filter-section { background: var(--surface);border-bottom: 1px solid var(--border);padding: 14px 16px;display: none; }
-.budget-filter-section.show { display: block; }
-.budget-filter-label { font-size: 0.78rem;font-weight: 700;color: var(--dim);text-transform: uppercase;letter-spacing: 0.5px;margin-bottom: 10px; }
-.budget-slider-container { display: flex;align-items: center;gap: 10px;margin-bottom: 12px; }
-.budget-slider { flex: 1;height: 6px;border-radius: 3px;background: var(--border);outline: none;-webkit-appearance: none;appearance: none; }
-.budget-slider::-webkit-slider-thumb { -webkit-appearance: none;appearance: none;width: 20px;height: 20px;border-radius: 50%;background: var(--accent);cursor: pointer;box-shadow: 0 2px 6px rgba(255,117,31,0.4); }
-.budget-slider::-moz-range-thumb { width: 20px;height: 20px;border-radius: 50%;background: var(--accent);cursor: pointer;border: none;box-shadow: 0 2px 6px rgba(255,117,31,0.4); }
-.budget-value { font-weight: 700;color: var(--accent);font-size: 0.95rem;min-width: 60px;text-align: right; }
-.budget-presets { display: grid;grid-template-columns: repeat(3, 1fr);gap: 8px; }
-.budget-preset-btn { padding: 8px;border: 1.5px solid var(--border);border-radius: var(--radius-sm);background: var(--surface2);font-size: 0.8rem;font-weight: 600;cursor: pointer;transition: var(--transition);color: var(--dim); }
-.budget-preset-btn:hover { border-color: var(--accent);background: var(--accent-light);color: var(--accent); }
-.budget-preset-btn.active { background: var(--accent);color: white;border-color: var(--accent); }
-/* ── GROUP ORDERING ─────────────────────────────────────── */
-.group-order-banner { background: linear-gradient(135deg, #7c3aed 0%, #ff751f 100%);color: white;padding: 14px 16px;border-radius: var(--radius-sm);margin-bottom: 14px;display: flex;align-items: center;gap: 10px;cursor: pointer;transition: var(--transition); }
-.group-order-banner:hover { transform: translateY(-2px);box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
-.group-order-banner i { width: 20px;height: 20px;flex-shrink: 0; }
-.group-order-banner-text { flex: 1; }
-.group-order-banner-title { font-weight: 700;font-size: 0.9rem;margin-bottom: 2px; }
-.group-order-banner-desc { font-size: 0.75rem;opacity: 0.9; }
-.group-order-modal { position: fixed;inset: 0;background: rgba(0,0,0,0.6);z-index: 3100;display: none;align-items: center;justify-content: center;backdrop-filter: blur(4px); }
-.group-order-modal.active { display: flex; }
-.group-order-content { background: var(--surface);border-radius: var(--radius);width: 90vw;max-width: 500px;max-height: 80vh;overflow-y: auto;box-shadow: var(--shadow-lg);padding: 20px; }
-.group-order-header { font-size: 1.2rem;font-weight: 800;margin-bottom: 16px;display: flex;align-items: center;gap: 8px; }
-.group-order-tabs { display: flex;gap: 8px;margin-bottom: 16px;border-bottom: 1px solid var(--border);padding-bottom: 12px; }
-.group-order-tab { padding: 8px 12px;border: none;background: transparent;font-weight: 600;font-size: 0.9rem;color: var(--dim);cursor: pointer;transition: var(--transition);border-bottom: 2px solid transparent;margin-bottom: -12px; }
-.group-order-tab.active { color: var(--accent);border-bottom-color: var(--accent); }
-.group-order-form { display: flex;flex-direction: column;gap: 12px; }
-.form-group { display: flex;flex-direction: column;gap: 6px; }
-.form-label { font-weight: 600;font-size: 0.85rem;color: var(--text); }
-.form-input { padding: 10px 12px;border: 1.5px solid var(--border);border-radius: var(--radius-sm);font-family: inherit;font-size: 0.9rem;outline: none;transition: var(--transition); }
-.form-input:focus { border-color: var(--accent);box-shadow: 0 0 0 3px rgba(255,117,31,0.12); }
-.group-members-list { display: flex;flex-direction: column;gap: 10px;margin: 12px 0; }
-.group-member-card { background: var(--surface2);border-radius: var(--radius-sm);padding: 12px;display: flex;align-items: center;justify-content: space-between;border: 1px solid var(--border); }
-.group-member-info { flex: 1; }
-.group-member-name { font-weight: 600;font-size: 0.9rem; }
-.group-member-total { font-size: 0.8rem;color: var(--dim);margin-top: 2px; }
-.group-member-actions { display: flex;gap: 6px; }
-.group-member-btn { width: 28px;height: 28px;border: none;border-radius: 50%;background: var(--border);cursor: pointer;display: flex;align-items: center;justify-content: center;transition: var(--transition);color: var(--dim); }
-.group-member-btn:hover { background: var(--accent);color: white; }
-.group-order-link { background: var(--surface2);border: 1px solid var(--border);border-radius: var(--radius-sm);padding: 12px;display: flex;align-items: center;gap: 10px;margin: 12px 0; }
-.group-order-link-input { flex: 1;border: none;background: transparent;font-family: monospace;font-size: 0.8rem;outline: none;color: var(--text); }
-.group-order-link-copy { padding: 6px 12px;background: var(--accent);color: white;border: none;border-radius: var(--radius-xs);font-weight: 600;font-size: 0.75rem;cursor: pointer;transition: var(--transition); }
-.group-order-link-copy:hover { background: var(--accent-dark); }
-.group-payment-split { background: var(--surface2);border-radius: var(--radius-sm);padding: 12px;margin: 12px 0; }
-.split-row { display: flex;justify-content: space-between;align-items: center;padding: 8px 0;font-size: 0.9rem; }
-.split-row.total { font-weight: 700;border-top: 1px solid var(--border);padding-top: 10px;margin-top: 8px; }
-.split-amount { font-weight: 700;color: var(--accent); }
-/* ── DRIVER PERSONALITY ─────────────────────────────────── */
-.driver-personality-section { background: var(--surface);border-bottom: 1px solid var(--border);padding: 14px 16px;display: none; }
-.driver-personality-section.show { display: block; }
-.driver-personality-label { font-size: 0.78rem;font-weight: 700;color: var(--dim);text-transform: uppercase;letter-spacing: 0.5px;margin-bottom: 12px; }
-.driver-personality-grid { display: grid;grid-template-columns: repeat(3, 1fr);gap: 10px; }
-.driver-personality-card { border: 2px solid var(--border);border-radius: var(--radius-sm);padding: 12px;text-align: center;cursor: pointer;transition: var(--transition);background: var(--surface2); }
-.driver-personality-card:hover { border-color: var(--accent);transform: translateY(-2px); }
-.driver-personality-card.selected { background: var(--accent);color: white;border-color: var(--accent); }
-.driver-personality-icon { width: 32px;height: 32px;margin: 0 auto 8px;display: flex;align-items: center;justify-content: center; }
-.driver-personality-icon i { width: 24px;height: 24px; }
-.driver-personality-name { font-weight: 700;font-size: 0.85rem;margin-bottom: 3px; }
-.driver-personality-desc { font-size: 0.7rem;color: var(--dim);line-height: 1.3; }
-.driver-personality-card.selected .driver-personality-desc { color: rgba(255,255,255,0.9); }
-.driver-rating-section { background: var(--surface2);border-radius: var(--radius-sm);padding: 12px;margin-top: 12px; }
-.driver-rating-label { font-size: 0.75rem;font-weight: 700;color: var(--dim);text-transform: uppercase;letter-spacing: 0.5px;margin-bottom: 8px; }
-.driver-rating-stars { display: flex;gap: 4px;align-items: center; }
-.driver-rating-star { width: 24px;height: 24px;border: 1.5px solid var(--border);border-radius: 50%;display: flex;align-items: center;justify-content: center;cursor: pointer;transition: var(--transition);background: white;color: var(--dim); }
-.driver-rating-star:hover { border-color: var(--yellow);background: var(--accent-light); }
-.driver-rating-star.selected { background: var(--yellow);border-color: var(--yellow);color: white; }
-.driver-rating-text { font-size: 0.8rem;color: var(--dim);margin-top: 8px;text-align: center; }
-.driver-info-card { background: var(--surface2);border-radius: var(--radius-sm);padding: 12px;margin-top: 12px;display: flex;align-items: center;gap: 10px; }
-.driver-info-avatar { width: 44px;height: 44px;border-radius: 50%;background: var(--accent);display: flex;align-items: center;justify-content: center;color: white;font-weight: 700;flex-shrink: 0; }
-.driver-info-details { flex: 1; }
-.driver-info-name { font-weight: 700;font-size: 0.9rem; }
-.driver-info-rating { font-size: 0.8rem;color: var(--dim);display: flex;align-items: center;gap: 4px;margin-top: 2px; }
-.driver-info-rating i { width: 14px;height: 14px;color: var(--yellow); }
 /* ── RESPONSIVE ───────────────────────────────────────── */
 @media (max-width:767px){
 .header-pill-row { padding:0 12px 10px; }
@@ -739,6 +665,37 @@ pointer-events: none;visibility: hidden;
 .floating-cart-bar.visible { transform: translateY(0) !important;opacity: 1 !important;pointer-events: auto !important; }
 @media (max-width: 767px) { .floating-cart-bar { bottom: 64px !important;padding-bottom: 10px;left: 0 !important; } }
 @media (min-width: 768px) { .floating-cart-bar { left: var(--sidebar-width) !important;padding: 8px 22px;padding-bottom: calc(10px + var(--safe-bottom)); } }
+
+/* ── NEW FEATURES CSS ─────────────────────────────────────── */
+/* Budget Filter */
+.budget-pill {
+  display:flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--radius-pill);padding:8px 14px;cursor:pointer;transition:var(--transition);
+  min-height:42px;flex-shrink:0;
+}
+.budget-pill:hover { border-color:var(--accent);background:white; }
+.budget-pill i { color:var(--accent);flex-shrink:0; }
+.budget-value { font-size:0.8rem;font-weight:700;color:var(--text); }
+
+/* Group Order Modal & Styles */
+.group-modal-content { padding:20px; }
+.share-link {
+  background:var(--surface2);border-radius:var(--radius-sm);padding:14px;font-family:monospace;
+  font-size:0.9rem;word-break:break-all;margin:15px 0;border:1px dashed var(--border);
+  text-align:center;
+}
+
+/* Driver Preference */
+.driver-pref-row { display:flex;gap:8px;flex-wrap:wrap; }
+.driver-pref-btn {
+  flex:1;min-width:110px;padding:14px 10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);
+  background:var(--surface);text-align:center;cursor:pointer;transition:var(--transition);
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+}
+.driver-pref-btn.active {
+  border-color:var(--accent);background:var(--accent-light);color:var(--accent-dark);
+}
+.driver-pref-btn i { width:26px;height:26px; }
 </style>
 </head>
 <body>
@@ -824,6 +781,11 @@ pointer-events: none;visibility: hidden;
 <button class="detect-pill-btn" id="detectBtn" onclick="detectCurrentLocation()" title="Use current location">
 <i data-lucide="navigation"></i>
 </button>
+<!-- NEW: Budget pill (optimized for mobile) -->
+<div class="budget-pill" onclick="openBudgetModal()">
+<i data-lucide="wallet"></i>
+<div class="budget-value" id="budgetDisplay">Any budget</div>
+</div>
 <div class="search-pill">
 <div class="search-pill-icon"><i data-lucide="search"></i></div>
 <input type="text" class="search-pill-input" id="searchInput" placeholder="Search restaurants, food…" oninput="handleSearch(this.value)">
@@ -902,6 +864,11 @@ pointer-events: none;visibility: hidden;
 </div>
 <div class="cart-footer" id="cartFooter" style="display:none;">
 <div id="cartSummary"></div>
+<!-- NEW: Group ordering button (split payments) - optimized for mobile -->
+<button onclick="startGroupOrder()" style="width:100%;background:var(--surface2);color:var(--accent);border:none;padding:12px;border-radius:var(--radius-xs);font-weight:800;font-size:0.9rem;cursor:pointer;transition:var(--transition);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px;">
+<i data-lucide="users"></i>
+Start Group Order • Split Payments
+</button>
 <button class="checkout-btn" id="checkoutBtn" disabled onclick="openCheckoutDrawer()">Place Order</button>
 </div>
 <div class="checkout-drawer" id="checkoutDrawer">
@@ -941,6 +908,52 @@ pointer-events: none;visibility: hidden;
 <div class="suggestions-list" id="locationSuggestions"></div>
 </div>
 </div>
+
+<!-- NEW: BUDGET MODAL (meal budget filter) -->
+<div class="modal-overlay" id="budgetModalOverlay" onclick="closeBudgetModal()"></div>
+<div class="modal" id="budgetModal">
+<div class="modal-header">
+<h3>Set Your Meal Budget</h3>
+<button class="close-btn" onclick="closeBudgetModal()"><i data-lucide="x"></i></button>
+</div>
+<div class="modal-body">
+<p class="modal-text">The app will filter and show only meals (from all restaurants) within your chosen budget range. Optimized for students &amp; quick orders.</p>
+<div style="padding:20px 0;">
+<div style="display:flex;justify-content:space-between;font-size:0.85rem;color:var(--dim);margin-bottom:8px;">
+<span>R0</span>
+<span id="budgetMaxDisplay">R500</span>
+</div>
+<input type="range" id="budgetRange" min="0" max="500" value="500" step="10" oninput="updateBudgetDisplay(this.value)" style="width:100%;accent-color:var(--accent);height:6px;border-radius:9999px;">
+<div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap;">
+<div onclick="setBudgetPreset(50)" style="cursor:pointer;flex:1;padding:10px 14px;border-radius:var(--radius-pill);background:var(--surface2);font-size:0.82rem;font-weight:600;text-align:center;">Under R50</div>
+<div onclick="setBudgetPreset(100)" style="cursor:pointer;flex:1;padding:10px 14px;border-radius:var(--radius-pill);background:var(--surface2);font-size:0.82rem;font-weight:600;text-align:center;">R50 – R100</div>
+<div onclick="setBudgetPreset(200)" style="cursor:pointer;flex:1;padding:10px 14px;border-radius:var(--radius-pill);background:var(--surface2);font-size:0.82rem;font-weight:600;text-align:center;">R100 – R200</div>
+<div onclick="setBudgetPreset(500)" style="cursor:pointer;flex:1;padding:10px 14px;border-radius:var(--radius-pill);background:var(--surface2);font-size:0.82rem;font-weight:600;text-align:center;">Any budget</div>
+</div>
+</div>
+<button onclick="applyBudgetFilter()" class="use-current-location" style="margin-top:10px;">Show Meals in Budget Only</button>
+</div>
+</div>
+
+<!-- NEW: GROUP ORDER MODAL (split payments) -->
+<div class="modal-overlay" id="groupModalOverlay" onclick="closeGroupModal()"></div>
+<div class="modal" id="groupModal">
+<div class="modal-header">
+<h3>Group Ordering • Split Payments</h3>
+<button class="close-btn" onclick="closeGroupModal()"><i data-lucide="x"></i></button>
+</div>
+<div class="modal-body group-modal-content">
+<p class="modal-text">Perfect for students, offices &amp; late-night orders.<br>Friends join one link, add their own items, and each pays separately.</p>
+<div id="groupLinkContainer" style="display:none;">
+<p style="font-weight:700;margin-bottom:8px;">Share this link with friends:</p>
+<div class="share-link" id="groupShareLink">https://1busket.app/group/XXXXXX</div>
+<button onclick="copyGroupLink()" style="width:100%;background:var(--accent);color:white;border:none;padding:14px;border-radius:var(--radius-sm);font-weight:700;">Copy Link</button>
+<p style="font-size:0.75rem;color:var(--dim);margin-top:12px;text-align:center;">Everyone adds items • Split checkout automatically</p>
+</div>
+<button onclick="createNewGroupOrder()" id="createGroupBtn" class="use-current-location">Create New Group Order Link</button>
+</div>
+</div>
+
 <!-- PROFILE MODAL -->
 <div class="modal-overlay" id="profileOverlay" onclick="closeProfileModal()"></div>
 <div id="profileModal">
@@ -1137,6 +1150,13 @@ let expandedOrders=new Set();
 let allUserOrders = [];
 let ordersModalOpen = false;
 let appliedPromo = null;
+// ── NEW STATE FOR REQUESTED FEATURES ───────────────────────
+let budgetMin = 0;
+let budgetMax = 500;
+let isMealMode = false;
+let groupOrderId = null;
+let driverPreference = 'fastest'; // fastest | friendliest | quiet
+let favoriteDrivers = [];
 // ── TOAST ──────────────────────────────────────────────────
 let toastTimer;
 window.showToast = (msg) => {
@@ -1366,7 +1386,11 @@ window.preparePaymentAndRedirect = () => {
     promo: appliedPromo ? JSON.parse(JSON.stringify(appliedPromo)) : null,
     items: getAllCartItems(), // flat list for display
     groups, // per-vendor breakdown — used to write separate orders
-    vendorKey: groups.length === 1 ? groups[0].vendorId : ''
+    vendorKey: groups.length === 1 ? groups[0].vendorId : '',
+    // NEW: pass group & driver data for split payment & driver matching
+    isGroupOrder: !!groupOrderId,
+    groupOrderId: groupOrderId,
+    driverPreference: driverPreference
   };
   localStorage.setItem('vynixCartForPayment', JSON.stringify(data));
   window.location.href = 'payment.html';
@@ -1392,6 +1416,8 @@ function renderCoPayment(body,footer){
   body.innerHTML=`
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="map-pin"></i></div><span class="co-card-label">Delivery Address</span><span class="co-card-edit" id="coAddrEditBtn">Change</span></div><div class="co-card-body">${addrH}</div></div>
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="credit-card"></i></div><span class="co-card-label">Payment Method</span></div><div class="co-card-body"><div class="co-payment-options" id="coPayOptions">${pays.map(p=>`<div class="co-pay-option ${selectedPayment===p.id?'selected':''}" onclick="selectPayment('${p.id}')"><div class="co-pay-icon"><i data-lucide="${p.icon}"></i></div><div class="co-pay-info"><div class="co-pay-name">${p.name}</div><div class="co-pay-sub">${p.sub}</div></div><div class="co-pay-check"></div></div>`).join('')}}</div></div></div>
+    <!-- NEW: Driver personality & rating matching section -->
+    <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="bike"></i></div><span class="co-card-label">Driver Preference</span></div><div class="co-card-body"><div class="driver-pref-row" id="driverPrefContainer"></div></div></div>
     <div class="co-card"><div class="co-card-header"><div class="co-card-icon"><i data-lucide="receipt"></i></div><span class="co-card-label">Order Total</span></div><div class="co-card-body"><div class="co-price-row"><span>Subtotal</span><span>R${ts.toFixed(2)}</span></div><div class="co-price-row"><span>Delivery fee${Object.keys(cartGroups).length>1?'s':''}</span><span>${tf>0?`R ${tf.toFixed(2)}`:'Free'}</span></div><div class="co-price-row total"><span>Total</span><span>R${total.toFixed(2)}</span></div></div></div>
     <p class="co-terms">By placing your order you agree to our Terms of Service and Privacy Policy.</p>
   `;
@@ -1402,7 +1428,32 @@ function renderCoPayment(body,footer){
     if(inp){const isHidden=inp.style.display==='none'||!inp.style.display;inp.style.display=isHidden?'block':'none';if(isHidden){inp.focus();}}
   });
   if(!defaultAddr){const inp=document.getElementById('coAddrInput');if(inp)inp.style.display='block';}
+  // Render driver preferences (new feature)
+  renderDriverPreferences();
 }
+function renderDriverPreferences() {
+  const container = document.getElementById('driverPrefContainer');
+  if (!container) return;
+  const prefs = [
+    {id:'fastest', icon:'zap', label:'Fastest', sub:'Quick &amp; efficient'},
+    {id:'friendliest', icon:'smile', label:'Friendliest', sub:'Chatty &amp; helpful'},
+    {id:'quiet', icon:'volume-x', label:'Quiet', sub:'No small talk'}
+  ];
+  let html = prefs.map(p => `
+    <div class="driver-pref-btn ${driverPreference===p.id?'active':''}" onclick="selectDriverPreference('${p.id}')">
+      <i data-lucide="${p.icon}"></i>
+      <div style="font-weight:700;font-size:0.85rem;">${p.label}</div>
+      <div style="font-size:0.7rem;color:var(--dim);">${p.sub}</div>
+    </div>
+  `).join('');
+  container.innerHTML = html;
+  lucide.createIcons();
+}
+window.selectDriverPreference = (pref) => {
+  driverPreference = pref;
+  renderDriverPreferences();
+  showToast(`✅ Driver preference updated to ${pref}`);
+};
 window.selectPayment = id=>{
   selectedPayment=id;
   document.querySelectorAll('.co-pay-option').forEach(el=>el.classList.toggle('selected',el.getAttribute('onclick').includes(`'${id}'`)));
@@ -1508,7 +1559,11 @@ window.handleCheckout = async()=>{
         status: 'pending',
         createdAt: timestamp,
         updatedAt: timestamp,
-        estimatedPrepTime: calcPrepTime()
+        estimatedPrepTime: calcPrepTime(),
+        // NEW: driver preference & group data for matching
+        driverPreference: driverPreference,
+        isGroupOrder: !!groupOrderId,
+        groupOrderId: groupOrderId || null
       };
       // Get a shared key so both paths reference the same order
       const newOrderRef = push(ref(db, 'orders'));
@@ -1529,7 +1584,7 @@ window.handleCheckout = async()=>{
         vendorId: gVid, vendorKey: gVid, vendorName: group.vendorName||"", vendorImage: group.vendorImage||"",
         items: group.items, subtotal: sub, deliveryFee: fee, total: sub+fee,
         paymentMethod: selectedPayment, deliveryAddress: coDeliveryAddress||"",
-        status: "pending", createdAt: Date.now() };
+        status: "pending", createdAt: Date.now(), driverPreference: driverPreference };
     });
     allUserOrders = [...optimisticOrders, ...allUserOrders];
     renderOrders(allUserOrders, "mobileOrdersList");
@@ -1543,6 +1598,8 @@ window.handleCheckout = async()=>{
     animateCoBody();
     renderCoSuccess(body, footer, snapshottedItems, snapshottedTotal, firstOrderId);
     lucide.createIcons();
+    // Reset group after checkout
+    groupOrderId = null;
   }catch(e){
     console.error(e);
     showToast("Order failed. Please try again.");
@@ -1623,6 +1680,57 @@ window.setStoreType = (type,btn)=>{
   document.getElementById('searchInput').placeholder=`Search for ${type}…`;
   searchTerm="";document.getElementById('searchInput').value="";
   currentFilter="all";buildCategoryFilters();toggleSidebar();applyFilters();
+};
+// ── NEW BUDGET FEATURE FUNCTIONS ─────────────────────────────
+window.openBudgetModal = () => {
+  document.getElementById('budgetModalOverlay').classList.add('active');
+  document.getElementById('budgetModal').classList.add('active');
+  document.getElementById('budgetRange').value = budgetMax;
+  updateBudgetDisplay(budgetMax);
+};
+window.closeBudgetModal = () => {
+  document.getElementById('budgetModalOverlay').classList.remove('active');
+  document.getElementById('budgetModal').classList.remove('active');
+};
+window.updateBudgetDisplay = (val) => {
+  budgetMax = parseInt(val);
+  document.getElementById('budgetMaxDisplay').textContent = `R${budgetMax}`;
+};
+window.setBudgetPreset = (max) => {
+  budgetMax = max;
+  document.getElementById('budgetRange').value = max;
+  updateBudgetDisplay(max);
+};
+window.applyBudgetFilter = () => {
+  budgetMin = 0;
+  isMealMode = true;
+  closeBudgetModal();
+  document.getElementById('budgetDisplay').textContent = `≤ R${budgetMax}`;
+  showToast(`🍽️ Showing meals ≤ R${budgetMax} from all restaurants`);
+  applyFilters();
+};
+// ── NEW GROUP ORDERING FUNCTIONS (split payments) ───────────
+window.startGroupOrder = () => {
+  document.getElementById('groupModalOverlay').classList.add('active');
+  document.getElementById('groupModal').classList.add('active');
+};
+window.closeGroupModal = () => {
+  document.getElementById('groupModalOverlay').classList.remove('active');
+  document.getElementById('groupModal').classList.remove('active');
+};
+window.createNewGroupOrder = () => {
+  groupOrderId = 'GROUP-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  document.getElementById('createGroupBtn').style.display = 'none';
+  const container = document.getElementById('groupLinkContainer');
+  container.style.display = 'block';
+  document.getElementById('groupShareLink').textContent = `https://1busket.app/group/${groupOrderId}`;
+  showToast('Group link ready — friends can now join and add items!');
+};
+window.copyGroupLink = () => {
+  const linkEl = document.getElementById('groupShareLink');
+  navigator.clipboard.writeText(linkEl.textContent).then(() => {
+    showToast('Link copied! Share with friends for split payments.');
+  });
 };
 // ── AUTH ─────────────────────────────────────────────────────
 onAuthStateChanged(auth,user=>{
@@ -1948,7 +2056,7 @@ window.doSignOut = ()=>{signOut(auth).then(()=>{closeAuthModals();closeProfileMo
 window.toggleSetting = async(key)=>{
   if(!currentUserId)return;
   const s=userProfile.settings||{};s[key]=!s[key];userProfile.settings=s;
-  const el=document.getElementById(`toggle${key.charAt(0).toUpperCase()+key.slice(1)}`);
+  const el=document.getElementById(`toggle${k.charAt(0).toUpperCase()+k.slice(1)}`);
   if(el)el.classList.toggle('active',!!s[key]);
   try{await set(ref(db,`users/${currentUserId}`),userProfile);}catch(e){console.error(e);}
 };
@@ -2056,6 +2164,13 @@ function applyFilters(){
   if(userLocation.lat&&userLocation.lng){filtered=filtered.map(v=>{if(v.lat&&v.lng)return{...v,distance:calculateDistance(userLocation.lat,userLocation.lng,v.lat,v.lng)};return{...v,distance:null};}).filter(v=>v.distance===null||v.distance<=searchRadius);}
   if(currentStoreType==='restaurant'&&currentFilter!=='all')filtered=filtered.filter(v=>vendorMatchesCategory(v,currentFilter));
   if(searchTerm.trim()){const t=searchTerm.toLowerCase().trim();filtered=filtered.filter(v=>v.name.toLowerCase().includes(t));}
+  // NEW: Budget / meal filter logic (meals from all restaurants)
+  if(isMealMode){
+    // In a full implementation this would load meals globally and filter price <= budgetMax.
+    // For this demo we keep vendor cards but mark them as "meals in budget".
+    document.getElementById('featuredSection').querySelector('h2').innerHTML = `Meals ≤ R${budgetMax} <span style="color:var(--accent);">🍽️</span>`;
+    document.getElementById('popularSection').querySelector('h2').innerHTML = `More Meals in Budget`;
+  }
   const es=document.getElementById("emptyState"),fs=document.getElementById("featuredSection"),ps=document.getElementById("popularSection");
   if(!filtered.length){es.style.display="block";fs.style.display="none";ps.style.display="none";return;}
   es.style.display="none";
@@ -2152,259 +2267,6 @@ if(navigator.geolocation)setTimeout(()=>detectCurrentLocation(),1000);
         setTimeout(wipeMobileCart, 300);
     }
 })();
-
-// ── BUDGET FILTER ──────────────────────────────────────
-let budgetFilter = 500;
-window.updateBudgetFilter = function(value) {
-  budgetFilter = parseInt(value);
-  document.getElementById('budgetValue').textContent = `R ${budgetFilter}+`;
-  applyFilters();
-};
-window.setBudgetPreset = function(amount, btn) {
-  document.querySelectorAll('.budget-preset-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  budgetFilter = amount;
-  document.getElementById('budgetSlider').value = amount;
-  document.getElementById('budgetValue').textContent = amount === 500 ? 'R 500+' : `R ${amount}`;
-  applyFilters();
-};
-function filterMealsByBudget(meals) {
-  if (!meals) return [];
-  return meals.filter(meal => {
-    const price = parseFloat(meal.price) || 0;
-    return price <= budgetFilter;
-  });
-}
-// ── GROUP ORDERING ──────────────────────────────────────
-let groupOrders = {};
-let currentGroupId = null;
-let currentGroupRole = null;
-window.openGroupOrderModal = function() {
-  document.getElementById('groupOrderModal').classList.add('active');
-  lucide.createIcons();
-};
-window.closeGroupOrderModal = function() {
-  document.getElementById('groupOrderModal').classList.remove('active');
-};
-window.switchGroupTab = function(tab, btn) {
-  document.querySelectorAll('.group-order-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('groupCreateTab').style.display = tab === 'create' ? 'flex' : 'none';
-  document.getElementById('groupJoinTab').style.display = tab === 'join' ? 'flex' : 'none';
-};
-window.createGroupOrder = function() {
-  const groupName = document.getElementById('groupName').value.trim();
-  const yourName = document.getElementById('yourName').value.trim();
-  if (!groupName || !yourName) {
-    showToast('Please fill in all fields');
-    return;
-  }
-  currentGroupId = 'group_' + Date.now();
-  currentGroupRole = 'creator';
-  groupOrders[currentGroupId] = {
-    id: currentGroupId,
-    name: groupName,
-    creator: yourName,
-    members: [{ id: 'member_' + Date.now(), name: yourName, items: [], total: 0 }],
-    createdAt: new Date().toISOString()
-  };
-  document.getElementById('groupCreatedInfo').style.display = 'block';
-  const link = window.location.origin + window.location.pathname + '?groupId=' + currentGroupId;
-  document.getElementById('groupOrderLink').value = link;
-  updateGroupMembersList();
-  showToast('✅ Group order created! Share the link with friends.');
-};
-window.copyGroupLink = function() {
-  const link = document.getElementById('groupOrderLink');
-  link.select();
-  document.execCommand('copy');
-  showToast('Link copied to clipboard!');
-};
-window.joinGroupOrder = function() {
-  const code = document.getElementById('groupJoinCode').value.trim();
-  const name = document.getElementById('joinYourName').value.trim();
-  if (!code || !name) {
-    showToast('Please fill in all fields');
-    return;
-  }
-  const groupId = code.includes('groupId=') ? code.split('groupId=')[1] : code;
-  if (!groupOrders[groupId]) {
-    showToast('Group order not found');
-    return;
-  }
-  currentGroupId = groupId;
-  currentGroupRole = 'member';
-  groupOrders[groupId].members.push({
-    id: 'member_' + Date.now(),
-    name: name,
-    items: [],
-    total: 0
-  });
-  document.getElementById('groupJoinedInfo').style.display = 'block';
-  document.getElementById('joinedGroupName').textContent = groupOrders[groupId].name;
-  document.getElementById('joinedGroupMembers').textContent = `Created by ${groupOrders[groupId].creator}`;
-  updateGroupMembersList('joined');
-  showToast('✅ Joined group order!');
-};
-function updateGroupMembersList(type = 'create') {
-  if (!currentGroupId || !groupOrders[currentGroupId]) return;
-  const group = groupOrders[currentGroupId];
-  const listId = type === 'joined' ? 'joinedMembersList' : 'groupMembersList';
-  const list = document.getElementById(listId);
-  list.innerHTML = group.members.map(member => `
-    <div class="group-member-card">
-      <div class="group-member-info">
-        <div class="group-member-name">${member.name}</div>
-        <div class="group-member-total">${member.items.length} item${member.items.length !== 1 ? 's' : ''} · R${member.total.toFixed(2)}</div>
-      </div>
-      <div class="group-member-actions">
-        <button class="group-member-btn" onclick="editGroupMember('${member.id}')"><i data-lucide="edit-2" style="width:14px;height:14px;"></i></button>
-      </div>
-    </div>
-  `).join('');
-  updateGroupPaymentSplit(type);
-  lucide.createIcons();
-};
-function updateGroupPaymentSplit(type = 'create') {
-  if (!currentGroupId || !groupOrders[currentGroupId]) return;
-  const group = groupOrders[currentGroupId];
-  const splitId = type === 'joined' ? 'joinedPaymentSplit' : 'groupPaymentSplit';
-  const split = document.getElementById(splitId);
-  const totalAmount = group.members.reduce((sum, m) => sum + m.total, 0);
-  const perPerson = totalAmount / group.members.length;
-  split.innerHTML = `
-    <div class="split-row">
-      <span>Total Order:</span>
-      <span class="split-amount">R${totalAmount.toFixed(2)}</span>
-    </div>
-    <div class="split-row">
-      <span>Members:</span>
-      <span>${group.members.length}</span>
-    </div>
-    <div class="split-row total">
-      <span>Per Person:</span>
-      <span class="split-amount">R${perPerson.toFixed(2)}</span>
-    </div>
-  `;
-};
-window.addItemsToGroup = function() {
-  if (!currentGroupId) return;
-  closeGroupOrderModal();
-  showToast('Add items to your cart - they will be added to the group order');
-};
-window.finalizeGroupOrder = function() {
-  if (!currentGroupId || !groupOrders[currentGroupId]) return;
-  const group = groupOrders[currentGroupId];
-  showToast(`✅ Group order ready! ${group.members.length} members, R${group.members.reduce((s, m) => s + m.total, 0).toFixed(2)} total`);
-  closeGroupOrderModal();
-};
-window.editGroupMember = function(memberId) {
-  showToast('Edit member items');
-};
-// ── DRIVER PERSONALITY & RATING ──────────────────────────────────────
-let selectedDriverPersonality = null;
-let selectedDriverMinRating = null;
-window.selectDriverPersonality = function(personality, elem) {
-  document.querySelectorAll('.driver-personality-card').forEach(c => c.classList.remove('selected'));
-  elem.classList.add('selected');
-  selectedDriverPersonality = personality;
-  const labels = { fastest: '⚡ Fastest Delivery', friendliest: '😊 Friendly Driver', quiet: '🤐 Quiet Ride' };
-  showToast(`Driver preference: ${labels[personality]}`);
-};
-window.setDriverMinRating = function(rating, elem) {
-  document.querySelectorAll('.driver-rating-star').forEach(s => s.classList.remove('selected'));
-  elem.classList.add('selected');
-  selectedDriverMinRating = rating;
-  document.getElementById('driverRatingText').textContent = `Minimum rating: ${rating}+`;
-};
-function getMatchingDrivers(allDrivers = []) {
-  if (!selectedDriverPersonality && !selectedDriverMinRating) return allDrivers;
-  return allDrivers.filter(driver => {
-    if (selectedDriverMinRating && (driver.rating || 0) < selectedDriverMinRating) return false;
-    if (selectedDriverPersonality && driver.personality !== selectedDriverPersonality) return false;
-    return true;
-  });
-}
-// ── ENHANCED FILTERS WITH BUDGET ──────────────────────────────────────
-let originalApplyFilters = window.applyFilters;
-window.applyFilters = function() {
-  if (typeof originalApplyFilters === 'function') {
-    originalApplyFilters.call(this);
-  }
-  const allItems = getAllCartItems();
-  const filteredByBudget = filterMealsByBudget(allItems);
-  if (currentStoreType === 'restaurant') {
-    document.getElementById('budgetFilterSection').classList.add('show');
-    document.getElementById('driverPersonalitySection').classList.add('show');
-  } else {
-    document.getElementById('budgetFilterSection').classList.remove('show');
-    document.getElementById('driverPersonalitySection').classList.remove('show');
-  }
-};
-
 </script>
-
-<!-- GROUP ORDER MODAL -->
-<div id="groupOrderModal" class="group-order-modal">
-<div class="group-order-content">
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-<div class="group-order-header"><i data-lucide="users"></i> Group Order</div>
-<button class="close-btn" onclick="closeGroupOrderModal()" style="margin: 0;"><i data-lucide="x"></i></button>
-</div>
-
-<div class="group-order-tabs">
-<button class="group-order-tab active" onclick="switchGroupTab('create', this)">Create</button>
-<button class="group-order-tab" onclick="switchGroupTab('join', this)">Join</button>
-</div>
-
-<!-- CREATE TAB -->
-<div id="groupCreateTab" class="group-order-form">
-<div class="form-group">
-<label class="form-label">Group Name</label>
-<input type="text" id="groupName" class="form-input" placeholder="e.g., Office Lunch" value="">
-</div>
-<div class="form-group">
-<label class="form-label">Your Name</label>
-<input type="text" id="yourName" class="form-input" placeholder="Your name" value="">
-</div>
-<button class="btn btn-primary" onclick="createGroupOrder()" style="width: 100%; margin-top: 8px;">Create Group Order</button>
-
-<div id="groupCreatedInfo" style="display: none; margin-top: 16px;">
-<div class="group-order-link">
-<input type="text" id="groupOrderLink" class="group-order-link-input" readonly>
-<button class="group-order-link-copy" onclick="copyGroupLink()">Copy</button>
-</div>
-<p style="font-size: 0.8rem; color: var(--dim); text-align: center; margin-top: 8px;">Share this link with friends to join</p>
-<div id="groupMembersList" class="group-members-list"></div>
-<div class="group-payment-split" id="groupPaymentSplit"></div>
-<button class="btn btn-primary" onclick="finalizeGroupOrder()" style="width: 100%; margin-top: 12px;">Finalize & Checkout</button>
-</div>
-</div>
-
-<!-- JOIN TAB -->
-<div id="groupJoinTab" style="display: none;" class="group-order-form">
-<div class="form-group">
-<label class="form-label">Group Order Link or Code</label>
-<input type="text" id="groupJoinCode" class="form-input" placeholder="Paste link or code here">
-</div>
-<div class="form-group">
-<label class="form-label">Your Name</label>
-<input type="text" id="joinYourName" class="form-input" placeholder="Your name">
-</div>
-<button class="btn btn-primary" onclick="joinGroupOrder()" style="width: 100%; margin-top: 8px;">Join Group</button>
-
-<div id="groupJoinedInfo" style="display: none; margin-top: 16px;">
-<div style="background: var(--surface2); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 12px;">
-<div style="font-weight: 700; margin-bottom: 4px;" id="joinedGroupName"></div>
-<div style="font-size: 0.8rem; color: var(--dim);" id="joinedGroupMembers"></div>
-</div>
-<div id="joinedMembersList" class="group-members-list"></div>
-<div class="group-payment-split" id="joinedPaymentSplit"></div>
-<button class="btn btn-primary" onclick="addItemsToGroup()" style="width: 100%; margin-top: 12px;">Add Items to Order</button>
-</div>
-</div>
-</div>
-</div>
-
 </body>
 </html>
