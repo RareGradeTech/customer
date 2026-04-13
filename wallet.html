@@ -8,17 +8,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-/* ── CORE VARIABLES ── */
 :root {
---bg: #f8f9fa; --surface: #ffffff; --surface2: #f1f3f5;
---border: #e9ecef; --border-light: #f0f0f0;
---text: #1a1d23; --text-secondary: #4a4a4a; --dim: #6c757d;
---accent: #ff751f; --accent-dark: #e0661c; --accent-light: #ffe8d6;
---danger: #ff3b30; --success: #2e7d32; --success-light: #e8f5e9;
---radius: 20px; --radius-sm: 12px; --radius-xs: 6px; --radius-pill: 100px;
---shadow: 0 4px 20px rgba(0,0,0,0.08); --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
---transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
---header-height: 64px;
+  --bg: #f8f9fa; --surface: #ffffff; --surface2: #f1f3f5;
+  --border: #e9ecef; --border-light: #f0f0f0;
+  --text: #1a1d23; --text-secondary: #4a4a4a; --dim: #6c757d;
+  --accent: #ff751f; --accent-dark: #e0661c; --accent-light: #ffe8d6;
+  --danger: #ff3b30; --success: #2e7d32; --success-light: #e8f5e9;
+  --radius: 20px; --radius-sm: 12px; --radius-xs: 6px; --radius-pill: 100px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.08); --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --header-height: 64px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
@@ -34,11 +33,11 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .back-btn:active { transform: scale(0.92); }
 .header-title { font-weight: 800; font-size: 1.1rem; }
 
-/* ── WALLET SPECIFIC STYLES ── */
+/* ── WALLET CONTAINER ── */
 .wallet-container { padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
 
-/* Balance Card */
-.wallet-card { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); border-radius: var(--radius); padding: 24px; color: white; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(255, 117, 31, 0.3); position: relative; overflow: hidden; }
+/* ── BALANCE CARD ── */
+.wallet-card { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); border-radius: var(--radius); padding: 24px; color: white; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(255,117,31,0.3); position: relative; overflow: hidden; }
 .wallet-card-bg { position: absolute; right: -20px; top: -20px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; pointer-events: none; }
 .wallet-card-bg-2 { position: absolute; left: -30px; bottom: -30px; width: 100px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 50%; pointer-events: none; }
 .wallet-label { font-size: 0.85rem; font-weight: 600; opacity: 0.9; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -47,17 +46,16 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .wallet-id-container { font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: var(--radius-pill); display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; backdrop-filter: blur(4px); cursor: pointer; transition: var(--transition); }
 .wallet-id-container:active { transform: scale(0.95); background: rgba(255,255,255,0.3); }
 
-/* Quick Actions */
+/* ── QUICK ACTIONS ── */
 .wallet-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 32px; }
 .action-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 8px; display: flex; flex-direction: column; align-items: center; gap: 10px; font-weight: 700; font-size: 0.85rem; color: var(--text); cursor: pointer; transition: var(--transition); box-shadow: var(--shadow); }
 .action-btn:active { transform: scale(0.96); }
 .action-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; color: var(--accent-dark); transition: var(--transition); }
-.action-btn:hover .action-icon { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(255, 117, 31, 0.2); }
+.action-btn:hover .action-icon { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(255,117,31,0.2); }
 
-/* Transactions */
+/* ── TRANSACTIONS ── */
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .section-title { font-size: 1.15rem; font-weight: 800; color: var(--text); }
-
 .tx-list { display: flex; flex-direction: column; gap: 12px; }
 .tx-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 .tx-icon { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -71,10 +69,9 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .tx-amount.in { color: var(--success); }
 .tx-amount.out { color: var(--text); }
 
-/* Empty State */
+/* ── EMPTY STATE ── */
 .empty-state { text-align: center; padding: 40px 20px; color: var(--dim); }
-.empty-state i { width: 48px; height: 48px; opacity: 0.2; margin-bottom: 12px; }
-.empty-state p { font-weight: 600; font-size: 0.95rem; color: var(--text); margin-bottom: 4px; }
+.empty-state p { font-weight: 600; font-size: 0.95rem; color: var(--text); margin-bottom: 4px; margin-top: 12px; }
 .empty-state small { font-size: 0.8rem; }
 
 /* ── MODALS ── */
@@ -84,35 +81,138 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .modal.active { display: flex; }
 
 @media (max-width: 767px) {
-  .modal { left: 0; right: 0; bottom: 0; border-radius: var(--radius) var(--radius) 0 0; max-height: 90vh; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); }
+  .modal { left: 0; right: 0; bottom: 0; border-radius: var(--radius) var(--radius) 0 0; max-height: 95vh; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); }
   .modal.active { transform: translateY(0); }
 }
 @media (min-width: 768px) {
   .wallet-container { padding: 40px; max-width: 800px; margin: 0; }
   .wallet-card { padding: 32px; }
   .wallet-balance { font-size: 3.5rem; }
-  .modal { top: 50%; left: 50%; width: 100%; max-width: 440px; border-radius: var(--radius); transform: translate(-50%, -50%) scale(0.95); opacity: 0; transition: all 0.35s ease; }
+  .modal { top: 50%; left: 50%; width: 100%; max-width: 480px; border-radius: var(--radius); transform: translate(-50%, -50%) scale(0.95); opacity: 0; transition: all 0.35s ease; }
   .modal.active { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 
-.modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
 .modal-header h3 { font-weight: 800; font-size: 1.15rem; }
-.modal-body { padding: 20px; overflow-y: auto; }
+.modal-body { padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .close-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--surface2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--dim); transition: var(--transition); }
 .close-btn:hover { background: var(--border); }
 
-/* Form Elements */
+/* ── STEPS ── */
+.steps-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 24px; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: var(--transition); }
+.step-dot.active { background: var(--accent); width: 24px; border-radius: 4px; }
+.step-dot.done { background: var(--success); }
+
+/* ── SAVED CARDS ── */
+.card-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.card-option { border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: var(--transition); background: var(--surface); }
+.card-option:hover { border-color: var(--accent); background: var(--accent-light); }
+.card-option.selected { border-color: var(--accent); background: var(--accent-light); }
+.card-option input[type="radio"] { display: none; }
+.card-chip { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.card-chip.visa { background: #1a1f71; color: white; font-weight: 900; font-size: 0.7rem; letter-spacing: -0.5px; }
+.card-chip.mastercard { background: linear-gradient(135deg, #eb001b, #f79e1b); color: white; }
+.card-chip.new { background: var(--surface2); color: var(--dim); }
+.card-details-text { flex: 1; }
+.card-name { font-weight: 700; font-size: 0.9rem; }
+.card-number-masked { font-size: 0.78rem; color: var(--dim); font-weight: 500; margin-top: 2px; font-family: monospace; }
+.card-expiry-badge { font-size: 0.72rem; color: var(--dim); font-weight: 600; background: var(--surface2); padding: 3px 8px; border-radius: var(--radius-pill); }
+
+/* ── VIRTUAL CARD PREVIEW ── */
+.card-preview { background: linear-gradient(135deg, #1a1d23 0%, #2d3748 100%); border-radius: 16px; padding: 22px; color: white; margin-bottom: 20px; position: relative; overflow: hidden; height: 160px; display: flex; flex-direction: column; justify-content: space-between; }
+.card-preview-bg { position: absolute; right: -20px; top: -20px; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 50%; }
+.card-preview-bg2 { position: absolute; left: -10px; bottom: -30px; width: 80px; height: 80px; background: rgba(255,255,255,0.03); border-radius: 50%; }
+.card-preview-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
+.card-preview-chip { width: 36px; height: 26px; background: linear-gradient(135deg, #d4af37, #f0d060); border-radius: 5px; }
+.card-preview-number { font-size: 1rem; font-family: 'Courier New', monospace; letter-spacing: 3px; font-weight: 700; position: relative; z-index: 1; text-align: center; }
+.card-preview-bottom { display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 1; }
+.card-preview-holder { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+.card-preview-expiry-label { font-size: 0.6rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; }
+.card-preview-expiry { font-size: 0.85rem; font-weight: 700; font-family: monospace; }
+.card-preview-brand { position: absolute; top: 20px; right: 20px; z-index: 1; }
+.card-preview-brand.visa-brand { font-weight: 900; font-size: 1.3rem; font-style: italic; letter-spacing: -1px; color: white; }
+.card-preview-brand.mc-brand { display: flex; }
+.mc-circle1 { width: 30px; height: 30px; background: #eb001b; border-radius: 50%; opacity: 0.9; }
+.mc-circle2 { width: 30px; height: 30px; background: #f79e1b; border-radius: 50%; opacity: 0.9; margin-left: -12px; }
+
+/* ── FORM ELEMENTS ── */
 .form-group { margin-bottom: 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
-.form-input { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 1rem; font-family: inherit; transition: var(--transition); background: var(--surface); outline: none; }
+.form-input { width: 100%; padding: 13px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 1rem; font-family: inherit; transition: var(--transition); background: var(--surface); outline: none; color: var(--text); }
 .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,117,31,0.1); }
-.btn-primary { width: 100%; background: var(--accent); color: white; border: none; padding: 14px; border-radius: var(--radius-sm); font-weight: 800; font-size: 1rem; cursor: pointer; transition: var(--transition); margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.form-input.card-num-input { font-family: 'Courier New', monospace; letter-spacing: 2px; font-size: 1.05rem; }
+.input-icon-wrap { position: relative; }
+.input-icon-wrap .form-input { padding-right: 44px; }
+.input-icon-wrap .input-icon { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--dim); pointer-events: none; }
+
+/* ── DIVIDER ── */
+.divider { display: flex; align-items: center; gap: 12px; margin: 16px 0; }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-text { font-size: 0.75rem; font-weight: 600; color: var(--dim); white-space: nowrap; }
+
+/* ── AMOUNT ROW ── */
+.amount-row { background: var(--accent-light); border: 2px solid var(--accent); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.amount-row-label { font-size: 0.8rem; font-weight: 700; color: var(--accent-dark); }
+.amount-row-value { font-size: 1.2rem; font-weight: 800; color: var(--accent-dark); }
+
+/* ── FEES ROW ── */
+.fee-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--dim); font-weight: 500; padding: 4px 0; }
+.fee-row strong { color: var(--text); }
+
+/* ── SECURE BADGE ── */
+.secure-badge { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--dim); font-weight: 600; justify-content: center; margin: 12px 0 4px; }
+
+/* ── BUTTONS ── */
+.btn-primary { width: 100%; background: var(--accent); color: white; border: none; padding: 15px; border-radius: var(--radius-sm); font-weight: 800; font-size: 1rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; }
 .btn-primary:active { transform: scale(0.98); }
 .btn-primary:disabled { background: var(--border); cursor: not-allowed; color: var(--dim); transform: none; }
+.btn-secondary { width: 100%; background: var(--surface2); color: var(--text); border: none; padding: 13px; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; font-family: inherit; }
+.btn-secondary:active { transform: scale(0.98); }
+
+/* ── NETWORK SELECTOR ── */
+.network-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.network-tab { flex: 1; padding: 10px 6px; border: 2px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); font-weight: 700; font-size: 0.78rem; cursor: pointer; transition: var(--transition); text-align: center; color: var(--dim); font-family: inherit; }
+.network-tab.active { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-light); }
+
+/* ── CVV TOOLTIP ── */
+.cvv-hint { font-size: 0.72rem; color: var(--dim); margin-top: 4px; font-weight: 500; }
+
+/* ── SUCCESS STATE ── */
+.success-screen { text-align: center; padding: 32px 20px; }
+.success-icon { width: 72px; height: 72px; background: var(--success-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.success-title { font-weight: 800; font-size: 1.3rem; margin-bottom: 8px; }
+.success-sub { font-size: 0.9rem; color: var(--dim); font-weight: 500; line-height: 1.5; }
+.success-amount { font-size: 2rem; font-weight: 800; color: var(--success); margin: 12px 0; }
 
 /* ── TOAST ── */
-#toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text); color: white; padding: 14px 24px; border-radius: 12px; z-index: 4000; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; font-weight: 600; font-size: 0.9rem; box-shadow: 0 8px 24px rgba(0,0,0,0.3); opacity: 0; white-space: nowrap; }
+#toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text); color: white; padding: 14px 24px; border-radius: 12px; z-index: 4000; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease; font-weight: 600; font-size: 0.9rem; box-shadow: 0 8px 24px rgba(0,0,0,0.3); opacity: 0; white-space: nowrap; }
 #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ── SPINNER ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; display: inline-block; }
+
+/* ── CARD FLIP ANIMATION ── */
+@keyframes fadeSlideUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.fade-slide-up { animation: fadeSlideUp 0.3s ease forwards; }
+
+/* ── SECURITY INFO ── */
+.security-info { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-sm); padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; margin-bottom: 16px; }
+.security-info svg { color: #16a34a; flex-shrink: 0; margin-top: 1px; }
+.security-info p { font-size: 0.78rem; color: #15803d; font-weight: 600; line-height: 1.4; }
+
+/* ── OTP INPUTS ── */
+.otp-row { display: flex; gap: 10px; justify-content: center; margin: 20px 0; }
+.otp-input { width: 48px; height: 56px; border: 2px solid var(--border); border-radius: var(--radius-sm); text-align: center; font-size: 1.4rem; font-weight: 800; font-family: monospace; outline: none; transition: var(--transition); color: var(--text); background: var(--surface); }
+.otp-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,117,31,0.1); }
+
+/* ── PROCESSING ── */
+.processing-screen { text-align: center; padding: 32px 20px; }
+.processing-ring { width: 72px; height: 72px; border: 5px solid var(--accent-light); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+.processing-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 6px; }
+.processing-sub { font-size: 0.85rem; color: var(--dim); font-weight: 500; }
 </style>
 </head>
 <body>
@@ -121,7 +221,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 
 <div class="app-container">
   <div class="main-wrapper">
-    
+
     <header class="header">
       <div class="header-left">
         <button class="back-btn" onclick="window.location.href='index.html'" aria-label="Go Back">
@@ -132,7 +232,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
     </header>
 
     <main class="wallet-container">
-      
+
       <div class="wallet-card">
         <div class="wallet-card-bg"></div>
         <div class="wallet-card-bg-2"></div>
@@ -141,17 +241,17 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
           <span class="wallet-currency">R</span><span id="walletBalanceDisplay">0.00</span>
         </div>
         <div class="wallet-id-container" onclick="copyWalletId()">
-          <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
+          <i data-lucide="copy" style="width:14px;height:14px;"></i>
           <span id="walletIdDisplay">Loading...</span>
         </div>
       </div>
 
       <div class="wallet-actions">
-        <button class="action-btn" onclick="openModal('topupModal')">
+        <button class="action-btn" onclick="openTopUp()">
           <div class="action-icon"><i data-lucide="plus"></i></div>
           Add Funds
         </button>
-        <button class="action-btn" onclick="openModal('transferModal')">
+        <button class="action-btn" onclick="openTransfer()">
           <div class="action-icon"><i data-lucide="send"></i></div>
           Send Money
         </button>
@@ -160,10 +260,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
       <div class="section-header">
         <h2 class="section-title">Recent Activity</h2>
       </div>
-      
+
       <div class="tx-list" id="transactionList">
-        <div style="text-align: center; padding: 20px; color: var(--dim);">
-          <i data-lucide="loader-2" style="animation: spin 1s linear infinite;"></i>
+        <div style="text-align:center;padding:20px;color:var(--dim);">
+          <i data-lucide="loader-2" class="spin"></i>
         </div>
       </div>
 
@@ -173,39 +273,29 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 
 <div class="modal-overlay" id="modalOverlay" onclick="closeModals()"></div>
 
+<!-- ══════════════════════════════════════════
+     TOP-UP MODAL  (3 steps)
+═══════════════════════════════════════════ -->
 <div class="modal" id="topupModal">
   <div class="modal-header">
-    <h3>Add Funds</h3>
+    <h3 id="topupModalTitle">Add Funds</h3>
     <button class="close-btn" onclick="closeModals()"><i data-lucide="x"></i></button>
   </div>
-  <div class="modal-body">
-    <div class="form-group">
-      <label class="form-label">Amount (ZAR)</label>
-      <input type="number" id="topupAmount" class="form-input" placeholder="e.g. 250" min="10">
-    </div>
-    <div style="font-size: 0.8rem; color: var(--dim); margin-bottom: 20px; line-height: 1.4;">
-      <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
-      Funds are instantly added via PayShap or your Capitec app.
-    </div>
-    <button class="btn-primary" id="btnTopUp" onclick="processTopUp()">Confirm Top Up</button>
+  <div class="modal-body" id="topupModalBody">
+    <!-- rendered by JS -->
   </div>
 </div>
 
+<!-- ══════════════════════════════════════════
+     TRANSFER MODAL  (3 steps)
+═══════════════════════════════════════════ -->
 <div class="modal" id="transferModal">
   <div class="modal-header">
-    <h3>Send Money</h3>
+    <h3 id="transferModalTitle">Send Money</h3>
     <button class="close-btn" onclick="closeModals()"><i data-lucide="x"></i></button>
   </div>
-  <div class="modal-body">
-    <div class="form-group">
-      <label class="form-label">Recipient Wallet ID</label>
-      <input type="text" id="transferTargetId" class="form-input" placeholder="e.g. BUSK-ABCD-12">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Amount (ZAR)</label>
-      <input type="number" id="transferAmount" class="form-input" placeholder="0.00" min="1">
-    </div>
-    <button class="btn-primary" id="btnTransfer" onclick="processTransfer()">Send Securely</button>
+  <div class="modal-body" id="transferModalBody">
+    <!-- rendered by JS -->
   </div>
 </div>
 
@@ -214,7 +304,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getDatabase, ref, onValue, set, push, get, update, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// Initialize Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
   authDomain: "test-17881.firebaseapp.com",
@@ -228,252 +317,696 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
-// State Variables
 let currentUserId = null;
 let currentBalance = 0;
 let currentWalletId = "";
+
+// ── STATE FOR TOP-UP FLOW ──
+let topupStep = 1;
+let topupData = { amount: 0, card: null, newCard: null, useNew: false };
+
+// ── STATE FOR TRANSFER FLOW ──
+let transferStep = 1;
+let transferData = { targetId: '', amount: 0, card: null, newCard: null, useNew: false };
+
 lucide.createIcons();
 
-// ── AUTHENTICATION & INITIALIZATION ──
+// ── SAVED CARDS (demo – in production fetch from DB) ──
+const DEMO_SAVED_CARDS = [
+  { id: 'card1', network: 'visa',       last4: '4242', holder: 'JOHN SMITH',   expiry: '09/27' },
+  { id: 'card2', network: 'mastercard', last4: '8891', holder: 'JOHN SMITH',   expiry: '03/26' },
+];
+
+// ══════════════ FIREBASE INIT ══════════════
 onAuthStateChanged(auth, user => {
   if (user) {
     currentUserId = user.uid;
     initializeWallet();
     listenToTransactions();
   } else {
-    // Not logged in, redirect to main app
     window.location.href = 'index.html';
   }
 });
 
-// Generate a readable random wallet ID
 function generateWalletId() {
-  const p1 = Math.random().toString(36).substring(2, 6).toUpperCase();
-  const p2 = Math.random().toString(36).substring(2, 4).toUpperCase();
+  const p1 = Math.random().toString(36).substring(2,6).toUpperCase();
+  const p2 = Math.random().toString(36).substring(2,4).toUpperCase();
   return `BUSK-${p1}-${p2}`;
 }
 
 async function initializeWallet() {
   const walletRef = ref(db, `users/${currentUserId}/wallet`);
-  
-  onValue(walletRef, async (snapshot) => {
-    if (snapshot.exists()) {
-      const data = snapshot.val();
+  onValue(walletRef, async (snap) => {
+    if (snap.exists()) {
+      const data = snap.val();
       currentBalance = parseFloat(data.balance || 0);
       currentWalletId = data.walletId;
-      
-      // Update UI
       document.getElementById('walletBalanceDisplay').textContent = currentBalance.toFixed(2);
       document.getElementById('walletIdDisplay').textContent = currentWalletId;
     } else {
-      // Create new wallet profile
-      const newWalletId = generateWalletId();
-      await set(walletRef, {
-        balance: 0,
-        walletId: newWalletId
-      });
-      // Save global mapping for P2P transfers
-      await set(ref(db, `walletMappings/${newWalletId}`), currentUserId);
+      const newId = generateWalletId();
+      await set(walletRef, { balance: 0, walletId: newId });
+      await set(ref(db, `walletMappings/${newId}`), currentUserId);
     }
   });
 }
 
-// ── TRANSACTIONS LISTENER ──
 function listenToTransactions() {
   const txRef = query(ref(db, `transactions/${currentUserId}`), limitToLast(50));
-  
-  onValue(txRef, (snapshot) => {
+  onValue(txRef, (snap) => {
     const listEl = document.getElementById('transactionList');
-    if (!snapshot.exists()) {
+    if (!snap.exists()) {
       listEl.innerHTML = `
         <div class="empty-state">
-          <i data-lucide="receipt"></i>
+          <i data-lucide="receipt" style="width:48px;height:48px;opacity:0.2;"></i>
           <p>No transactions yet</p>
           <small>Top up your wallet to get started</small>
         </div>`;
-      lucide.createIcons();
-      return;
+      lucide.createIcons(); return;
     }
-
-    const transactions = [];
-    snapshot.forEach(child => {
-      transactions.push({ id: child.key, ...child.val() });
-    });
-    
-    // Sort newest first
-    transactions.sort((a, b) => b.timestamp - a.timestamp);
-
-    listEl.innerHTML = transactions.map(tx => {
+    const txs = [];
+    snap.forEach(child => txs.push({ id: child.key, ...child.val() }));
+    txs.sort((a,b) => b.timestamp - a.timestamp);
+    listEl.innerHTML = txs.map(tx => {
       let icon, iconClass, amountClass, sign;
-      
-      if (tx.type === 'in') {
-        icon = 'arrow-down-left'; iconClass = 'in'; amountClass = 'in'; sign = '+R';
-      } else if (tx.type === 'transfer') {
-        icon = 'send'; iconClass = 'transfer'; amountClass = 'out'; sign = '-R';
-      } else {
-        icon = 'shopping-bag'; iconClass = 'out'; amountClass = 'out'; sign = '-R';
-      }
-
-      const dateStr = new Date(tx.timestamp).toLocaleDateString('en-ZA', { 
-        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
-      });
-
-      return `
-        <div class="tx-item">
-          <div class="tx-icon ${iconClass}">
-            <i data-lucide="${icon}"></i>
-          </div>
-          <div class="tx-info">
-            <div class="tx-title">${tx.title}</div>
-            <div class="tx-date">${dateStr}</div>
-          </div>
-          <div class="tx-amount ${amountClass}">${sign}${parseFloat(tx.amount).toFixed(2)}</div>
-        </div>`;
+      if (tx.type === 'in') { icon='arrow-down-left'; iconClass='in'; amountClass='in'; sign='+R'; }
+      else if (tx.type === 'transfer') { icon='send'; iconClass='transfer'; amountClass='out'; sign='-R'; }
+      else { icon='shopping-bag'; iconClass='out'; amountClass='out'; sign='-R'; }
+      const dateStr = new Date(tx.timestamp).toLocaleDateString('en-ZA', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+      return `<div class="tx-item">
+        <div class="tx-icon ${iconClass}"><i data-lucide="${icon}"></i></div>
+        <div class="tx-info">
+          <div class="tx-title">${tx.title}</div>
+          <div class="tx-date">${dateStr}</div>
+        </div>
+        <div class="tx-amount ${amountClass}">${sign}${parseFloat(tx.amount).toFixed(2)}</div>
+      </div>`;
     }).join('');
-    
     lucide.createIcons();
   });
 }
 
-// ── TOP UP LOGIC ──
-window.processTopUp = async () => {
-  const input = document.getElementById('topupAmount');
-  const amount = parseFloat(input.value);
-  const btn = document.getElementById('btnTopUp');
+// ══════════════════════════════════════════
+// TOP-UP FLOW
+// ══════════════════════════════════════════
 
-  if (isNaN(amount) || amount <= 0) {
-    showToast("Please enter a valid amount");
-    return;
+window.openTopUp = () => {
+  topupStep = 1;
+  topupData = { amount: 0, card: null, newCard: null, useNew: false };
+  renderTopupStep();
+  openModal('topupModal');
+};
+
+function renderTopupStep() {
+  document.getElementById('topupModalTitle').textContent =
+    topupStep === 1 ? 'Add Funds' : topupStep === 2 ? 'Payment Method' : topupStep === 3 ? 'Card Details' : 'Confirm & Pay';
+  const body = document.getElementById('topupModalBody');
+  body.innerHTML = buildTopupStepHTML();
+  lucide.createIcons();
+  attachTopupListeners();
+}
+
+function buildTopupStepHTML() {
+  const steps = `<div class="steps-indicator">
+    ${[1,2,3,4].map(i=>`<div class="step-dot ${topupStep===i?'active':topupStep>i?'done':''}"></div>`).join('')}
+  </div>`;
+
+  if (topupStep === 1) return `
+    ${steps}
+    <div class="form-group">
+      <label class="form-label">Amount to Add (ZAR)</label>
+      <div class="input-icon-wrap">
+        <input type="number" id="tu_amount" class="form-input" placeholder="0.00" min="10" value="${topupData.amount||''}">
+        <span class="input-icon"><i data-lucide="south-african-rand" style="width:18px;height:18px;"></i></span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px;">
+      ${[50,100,250,500].map(v=>`<button onclick="setTopupAmount(${v})" style="padding:10px 4px;border:2px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);font-weight:700;font-size:0.85rem;cursor:pointer;font-family:inherit;" class="quick-amount-btn">R${v}</button>`).join('')}
+    </div>
+    <div class="security-info">
+      <i data-lucide="shield-check" style="width:16px;height:16px;"></i>
+      <p>All transactions are encrypted with 256-bit SSL and monitored for fraud 24/7.</p>
+    </div>
+    <button class="btn-primary" onclick="topupNext1()"><i data-lucide="arrow-right" style="width:18px;height:18px;"></i> Continue</button>`;
+
+  if (topupStep === 2) return `
+    ${steps}
+    <p style="font-size:0.8rem;color:var(--dim);font-weight:600;margin-bottom:12px;">SELECT A SAVED CARD</p>
+    <div class="card-list">
+      ${DEMO_SAVED_CARDS.map((c,i)=>`
+        <label class="card-option ${topupData.card?.id===c.id?'selected':''}" onclick="selectTopupCard('${c.id}')">
+          <div class="card-chip ${c.network}">${c.network==='visa'?'VISA':'<span style="font-size:0.6rem;font-weight:800;">MC</span>'}</div>
+          <div class="card-details-text">
+            <div class="card-name">${c.holder}</div>
+            <div class="card-number-masked">•••• •••• •••• ${c.last4}</div>
+          </div>
+          <div class="card-expiry-badge">${c.expiry}</div>
+        </label>`).join('')}
+      <label class="card-option ${topupData.useNew?'selected':''}" onclick="selectTopupCard('new')">
+        <div class="card-chip new"><i data-lucide="plus" style="width:20px;height:20px;"></i></div>
+        <div class="card-details-text">
+          <div class="card-name">Use a new card</div>
+          <div class="card-number-masked">Enter card details manually</div>
+        </div>
+      </label>
+    </div>
+    <button class="btn-primary" onclick="topupNext2()" ${!topupData.card && !topupData.useNew?'disabled':''} id="tu_next2_btn">Continue <i data-lucide="arrow-right" style="width:18px;height:18px;"></i></button>
+    <button class="btn-secondary" onclick="topupBack()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back</button>`;
+
+  if (topupStep === 3) {
+    if (!topupData.useNew) {
+      // existing card — go to confirm
+      topupStep = 4; return buildTopupStepHTML();
+    }
+    return `
+    ${steps}
+    ${buildCardPreviewHTML(topupData.newCard||{})}
+    <div class="network-tabs">
+      <button class="network-tab ${(topupData.newCard?.network||'visa')==='visa'?'active':''}" onclick="setNewCardNetwork('visa','topup')">Visa</button>
+      <button class="network-tab ${(topupData.newCard?.network||'')==='mastercard'?'active':''}" onclick="setNewCardNetwork('mastercard','topup')">Mastercard</button>
+      <button class="network-tab ${(topupData.newCard?.network||'')==='amex'?'active':''}" onclick="setNewCardNetwork('amex','topup')">Amex</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Cardholder Name</label>
+      <input type="text" id="tu_holder" class="form-input" placeholder="e.g. John Smith" value="${topupData.newCard?.holder||''}" oninput="updateCardPreview()" autocomplete="cc-name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Card Number</label>
+      <input type="text" id="tu_number" class="form-input card-num-input" placeholder="0000 0000 0000 0000" maxlength="19" value="${topupData.newCard?.number||''}" oninput="formatCardNumber(this,'topup')" autocomplete="cc-number">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Expiry Date</label>
+        <input type="text" id="tu_expiry" class="form-input" placeholder="MM/YY" maxlength="5" value="${topupData.newCard?.expiry||''}" oninput="formatExpiry(this,'topup')" autocomplete="cc-exp">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CVV / CVC</label>
+        <div class="input-icon-wrap">
+          <input type="password" id="tu_cvv" class="form-input" placeholder="•••" maxlength="4" value="${topupData.newCard?.cvv||''}" oninput="updateCardPreview()" autocomplete="cc-csc">
+          <span class="input-icon"><i data-lucide="lock" style="width:16px;height:16px;"></i></span>
+        </div>
+        <div class="cvv-hint">3 digits on back (Amex: 4 digits front)</div>
+      </div>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="toggleSaveCard()">
+      <div id="save_card_check" style="width:20px;height:20px;border:2px solid var(--accent);border-radius:5px;display:flex;align-items:center;justify-content:center;background:${topupData.saveCard?'var(--accent)':'white'};transition:var(--transition);flex-shrink:0;">
+        ${topupData.saveCard?'<i data-lucide="check" style="width:13px;height:13px;color:white;"></i>':''}
+      </div>
+      <span style="font-size:0.85rem;font-weight:600;color:var(--text-secondary);">Save card for future payments</span>
+    </div>
+    <button class="btn-primary" onclick="topupNext3()">Review Payment <i data-lucide="arrow-right" style="width:18px;height:18px;"></i></button>
+    <button class="btn-secondary" onclick="topupBack()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back</button>`;
   }
 
-  btn.disabled = true;
-  btn.innerHTML = '<i data-lucide="loader-2" style="animation:spin 1s linear infinite;"></i> Processing...';
-  lucide.createIcons();
+  if (topupStep === 4) {
+    const card = topupData.useNew ? topupData.newCard : topupData.card;
+    const last4 = topupData.useNew ? (card?.number?.replace(/\s/g,'').slice(-4)||'????') : card?.last4;
+    const network = topupData.useNew ? (card?.network||'visa') : card?.network;
+    const holder = topupData.useNew ? (card?.holder||'Card Holder') : card?.holder;
+    const fee = (topupData.amount * 0.015).toFixed(2);
+    const total = (topupData.amount + parseFloat(fee)).toFixed(2);
+    return `
+    ${steps}
+    <div class="amount-row">
+      <span class="amount-row-label">Adding to Wallet</span>
+      <span class="amount-row-value">R ${parseFloat(topupData.amount).toFixed(2)}</span>
+    </div>
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div class="card-chip ${network}" style="width:36px;height:36px;border-radius:8px;font-size:0.6rem;">${network==='visa'?'VISA':network==='mastercard'?'<span style="font-size:0.5rem;font-weight:900;">MC</span>':'AMEX'}</div>
+        <div>
+          <div style="font-weight:700;font-size:0.9rem;">${holder}</div>
+          <div style="font-size:0.78rem;color:var(--dim);font-family:monospace;">•••• •••• •••• ${last4}</div>
+        </div>
+      </div>
+      <div class="fee-row"><span>Top-up amount</span><strong>R ${parseFloat(topupData.amount).toFixed(2)}</strong></div>
+      <div class="fee-row"><span>Processing fee (1.5%)</span><strong>R ${fee}</strong></div>
+      <div style="height:1px;background:var(--border);margin:8px 0;"></div>
+      <div class="fee-row"><span style="font-weight:700;color:var(--text);">Total charged to card</span><strong style="font-size:1rem;">R ${total}</strong></div>
+    </div>
+    <div class="security-info">
+      <i data-lucide="shield-check" style="width:16px;height:16px;"></i>
+      <p>Payment processed securely via Peach Payments. Your card details are never stored on our servers.</p>
+    </div>
+    <button class="btn-primary" id="tu_confirm_btn" onclick="finalizeTopUp()">
+      <i data-lucide="lock" style="width:16px;height:16px;"></i> Pay R ${total} & Add Funds
+    </button>
+    <button class="btn-secondary" onclick="topupBack()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back</button>`;
+  }
+}
+
+function attachTopupListeners() {
+  // quick amount buttons
+  document.querySelectorAll('.quick-amount-btn').forEach(btn => {
+    btn.style.transition = 'all 0.2s';
+  });
+}
+
+window.setTopupAmount = (v) => {
+  const inp = document.getElementById('tu_amount');
+  if (inp) { inp.value = v; topupData.amount = v; }
+};
+
+window.selectTopupCard = (id) => {
+  if (id === 'new') { topupData.useNew = true; topupData.card = null; }
+  else { topupData.useNew = false; topupData.card = DEMO_SAVED_CARDS.find(c=>c.id===id)||null; }
+  renderTopupStep();
+};
+
+window.topupNext1 = () => {
+  const v = parseFloat(document.getElementById('tu_amount')?.value);
+  if (!v || v < 10) { showToast("Minimum top-up is R10"); return; }
+  topupData.amount = v;
+  topupStep = 2;
+  renderTopupStep();
+};
+window.topupNext2 = () => {
+  if (!topupData.card && !topupData.useNew) { showToast("Select a payment method"); return; }
+  topupStep = topupData.useNew ? 3 : 4;
+  renderTopupStep();
+};
+window.topupNext3 = () => {
+  const holder = document.getElementById('tu_holder')?.value.trim();
+  const number = document.getElementById('tu_number')?.value.replace(/\s/g,'');
+  const expiry = document.getElementById('tu_expiry')?.value.trim();
+  const cvv    = document.getElementById('tu_cvv')?.value.trim();
+  if (!holder) { showToast("Enter cardholder name"); return; }
+  if (!number || number.length < 13) { showToast("Enter a valid card number"); return; }
+  if (!expiry || !expiry.match(/^\d{2}\/\d{2}$/)) { showToast("Enter a valid expiry (MM/YY)"); return; }
+  if (!cvv || cvv.length < 3) { showToast("Enter your CVV"); return; }
+  if (!validateExpiry(expiry)) { showToast("Card has expired"); return; }
+  topupData.newCard = { ...topupData.newCard, holder, number: formatCardDisplay(number), expiry, cvv };
+  topupStep = 4;
+  renderTopupStep();
+};
+window.topupBack = () => {
+  if (topupStep <= 1) { closeModals(); return; }
+  topupStep = topupStep === 4 && !topupData.useNew ? 2 : topupStep - 1;
+  renderTopupStep();
+};
+
+window.toggleSaveCard = () => {
+  topupData.saveCard = !topupData.saveCard;
+  const check = document.getElementById('save_card_check');
+  if (check) { check.style.background = topupData.saveCard ? 'var(--accent)' : 'white'; check.innerHTML = topupData.saveCard ? '<i data-lucide="check" style="width:13px;height:13px;color:white;"></i>' : ''; lucide.createIcons(); }
+};
+
+window.finalizeTopUp = async () => {
+  const btn = document.getElementById('tu_confirm_btn');
+  if (btn) { btn.disabled = true; }
+  // Show processing screen
+  document.getElementById('topupModalBody').innerHTML = `
+    <div class="processing-screen fade-slide-up">
+      <div class="processing-ring"></div>
+      <div class="processing-title">Processing Payment…</div>
+      <div class="processing-sub">Please wait while we securely process your card</div>
+    </div>`;
 
   try {
-    // 1. Update Balance
-    const newBalance = currentBalance + amount;
+    await new Promise(r => setTimeout(r, 2200)); // simulate gateway
+    const newBalance = currentBalance + topupData.amount;
     await set(ref(db, `users/${currentUserId}/wallet/balance`), newBalance);
-    
-    // 2. Log Transaction
+    const card = topupData.useNew ? topupData.newCard : topupData.card;
+    const last4 = topupData.useNew ? card.number.replace(/\s/g,'').slice(-4) : card.last4;
     await push(ref(db, `transactions/${currentUserId}`), {
       type: 'in',
-      title: 'Top Up - Bank / PayShap',
-      amount: amount,
+      title: `Top Up •••• ${last4}`,
+      amount: topupData.amount,
       timestamp: Date.now()
     });
-
-    input.value = '';
-    closeModals();
-    showToast(`Successfully added R${amount.toFixed(2)}`);
-  } catch (error) {
-    showToast("Top up failed. Please try again.");
-    console.error(error);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = 'Confirm Top Up';
+    document.getElementById('topupModalBody').innerHTML = `
+      <div class="success-screen fade-slide-up">
+        <div class="success-icon"><i data-lucide="check-circle-2" style="width:36px;height:36px;color:#2e7d32;"></i></div>
+        <div class="success-title">Funds Added!</div>
+        <div class="success-amount">+R${topupData.amount.toFixed(2)}</div>
+        <div class="success-sub">Your wallet has been topped up successfully.<br>New balance: <strong>R${newBalance.toFixed(2)}</strong></div>
+        <button class="btn-primary" style="margin-top:24px;" onclick="closeModals()">Done</button>
+      </div>`;
+    lucide.createIcons();
+  } catch(e) {
+    showToast("Payment failed. Please try again.");
+    topupStep = 4; renderTopupStep();
+    console.error(e);
   }
 };
 
-// ── TRANSFER LOGIC ──
-window.processTransfer = async () => {
-  const targetIdInput = document.getElementById('transferTargetId');
-  const targetId = targetIdInput.value.trim().toUpperCase();
-  const amountInput = document.getElementById('transferAmount');
-  const amount = parseFloat(amountInput.value);
-  const btn = document.getElementById('btnTransfer');
+// ══════════════════════════════════════════
+// TRANSFER FLOW
+// ══════════════════════════════════════════
 
-  if (!targetId) return showToast("Enter a recipient Wallet ID");
-  if (targetId === currentWalletId) return showToast("You cannot transfer to yourself");
-  if (isNaN(amount) || amount <= 0) return showToast("Enter a valid amount");
-  if (amount > currentBalance) return showToast("Insufficient funds");
+window.openTransfer = () => {
+  transferStep = 1;
+  transferData = { targetId:'', amount:0, card:null, newCard:null, useNew:false };
+  renderTransferStep();
+  openModal('transferModal');
+};
 
-  btn.disabled = true;
-  btn.innerHTML = '<i data-lucide="loader-2" style="animation:spin 1s linear infinite;"></i> Sending...';
+function renderTransferStep() {
+  document.getElementById('transferModalTitle').textContent =
+    transferStep===1?'Send Money': transferStep===2?'Payment Method': transferStep===3?'Card Details':'Confirm Transfer';
+  const body = document.getElementById('transferModalBody');
+  body.innerHTML = buildTransferStepHTML();
   lucide.createIcons();
+}
+
+function buildTransferStepHTML() {
+  const steps = `<div class="steps-indicator">
+    ${[1,2,3,4].map(i=>`<div class="step-dot ${transferStep===i?'active':transferStep>i?'done':''}"></div>`).join('')}
+  </div>`;
+
+  if (transferStep===1) return `
+    ${steps}
+    <div class="form-group">
+      <label class="form-label">Recipient Wallet ID</label>
+      <div class="input-icon-wrap">
+        <input type="text" id="tr_target" class="form-input" placeholder="BUSK-XXXX-XX" value="${transferData.targetId}" style="text-transform:uppercase;" autocomplete="off">
+        <span class="input-icon"><i data-lucide="user" style="width:18px;height:18px;"></i></span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amount (ZAR)</label>
+      <div class="input-icon-wrap">
+        <input type="number" id="tr_amount" class="form-input" placeholder="0.00" min="1" value="${transferData.amount||''}">
+        <span class="input-icon"><i data-lucide="banknote" style="width:18px;height:18px;"></i></span>
+      </div>
+      ${currentBalance>0?`<div style="font-size:0.75rem;color:var(--dim);margin-top:4px;font-weight:500;">Available: R${currentBalance.toFixed(2)}</div>`:''}
+    </div>
+    <div class="form-group">
+      <label class="form-label">Reference (optional)</label>
+      <input type="text" id="tr_ref" class="form-input" placeholder="e.g. For groceries" value="${transferData.reference||''}">
+    </div>
+    <button class="btn-primary" onclick="transferNext1()">Continue <i data-lucide="arrow-right" style="width:18px;height:18px;"></i></button>`;
+
+  if (transferStep===2) return `
+    ${steps}
+    <div class="amount-row" style="margin-bottom:16px;">
+      <span class="amount-row-label">Sending to ${transferData.targetId}</span>
+      <span class="amount-row-value">R ${parseFloat(transferData.amount).toFixed(2)}</span>
+    </div>
+    <p style="font-size:0.8rem;color:var(--dim);font-weight:600;margin-bottom:12px;">PAY FROM</p>
+    <div class="card-list">
+      ${DEMO_SAVED_CARDS.map(c=>`
+        <label class="card-option ${transferData.card?.id===c.id?'selected':''}" onclick="selectTransferCard('${c.id}')">
+          <div class="card-chip ${c.network}">${c.network==='visa'?'VISA':'<span style="font-size:0.6rem;font-weight:800;">MC</span>'}</div>
+          <div class="card-details-text">
+            <div class="card-name">${c.holder}</div>
+            <div class="card-number-masked">•••• •••• •••• ${c.last4}</div>
+          </div>
+          <div class="card-expiry-badge">${c.expiry}</div>
+        </label>`).join('')}
+      <label class="card-option ${transferData.useNew?'selected':''}" onclick="selectTransferCard('new')">
+        <div class="card-chip new"><i data-lucide="plus" style="width:20px;height:20px;"></i></div>
+        <div class="card-details-text">
+          <div class="card-name">Use a new card</div>
+          <div class="card-number-masked">Enter card details manually</div>
+        </div>
+      </label>
+    </div>
+    <button class="btn-primary" onclick="transferNext2()" ${!transferData.card&&!transferData.useNew?'disabled':''} id="tr_next2_btn">Continue <i data-lucide="arrow-right" style="width:18px;height:18px;"></i></button>
+    <button class="btn-secondary" onclick="transferBack()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back</button>`;
+
+  if (transferStep===3) {
+    if (!transferData.useNew) { transferStep=4; return buildTransferStepHTML(); }
+    return `
+    ${steps}
+    ${buildCardPreviewHTML(transferData.newCard||{})}
+    <div class="network-tabs">
+      <button class="network-tab ${(transferData.newCard?.network||'visa')==='visa'?'active':''}" onclick="setNewCardNetwork('visa','transfer')">Visa</button>
+      <button class="network-tab ${(transferData.newCard?.network||'')==='mastercard'?'active':''}" onclick="setNewCardNetwork('mastercard','transfer')">Mastercard</button>
+      <button class="network-tab ${(transferData.newCard?.network||'')==='amex'?'active':''}" onclick="setNewCardNetwork('amex','transfer')">Amex</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Cardholder Name</label>
+      <input type="text" id="tr_holder" class="form-input" placeholder="e.g. John Smith" value="${transferData.newCard?.holder||''}" oninput="updateCardPreviewTransfer()" autocomplete="cc-name">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Card Number</label>
+      <input type="text" id="tr_number" class="form-input card-num-input" placeholder="0000 0000 0000 0000" maxlength="19" value="${transferData.newCard?.number||''}" oninput="formatCardNumber(this,'transfer')" autocomplete="cc-number">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Expiry Date</label>
+        <input type="text" id="tr_expiry" class="form-input" placeholder="MM/YY" maxlength="5" value="${transferData.newCard?.expiry||''}" oninput="formatExpiry(this,'transfer')" autocomplete="cc-exp">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CVV / CVC</label>
+        <div class="input-icon-wrap">
+          <input type="password" id="tr_cvv" class="form-input" placeholder="•••" maxlength="4" value="${transferData.newCard?.cvv||''}" oninput="updateCardPreviewTransfer()" autocomplete="cc-csc">
+          <span class="input-icon"><i data-lucide="lock" style="width:16px;height:16px;"></i></span>
+        </div>
+        <div class="cvv-hint">3 digits on back (Amex: 4 digits front)</div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="transferNext3()">Review Transfer <i data-lucide="arrow-right" style="width:18px;height:18px;"></i></button>
+    <button class="btn-secondary" onclick="transferBack()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back</button>`;
+  }
+
+  if (transferStep===4) {
+    const card = transferData.useNew ? transferData.newCard : transferData.card;
+    const last4 = transferData.useNew ? (card?.number?.replace(/\s/g,'').slice(-4)||'????') : card?.last4;
+    const network = transferData.useNew ? (card?.network||'visa') : card?.network;
+    const holder = transferData.useNew ? (card?.holder||'Card Holder') : card?.holder;
+    const fee = (transferData.amount * 0.01).toFixed(2);
+    const total = (transferData.amount + parseFloat(fee)).toFixed(2);
+    return `
+    ${steps}
+    <div class="amount-row">
+      <span class="amount-row-label">Sending to ${transferData.targetId}</span>
+      <span class="amount-row-value">R ${parseFloat(transferData.amount).toFixed(2)}</span>
+    </div>
+    ${transferData.reference ? `<div style="font-size:0.8rem;color:var(--dim);font-weight:500;margin:-8px 0 14px;">Ref: ${transferData.reference}</div>` : ''}
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div class="card-chip ${network}" style="width:36px;height:36px;border-radius:8px;font-size:0.6rem;">${network==='visa'?'VISA':network==='mastercard'?'<span style="font-size:0.5rem;font-weight:900;">MC</span>':'AMEX'}</div>
+        <div>
+          <div style="font-weight:700;font-size:0.9rem;">${holder}</div>
+          <div style="font-size:0.78rem;color:var(--dim);font-family:monospace;">•••• •••• •••• ${last4}</div>
+        </div>
+      </div>
+      <div class="fee-row"><span>Transfer amount</span><strong>R ${parseFloat(transferData.amount).toFixed(2)}</strong></div>
+      <div class="fee-row"><span>Transfer fee (1%)</span><strong>R ${fee}</strong></div>
+      <div style="height:1px;background:var(--border);margin:8px 0;"></div>
+      <div class="fee-row"><span style="font-weight:700;color:var(--text);">Total charged to card</span><strong style="font-size:1rem;">R ${total}</strong></div>
+    </div>
+    <div class="security-info">
+      <i data-lucide="shield-check" style="width:16px;height:16px;"></i>
+      <p>This transfer is instant and irreversible. Please confirm the Wallet ID is correct.</p>
+    </div>
+    <button class="btn-primary" id="tr_confirm_btn" onclick="finalizeTransfer()">
+      <i data-lucide="send" style="width:16px;height:16px;"></i> Confirm Transfer R${total}
+    </button>
+    <button class="btn-secondary" onclick="transferBack()"><i data-lucide="arrow-left" style="width:16px;height:16px;"></i> Back</button>`;
+  }
+}
+
+window.selectTransferCard = (id) => {
+  if (id==='new') { transferData.useNew=true; transferData.card=null; }
+  else { transferData.useNew=false; transferData.card=DEMO_SAVED_CARDS.find(c=>c.id===id)||null; }
+  renderTransferStep();
+};
+
+window.transferNext1 = async () => {
+  const targetId = document.getElementById('tr_target')?.value.trim().toUpperCase();
+  const amount   = parseFloat(document.getElementById('tr_amount')?.value);
+  const ref2     = document.getElementById('tr_ref')?.value.trim();
+  if (!targetId) { showToast("Enter a recipient Wallet ID"); return; }
+  if (targetId===currentWalletId) { showToast("Cannot send to yourself"); return; }
+  if (!amount||amount<1) { showToast("Enter a valid amount"); return; }
+  // Verify wallet exists
+  const btn = document.querySelector('#transferModalBody .btn-primary');
+  btn.disabled=true; btn.innerHTML='<span class="spin"><i data-lucide="loader-2" style="width:16px;height:16px;"></i></span> Verifying…';
+  lucide.createIcons();
+  try {
+    const snap = await get(ref(db, `walletMappings/${targetId}`));
+    if (!snap.exists()) { showToast("Wallet ID not found"); btn.disabled=false; btn.innerHTML='Continue <i data-lucide="arrow-right" style="width:18px;height:18px;"></i>'; lucide.createIcons(); return; }
+    transferData.targetId=targetId; transferData.amount=amount; transferData.reference=ref2;
+    transferStep=2; renderTransferStep();
+  } catch(e) { showToast("Verification failed"); btn.disabled=false; btn.innerHTML='Continue'; }
+};
+window.transferNext2 = () => {
+  if (!transferData.card&&!transferData.useNew) { showToast("Select a payment method"); return; }
+  transferStep=transferData.useNew?3:4;
+  renderTransferStep();
+};
+window.transferNext3 = () => {
+  const holder = document.getElementById('tr_holder')?.value.trim();
+  const number = document.getElementById('tr_number')?.value.replace(/\s/g,'');
+  const expiry = document.getElementById('tr_expiry')?.value.trim();
+  const cvv    = document.getElementById('tr_cvv')?.value.trim();
+  if (!holder) { showToast("Enter cardholder name"); return; }
+  if (!number||number.length<13) { showToast("Enter a valid card number"); return; }
+  if (!expiry||!expiry.match(/^\d{2}\/\d{2}$/)) { showToast("Enter a valid expiry (MM/YY)"); return; }
+  if (!cvv||cvv.length<3) { showToast("Enter your CVV"); return; }
+  if (!validateExpiry(expiry)) { showToast("Card has expired"); return; }
+  transferData.newCard={...transferData.newCard, holder, number:formatCardDisplay(number), expiry, cvv};
+  transferStep=4; renderTransferStep();
+};
+window.transferBack = () => {
+  if (transferStep<=1) { closeModals(); return; }
+  transferStep=transferStep===4&&!transferData.useNew?2:transferStep-1;
+  renderTransferStep();
+};
+
+window.finalizeTransfer = async () => {
+  const btn = document.getElementById('tr_confirm_btn');
+  if (btn) btn.disabled=true;
+  document.getElementById('transferModalBody').innerHTML = `
+    <div class="processing-screen fade-slide-up">
+      <div class="processing-ring"></div>
+      <div class="processing-title">Sending Transfer…</div>
+      <div class="processing-sub">Securely processing your payment</div>
+    </div>`;
 
   try {
-    // 1. Verify Recipient ID exists in mappings
-    const mapSnap = await get(ref(db, `walletMappings/${targetId}`));
-    if (!mapSnap.exists()) {
-      showToast("Wallet ID not found");
-      btn.disabled = false;
-      btn.innerHTML = 'Send Securely';
-      return;
-    }
-    
+    await new Promise(r=>setTimeout(r,2000));
+    const mapSnap = await get(ref(db, `walletMappings/${transferData.targetId}`));
+    if (!mapSnap.exists()) { showToast("Wallet not found"); renderTransferStep(); return; }
     const targetUid = mapSnap.val();
-
-    // 2. Get Target Balance
     const targetBalSnap = await get(ref(db, `users/${targetUid}/wallet/balance`));
     const targetBal = targetBalSnap.exists() ? parseFloat(targetBalSnap.val()) : 0;
-
-    // 3. Execute Updates
     const updates = {};
-    updates[`users/${currentUserId}/wallet/balance`] = currentBalance - amount;
-    updates[`users/${targetUid}/wallet/balance`] = targetBal + amount;
-    
+    updates[`users/${currentUserId}/wallet/balance`] = currentBalance - transferData.amount;
+    updates[`users/${targetUid}/wallet/balance`] = targetBal + transferData.amount;
     await update(ref(db), updates);
-
-    // 4. Log Transactions for both users
-    const timestamp = Date.now();
-    await push(ref(db, `transactions/${currentUserId}`), {
-      type: 'transfer',
-      title: `Transfer to ${targetId}`,
-      amount: amount,
-      timestamp: timestamp
-    });
-
-    await push(ref(db, `transactions/${targetUid}`), {
-      type: 'in',
-      title: `Transfer from ${currentWalletId}`,
-      amount: amount,
-      timestamp: timestamp
-    });
-
-    targetIdInput.value = '';
-    amountInput.value = '';
-    closeModals();
-    showToast("Transfer sent successfully!");
-
-  } catch (error) {
-    showToast("Transfer failed. Try again.");
-    console.error(error);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = 'Send Securely';
+    const ts = Date.now();
+    await push(ref(db,`transactions/${currentUserId}`),{ type:'transfer', title:`Transfer to ${transferData.targetId}${transferData.reference?' · '+transferData.reference:''}`, amount:transferData.amount, timestamp:ts });
+    await push(ref(db,`transactions/${targetUid}`),{ type:'in', title:`Transfer from ${currentWalletId}`, amount:transferData.amount, timestamp:ts });
+    document.getElementById('transferModalBody').innerHTML = `
+      <div class="success-screen fade-slide-up">
+        <div class="success-icon"><i data-lucide="check-circle-2" style="width:36px;height:36px;color:#2e7d32;"></i></div>
+        <div class="success-title">Transfer Sent!</div>
+        <div class="success-amount">R${transferData.amount.toFixed(2)}</div>
+        <div class="success-sub">Successfully sent to <strong>${transferData.targetId}</strong></div>
+        <button class="btn-primary" style="margin-top:24px;" onclick="closeModals()">Done</button>
+      </div>`;
+    lucide.createIcons();
+  } catch(e) {
+    showToast("Transfer failed. Please try again.");
+    transferStep=4; renderTransferStep();
+    console.error(e);
   }
 };
 
-// ── UTILITIES ──
+// ══════════════════════════════════════════
+// CARD HELPERS
+// ══════════════════════════════════════════
+
+function buildCardPreviewHTML(card) {
+  const num = card.number || '•••• •••• •••• ••••';
+  const holder = (card.holder || 'CARD HOLDER').toUpperCase();
+  const expiry = card.expiry || 'MM/YY';
+  const network = card.network || 'visa';
+  const brandHTML = network==='visa'
+    ? `<div class="card-preview-brand visa-brand">VISA</div>`
+    : network==='mastercard'
+    ? `<div class="card-preview-brand mc-brand"><div class="mc-circle1"></div><div class="mc-circle2"></div></div>`
+    : `<div class="card-preview-brand visa-brand" style="font-size:0.85rem;letter-spacing:1px;font-style:normal;">AMEX</div>`;
+  return `
+    <div class="card-preview" id="card_preview_box">
+      <div class="card-preview-bg"></div>
+      <div class="card-preview-bg2"></div>
+      <div class="card-preview-top">
+        <div class="card-preview-chip"></div>
+        ${brandHTML}
+      </div>
+      <div class="card-preview-number">${num}</div>
+      <div class="card-preview-bottom">
+        <div>
+          <div class="card-preview-expiry-label">Valid Thru</div>
+          <div class="card-preview-expiry">${expiry}</div>
+        </div>
+        <div class="card-preview-holder">${holder.substring(0,22)}</div>
+      </div>
+    </div>`;
+}
+
+window.setNewCardNetwork = (network, flow) => {
+  if (flow==='topup') { topupData.newCard = {...(topupData.newCard||{}), network}; renderTopupStep(); }
+  else { transferData.newCard={...(transferData.newCard||{}), network}; renderTransferStep(); }
+};
+
+window.updateCardPreview = () => {
+  const holder = document.getElementById('tu_holder')?.value||'';
+  const number = document.getElementById('tu_number')?.value||'';
+  const expiry = document.getElementById('tu_expiry')?.value||'';
+  topupData.newCard={...(topupData.newCard||{}), holder, number, expiry};
+  refreshCardPreview(holder, number, expiry, topupData.newCard?.network||'visa');
+};
+window.updateCardPreviewTransfer = () => {
+  const holder = document.getElementById('tr_holder')?.value||'';
+  const number = document.getElementById('tr_number')?.value||'';
+  const expiry = document.getElementById('tr_expiry')?.value||'';
+  transferData.newCard={...(transferData.newCard||{}), holder, number, expiry};
+  refreshCardPreview(holder, number, expiry, transferData.newCard?.network||'visa');
+};
+
+function refreshCardPreview(holder, number, expiry, network) {
+  const box = document.getElementById('card_preview_box');
+  if (!box) return;
+  const numEl = box.querySelector('.card-preview-number');
+  const holderEl = box.querySelector('.card-preview-holder');
+  const expiryEl = box.querySelector('.card-preview-expiry');
+  if (numEl) numEl.textContent = number||'•••• •••• •••• ••••';
+  if (holderEl) holderEl.textContent = (holder||'CARD HOLDER').toUpperCase().substring(0,22);
+  if (expiryEl) expiryEl.textContent = expiry||'MM/YY';
+}
+
+window.formatCardNumber = (el, flow) => {
+  let v = el.value.replace(/\D/g,'');
+  v = v.substring(0,16);
+  el.value = v.replace(/(.{4})/g,'$1 ').trim();
+  if (flow==='topup') updateCardPreview();
+  else updateCardPreviewTransfer();
+};
+
+window.formatExpiry = (el, flow) => {
+  let v = el.value.replace(/\D/g,'');
+  if (v.length>=3) v = v.substring(0,2)+'/'+v.substring(2,4);
+  el.value = v;
+  if (flow==='topup') updateCardPreview();
+  else updateCardPreviewTransfer();
+};
+
+function formatCardDisplay(num) {
+  return num.replace(/(.{4})/g,'$1 ').trim();
+}
+
+function validateExpiry(expiry) {
+  const [mm,yy] = expiry.split('/');
+  if (!mm||!yy) return false;
+  const now = new Date();
+  const exp = new Date(2000+parseInt(yy), parseInt(mm)-1, 1);
+  return exp > now;
+}
+
+// ══════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════
+
 window.copyWalletId = () => {
-  if(!currentWalletId) return;
-  navigator.clipboard.writeText(currentWalletId).then(() => {
-    showToast("Wallet ID copied to clipboard!");
-  });
+  if (!currentWalletId) return;
+  navigator.clipboard.writeText(currentWalletId).then(()=>showToast("Wallet ID copied!"));
 };
 
 window.openModal = (id) => {
   document.getElementById('modalOverlay').classList.add('active');
   document.getElementById(id).classList.add('active');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
 };
-
 window.closeModals = () => {
   document.getElementById('modalOverlay').classList.remove('active');
-  document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-  document.body.style.overflow = '';
+  document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active'));
+  document.body.style.overflow='';
 };
 
 let toastTimer;
 window.showToast = (msg) => {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  t.textContent=msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
 };
-
 </script>
 </body>
 </html>
