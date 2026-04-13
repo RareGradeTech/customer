@@ -7,11 +7,8 @@
 <title>1BUSKET | My Wallet</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
 <style>
-/* ── CORE VARIABLES (from your design system) ── */
+/* ── CORE VARIABLES ── */
 :root {
 --bg: #f8f9fa; --surface: #ffffff; --surface2: #f1f3f5;
 --border: #e9ecef; --border-light: #f0f0f0;
@@ -21,7 +18,7 @@
 --radius: 20px; --radius-sm: 12px; --radius-xs: 6px; --radius-pill: 100px;
 --shadow: 0 4px 20px rgba(0,0,0,0.08); --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
 --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
---sidebar-width: 280px; --header-height: 64px;
+--header-height: 64px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
@@ -47,11 +44,12 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .wallet-label { font-size: 0.85rem; font-weight: 600; opacity: 0.9; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 .wallet-balance { font-size: 2.8rem; font-weight: 800; display: flex; align-items: center; gap: 6px; letter-spacing: -1px; }
 .wallet-currency { font-size: 1.4rem; font-weight: 700; opacity: 0.9; transform: translateY(-4px); }
-.wallet-id { font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: var(--radius-pill); display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; backdrop-filter: blur(4px); }
+.wallet-id-container { font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: var(--radius-pill); display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; backdrop-filter: blur(4px); cursor: pointer; transition: var(--transition); }
+.wallet-id-container:active { transform: scale(0.95); background: rgba(255,255,255,0.3); }
 
 /* Quick Actions */
-.wallet-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
-.action-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 8px; display: flex; flex-direction: column; align-items: center; gap: 10px; font-weight: 700; font-size: 0.8rem; color: var(--text); cursor: pointer; transition: var(--transition); box-shadow: var(--shadow); }
+.wallet-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 32px; }
+.action-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 8px; display: flex; flex-direction: column; align-items: center; gap: 10px; font-weight: 700; font-size: 0.85rem; color: var(--text); cursor: pointer; transition: var(--transition); box-shadow: var(--shadow); }
 .action-btn:active { transform: scale(0.96); }
 .action-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; color: var(--accent-dark); transition: var(--transition); }
 .action-btn:hover .action-icon { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(255, 117, 31, 0.2); }
@@ -59,7 +57,6 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 /* Transactions */
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
 .section-title { font-size: 1.15rem; font-weight: 800; color: var(--text); }
-.see-all-btn { font-size: 0.8rem; font-weight: 700; color: var(--accent); background: none; border: none; cursor: pointer; }
 
 .tx-list { display: flex; flex-direction: column; gap: 12px; }
 .tx-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
@@ -74,31 +71,63 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
 .tx-amount.in { color: var(--success); }
 .tx-amount.out { color: var(--text); }
 
-/* ── DESKTOP ADJUSTMENTS ── */
+/* Empty State */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--dim); }
+.empty-state i { width: 48px; height: 48px; opacity: 0.2; margin-bottom: 12px; }
+.empty-state p { font-weight: 600; font-size: 0.95rem; color: var(--text); margin-bottom: 4px; }
+.empty-state small { font-size: 0.8rem; }
+
+/* ── MODALS ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 3000; display: none; opacity: 0; transition: var(--transition); backdrop-filter: blur(4px); }
+.modal-overlay.active { display: block; opacity: 1; }
+.modal { position: fixed; display: none; background: var(--surface); z-index: 3001; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); flex-direction: column; }
+.modal.active { display: flex; }
+
+@media (max-width: 767px) {
+  .modal { left: 0; right: 0; bottom: 0; border-radius: var(--radius) var(--radius) 0 0; max-height: 90vh; transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1); }
+  .modal.active { transform: translateY(0); }
+}
 @media (min-width: 768px) {
   .wallet-container { padding: 40px; max-width: 800px; margin: 0; }
   .wallet-card { padding: 32px; }
   .wallet-balance { font-size: 3.5rem; }
-  .tx-item:hover { transform: translateX(4px); border-color: var(--border-light); box-shadow: var(--shadow); }
+  .modal { top: 50%; left: 50%; width: 100%; max-width: 440px; border-radius: var(--radius); transform: translate(-50%, -50%) scale(0.95); opacity: 0; transition: all 0.35s ease; }
+  .modal.active { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
+
+.modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-weight: 800; font-size: 1.15rem; }
+.modal-body { padding: 20px; overflow-y: auto; }
+.close-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--surface2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--dim); transition: var(--transition); }
+.close-btn:hover { background: var(--border); }
+
+/* Form Elements */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--dim); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.form-input { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 1rem; font-family: inherit; transition: var(--transition); background: var(--surface); outline: none; }
+.form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(255,117,31,0.1); }
+.btn-primary { width: 100%; background: var(--accent); color: white; border: none; padding: 14px; border-radius: var(--radius-sm); font-weight: 800; font-size: 1rem; cursor: pointer; transition: var(--transition); margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { background: var(--border); cursor: not-allowed; color: var(--dim); transform: none; }
+
+/* ── TOAST ── */
+#toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--text); color: white; padding: 14px 24px; border-radius: 12px; z-index: 4000; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease; font-weight: 600; font-size: 0.9rem; box-shadow: 0 8px 24px rgba(0,0,0,0.3); opacity: 0; white-space: nowrap; }
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 </style>
 </head>
 <body>
+
+<div id="toast">Message</div>
 
 <div class="app-container">
   <div class="main-wrapper">
     
     <header class="header">
       <div class="header-left">
-        <button class="back-btn" onclick="window.history.back()" aria-label="Go Back">
+        <button class="back-btn" onclick="window.location.href='index.html'" aria-label="Go Back">
           <i data-lucide="arrow-left"></i>
         </button>
         <span class="header-title">My Wallet</span>
-      </div>
-      <div>
-        <button class="back-btn" aria-label="Settings">
-          <i data-lucide="settings"></i>
-        </button>
       </div>
     </header>
 
@@ -107,34 +136,29 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
       <div class="wallet-card">
         <div class="wallet-card-bg"></div>
         <div class="wallet-card-bg-2"></div>
-        <div class="wallet-label">Total Balance</div>
+        <div class="wallet-label">Available Balance</div>
         <div class="wallet-balance">
           <span class="wallet-currency">R</span><span id="walletBalanceDisplay">0.00</span>
         </div>
-        <div class="wallet-id" title="Tap to copy">
-          <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
-          ID: <span id="walletIdDisplay">BUSK-...</span>
+        <div class="wallet-id-container" onclick="copyWalletId()">
+          <i data-lucide="copy" style="width: 14px; height: 14px;"></i>
+          <span id="walletIdDisplay">Loading...</span>
         </div>
       </div>
 
       <div class="wallet-actions">
-        <button class="action-btn" onclick="handleAction('topup')">
+        <button class="action-btn" onclick="openModal('topupModal')">
           <div class="action-icon"><i data-lucide="plus"></i></div>
-          Top Up
+          Add Funds
         </button>
-        <button class="action-btn" onclick="handleAction('transfer')">
+        <button class="action-btn" onclick="openModal('transferModal')">
           <div class="action-icon"><i data-lucide="send"></i></div>
-          Transfer
-        </button>
-        <button class="action-btn" onclick="handleAction('history')">
-          <div class="action-icon"><i data-lucide="history"></i></div>
-          History
+          Send Money
         </button>
       </div>
 
       <div class="section-header">
         <h2 class="section-title">Recent Activity</h2>
-        <button class="see-all-btn">See all</button>
       </div>
       
       <div class="tx-list" id="transactionList">
@@ -147,31 +171,139 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   </div>
 </div>
 
-<script>
-  // Initialize Lucide Icons
-  lucide.createIcons();
+<div class="modal-overlay" id="modalOverlay" onclick="closeModals()"></div>
 
-  // Mock Wallet Data (Replace with Firebase logic)
-  const mockWallet = {
-    balance: 1250.50,
-    walletId: "BUSK-8849-X2",
-    transactions: [
-      { id: 1, type: "out", title: "Order Payment - KFC", date: "Today, 14:30", amount: 145.00 },
-      { id: 2, type: "in", title: "Top Up - Capitec Bank", date: "Yesterday, 09:15", amount: 500.00 },
-      { id: 3, type: "transfer", title: "Transfer to John", date: "Mon, 12 Oct", amount: 120.00 },
-      { id: 4, type: "out", title: "Order Payment - Nando's", date: "Sun, 11 Oct", amount: 280.50 },
-    ]
-  };
+<div class="modal" id="topupModal">
+  <div class="modal-header">
+    <h3>Add Funds</h3>
+    <button class="close-btn" onclick="closeModals()"><i data-lucide="x"></i></button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label class="form-label">Amount (ZAR)</label>
+      <input type="number" id="topupAmount" class="form-input" placeholder="e.g. 250" min="10">
+    </div>
+    <div style="font-size: 0.8rem; color: var(--dim); margin-bottom: 20px; line-height: 1.4;">
+      <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;"></i>
+      Funds are instantly added via PayShap or your Capitec app.
+    </div>
+    <button class="btn-primary" id="btnTopUp" onclick="processTopUp()">Confirm Top Up</button>
+  </div>
+</div>
 
-  // Render Logic
-  document.addEventListener('DOMContentLoaded', () => {
-    // 1. Set Balance
-    document.getElementById('walletBalanceDisplay').textContent = mockWallet.balance.toFixed(2);
-    document.getElementById('walletIdDisplay').textContent = mockWallet.walletId;
+<div class="modal" id="transferModal">
+  <div class="modal-header">
+    <h3>Send Money</h3>
+    <button class="close-btn" onclick="closeModals()"><i data-lucide="x"></i></button>
+  </div>
+  <div class="modal-body">
+    <div class="form-group">
+      <label class="form-label">Recipient Wallet ID</label>
+      <input type="text" id="transferTargetId" class="form-input" placeholder="e.g. BUSK-ABCD-12">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Amount (ZAR)</label>
+      <input type="number" id="transferAmount" class="form-input" placeholder="0.00" min="1">
+    </div>
+    <button class="btn-primary" id="btnTransfer" onclick="processTransfer()">Send Securely</button>
+  </div>
+</div>
 
-    // 2. Render Transactions
-    const txList = document.getElementById('transactionList');
-    txList.innerHTML = mockWallet.transactions.map(tx => {
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, push, get, update, query, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyCh7Ute6LeSAxcNDEQwZg5m0cA4ujnLCfg",
+  authDomain: "test-17881.firebaseapp.com",
+  projectId: "test-17881",
+  storageBucket: "test-17881.firebasestorage.app",
+  messagingSenderId: "1057428047643",
+  appId: "1:1057428047643:web:f3801c0d933225a5cd35be"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+// State Variables
+let currentUserId = null;
+let currentBalance = 0;
+let currentWalletId = "";
+lucide.createIcons();
+
+// ── AUTHENTICATION & INITIALIZATION ──
+onAuthStateChanged(auth, user => {
+  if (user) {
+    currentUserId = user.uid;
+    initializeWallet();
+    listenToTransactions();
+  } else {
+    // Not logged in, redirect to main app
+    window.location.href = 'index.html';
+  }
+});
+
+// Generate a readable random wallet ID
+function generateWalletId() {
+  const p1 = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const p2 = Math.random().toString(36).substring(2, 4).toUpperCase();
+  return `BUSK-${p1}-${p2}`;
+}
+
+async function initializeWallet() {
+  const walletRef = ref(db, `users/${currentUserId}/wallet`);
+  
+  onValue(walletRef, async (snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      currentBalance = parseFloat(data.balance || 0);
+      currentWalletId = data.walletId;
+      
+      // Update UI
+      document.getElementById('walletBalanceDisplay').textContent = currentBalance.toFixed(2);
+      document.getElementById('walletIdDisplay').textContent = currentWalletId;
+    } else {
+      // Create new wallet profile
+      const newWalletId = generateWalletId();
+      await set(walletRef, {
+        balance: 0,
+        walletId: newWalletId
+      });
+      // Save global mapping for P2P transfers
+      await set(ref(db, `walletMappings/${newWalletId}`), currentUserId);
+    }
+  });
+}
+
+// ── TRANSACTIONS LISTENER ──
+function listenToTransactions() {
+  const txRef = query(ref(db, `transactions/${currentUserId}`), limitToLast(50));
+  
+  onValue(txRef, (snapshot) => {
+    const listEl = document.getElementById('transactionList');
+    if (!snapshot.exists()) {
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <i data-lucide="receipt"></i>
+          <p>No transactions yet</p>
+          <small>Top up your wallet to get started</small>
+        </div>`;
+      lucide.createIcons();
+      return;
+    }
+
+    const transactions = [];
+    snapshot.forEach(child => {
+      transactions.push({ id: child.key, ...child.val() });
+    });
+    
+    // Sort newest first
+    transactions.sort((a, b) => b.timestamp - a.timestamp);
+
+    listEl.innerHTML = transactions.map(tx => {
       let icon, iconClass, amountClass, sign;
       
       if (tx.type === 'in') {
@@ -182,6 +314,10 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
         icon = 'shopping-bag'; iconClass = 'out'; amountClass = 'out'; sign = '-R';
       }
 
+      const dateStr = new Date(tx.timestamp).toLocaleDateString('en-ZA', { 
+        day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' 
+      });
+
       return `
         <div class="tx-item">
           <div class="tx-icon ${iconClass}">
@@ -189,27 +325,155 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
           </div>
           <div class="tx-info">
             <div class="tx-title">${tx.title}</div>
-            <div class="tx-date">${tx.date}</div>
+            <div class="tx-date">${dateStr}</div>
           </div>
-          <div class="tx-amount ${amountClass}">${sign}${tx.amount.toFixed(2)}</div>
-        </div>
-      `;
+          <div class="tx-amount ${amountClass}">${sign}${parseFloat(tx.amount).toFixed(2)}</div>
+        </div>`;
     }).join('');
-
-    // Re-initialize icons for the newly injected HTML
+    
     lucide.createIcons();
   });
+}
 
-  // Action Handlers
-  function handleAction(action) {
-    if (action === 'topup') {
-      alert('Top Up modal would open here. Integration with Capitec/PayShap can go here.');
-    } else if (action === 'transfer') {
-      alert('Transfer funds to another 1BUSKET user.');
-    } else {
-      alert('Loading full transaction history...');
-    }
+// ── TOP UP LOGIC ──
+window.processTopUp = async () => {
+  const input = document.getElementById('topupAmount');
+  const amount = parseFloat(input.value);
+  const btn = document.getElementById('btnTopUp');
+
+  if (isNaN(amount) || amount <= 0) {
+    showToast("Please enter a valid amount");
+    return;
   }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader-2" style="animation:spin 1s linear infinite;"></i> Processing...';
+  lucide.createIcons();
+
+  try {
+    // 1. Update Balance
+    const newBalance = currentBalance + amount;
+    await set(ref(db, `users/${currentUserId}/wallet/balance`), newBalance);
+    
+    // 2. Log Transaction
+    await push(ref(db, `transactions/${currentUserId}`), {
+      type: 'in',
+      title: 'Top Up - Bank / PayShap',
+      amount: amount,
+      timestamp: Date.now()
+    });
+
+    input.value = '';
+    closeModals();
+    showToast(`Successfully added R${amount.toFixed(2)}`);
+  } catch (error) {
+    showToast("Top up failed. Please try again.");
+    console.error(error);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Confirm Top Up';
+  }
+};
+
+// ── TRANSFER LOGIC ──
+window.processTransfer = async () => {
+  const targetIdInput = document.getElementById('transferTargetId');
+  const targetId = targetIdInput.value.trim().toUpperCase();
+  const amountInput = document.getElementById('transferAmount');
+  const amount = parseFloat(amountInput.value);
+  const btn = document.getElementById('btnTransfer');
+
+  if (!targetId) return showToast("Enter a recipient Wallet ID");
+  if (targetId === currentWalletId) return showToast("You cannot transfer to yourself");
+  if (isNaN(amount) || amount <= 0) return showToast("Enter a valid amount");
+  if (amount > currentBalance) return showToast("Insufficient funds");
+
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader-2" style="animation:spin 1s linear infinite;"></i> Sending...';
+  lucide.createIcons();
+
+  try {
+    // 1. Verify Recipient ID exists in mappings
+    const mapSnap = await get(ref(db, `walletMappings/${targetId}`));
+    if (!mapSnap.exists()) {
+      showToast("Wallet ID not found");
+      btn.disabled = false;
+      btn.innerHTML = 'Send Securely';
+      return;
+    }
+    
+    const targetUid = mapSnap.val();
+
+    // 2. Get Target Balance
+    const targetBalSnap = await get(ref(db, `users/${targetUid}/wallet/balance`));
+    const targetBal = targetBalSnap.exists() ? parseFloat(targetBalSnap.val()) : 0;
+
+    // 3. Execute Updates
+    const updates = {};
+    updates[`users/${currentUserId}/wallet/balance`] = currentBalance - amount;
+    updates[`users/${targetUid}/wallet/balance`] = targetBal + amount;
+    
+    await update(ref(db), updates);
+
+    // 4. Log Transactions for both users
+    const timestamp = Date.now();
+    await push(ref(db, `transactions/${currentUserId}`), {
+      type: 'transfer',
+      title: `Transfer to ${targetId}`,
+      amount: amount,
+      timestamp: timestamp
+    });
+
+    await push(ref(db, `transactions/${targetUid}`), {
+      type: 'in',
+      title: `Transfer from ${currentWalletId}`,
+      amount: amount,
+      timestamp: timestamp
+    });
+
+    targetIdInput.value = '';
+    amountInput.value = '';
+    closeModals();
+    showToast("Transfer sent successfully!");
+
+  } catch (error) {
+    showToast("Transfer failed. Try again.");
+    console.error(error);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Send Securely';
+  }
+};
+
+// ── UTILITIES ──
+window.copyWalletId = () => {
+  if(!currentWalletId) return;
+  navigator.clipboard.writeText(currentWalletId).then(() => {
+    showToast("Wallet ID copied to clipboard!");
+  });
+};
+
+window.openModal = (id) => {
+  document.getElementById('modalOverlay').classList.add('active');
+  document.getElementById(id).classList.add('active');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeModals = () => {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+  document.body.style.overflow = '';
+};
+
+let toastTimer;
+window.showToast = (msg) => {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+};
+
 </script>
 </body>
 </html>
