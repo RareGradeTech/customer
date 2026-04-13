@@ -1996,9 +1996,14 @@ window.openSidebarFavorites = ()=>{
   document.getElementById('sidebarPane-favorites').classList.add('active');
   renderFavorites(); lucide.createIcons();
 };
-window.openSidebarWallet = ()=>{
-  if(!currentUser){showToast("Sign in to access your wallet");handleProfileClick();return;}
-  showToast("Wallet feature coming soon!");
+window.openSidebarWallet = () => {
+  if (!currentUser) {
+    showToast("Sign in to access your wallet");
+    handleProfileClick();
+    return;
+  }
+  // Redirect the user to the wallet page
+  window.location.href = 'wallet.html';
 };
 window.switchSidebarDataTab = (tab, btn) => {
   document.querySelectorAll('.sidebar-data-tab-item').forEach(t => t.classList.remove('active'));
