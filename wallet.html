@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ff751f">
+<title>1BUSKET | My Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+<style>
+/* ── CORE VARIABLES (from your design system) ── */
+:root {
+--bg: #f8f9fa; --surface: #ffffff; --surface2: #f1f3f5;
+--border: #e9ecef; --border-light: #f0f0f0;
+--text: #1a1d23; --text-secondary: #4a4a4a; --dim: #6c757d;
+--accent: #ff751f; --accent-dark: #e0661c; --accent-light: #ffe8d6;
+--danger: #ff3b30; --success: #2e7d32; --success-light: #e8f5e9;
+--radius: 20px; --radius-sm: 12px; --radius-xs: 6px; --radius-pill: 100px;
+--shadow: 0 4px 20px rgba(0,0,0,0.08); --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+--transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+--sidebar-width: 280px; --header-height: 64px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+/* ── LAYOUT SHELL ── */
+.app-container { display: flex; height: 100vh; height: 100dvh; width: 100vw; position: relative; }
+.main-wrapper { flex: 1; display: flex; flex-direction: column; overflow-y: auto; overflow-x: hidden; width: 100%; }
+
+/* ── HEADER ── */
+.header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; height: var(--header-height); background: var(--surface); position: sticky; top: 0; z-index: 1000; box-shadow: 0 1px 0 var(--border); }
+.header-left { display: flex; align-items: center; gap: 12px; }
+.back-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: var(--surface2); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text); transition: var(--transition); }
+.back-btn:active { transform: scale(0.92); }
+.header-title { font-weight: 800; font-size: 1.1rem; }
+
+/* ── WALLET SPECIFIC STYLES ── */
+.wallet-container { padding: 20px 16px 100px; max-width: 600px; margin: 0 auto; width: 100%; }
+
+/* Balance Card */
+.wallet-card { background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%); border-radius: var(--radius); padding: 24px; color: white; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(255, 117, 31, 0.3); position: relative; overflow: hidden; }
+.wallet-card-bg { position: absolute; right: -20px; top: -20px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; pointer-events: none; }
+.wallet-card-bg-2 { position: absolute; left: -30px; bottom: -30px; width: 100px; height: 100px; background: rgba(255,255,255,0.05); border-radius: 50%; pointer-events: none; }
+.wallet-label { font-size: 0.85rem; font-weight: 600; opacity: 0.9; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.wallet-balance { font-size: 2.8rem; font-weight: 800; display: flex; align-items: center; gap: 6px; letter-spacing: -1px; }
+.wallet-currency { font-size: 1.4rem; font-weight: 700; opacity: 0.9; transform: translateY(-4px); }
+.wallet-id { font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: var(--radius-pill); display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; backdrop-filter: blur(4px); }
+
+/* Quick Actions */
+.wallet-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+.action-btn { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 8px; display: flex; flex-direction: column; align-items: center; gap: 10px; font-weight: 700; font-size: 0.8rem; color: var(--text); cursor: pointer; transition: var(--transition); box-shadow: var(--shadow); }
+.action-btn:active { transform: scale(0.96); }
+.action-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; color: var(--accent-dark); transition: var(--transition); }
+.action-btn:hover .action-icon { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(255, 117, 31, 0.2); }
+
+/* Transactions */
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.section-title { font-size: 1.15rem; font-weight: 800; color: var(--text); }
+.see-all-btn { font-size: 0.8rem; font-weight: 700; color: var(--accent); background: none; border: none; cursor: pointer; }
+
+.tx-list { display: flex; flex-direction: column; gap: 12px; }
+.tx-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.tx-icon { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tx-icon.in { background: var(--success-light); color: var(--success); }
+.tx-icon.out { background: #ffebee; color: var(--danger); }
+.tx-icon.transfer { background: #e3f2fd; color: #1565c0; }
+.tx-info { flex: 1; min-width: 0; }
+.tx-title { font-weight: 700; font-size: 0.9rem; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tx-date { font-size: 0.75rem; color: var(--dim); margin-top: 2px; font-weight: 500; }
+.tx-amount { font-weight: 800; font-size: 0.95rem; text-align: right; }
+.tx-amount.in { color: var(--success); }
+.tx-amount.out { color: var(--text); }
+
+/* ── DESKTOP ADJUSTMENTS ── */
+@media (min-width: 768px) {
+  .wallet-container { padding: 40px; max-width: 800px; margin: 0; }
+  .wallet-card { padding: 32px; }
+  .wallet-balance { font-size: 3.5rem; }
+  .tx-item:hover { transform: translateX(4px); border-color: var(--border-light); box-shadow: var(--shadow); }
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="main-wrapper">
+    
+    <header class="header">
+      <div class="header-left">
+        <button class="back-btn" onclick="window.history.back()" aria-label="Go Back">
+          <i data-lucide="arrow-left"></i>
+        </button>
+        <span class="header-title">My Wallet</span>
+      </div>
+      <div>
+        <button class="back-btn" aria-label="Settings">
+          <i data-lucide="settings"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="wallet-container">
+      
+      <div class="wallet-card">
+        <div class="wallet-card-bg"></div>
+        <div class="wallet-card-bg-2"></div>
+        <div class="wallet-label">Total Balance</div>
+        <div class="wallet-balance">
+          <span class="wallet-currency">R</span><span id="walletBalanceDisplay">0.00</span>
+        </div>
+        <div class="wallet-id" title="Tap to copy">
+          <i data-lucide="copy" style="width: 12px; height: 12px;"></i>
+          ID: <span id="walletIdDisplay">BUSK-...</span>
+        </div>
+      </div>
+
+      <div class="wallet-actions">
+        <button class="action-btn" onclick="handleAction('topup')">
+          <div class="action-icon"><i data-lucide="plus"></i></div>
+          Top Up
+        </button>
+        <button class="action-btn" onclick="handleAction('transfer')">
+          <div class="action-icon"><i data-lucide="send"></i></div>
+          Transfer
+        </button>
+        <button class="action-btn" onclick="handleAction('history')">
+          <div class="action-icon"><i data-lucide="history"></i></div>
+          History
+        </button>
+      </div>
+
+      <div class="section-header">
+        <h2 class="section-title">Recent Activity</h2>
+        <button class="see-all-btn">See all</button>
+      </div>
+      
+      <div class="tx-list" id="transactionList">
+        <div style="text-align: center; padding: 20px; color: var(--dim);">
+          <i data-lucide="loader-2" style="animation: spin 1s linear infinite;"></i>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  // Initialize Lucide Icons
+  lucide.createIcons();
+
+  // Mock Wallet Data (Replace with Firebase logic)
+  const mockWallet = {
+    balance: 1250.50,
+    walletId: "BUSK-8849-X2",
+    transactions: [
+      { id: 1, type: "out", title: "Order Payment - KFC", date: "Today, 14:30", amount: 145.00 },
+      { id: 2, type: "in", title: "Top Up - Capitec Bank", date: "Yesterday, 09:15", amount: 500.00 },
+      { id: 3, type: "transfer", title: "Transfer to John", date: "Mon, 12 Oct", amount: 120.00 },
+      { id: 4, type: "out", title: "Order Payment - Nando's", date: "Sun, 11 Oct", amount: 280.50 },
+    ]
+  };
+
+  // Render Logic
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1. Set Balance
+    document.getElementById('walletBalanceDisplay').textContent = mockWallet.balance.toFixed(2);
+    document.getElementById('walletIdDisplay').textContent = mockWallet.walletId;
+
+    // 2. Render Transactions
+    const txList = document.getElementById('transactionList');
+    txList.innerHTML = mockWallet.transactions.map(tx => {
+      let icon, iconClass, amountClass, sign;
+      
+      if (tx.type === 'in') {
+        icon = 'arrow-down-left'; iconClass = 'in'; amountClass = 'in'; sign = '+R';
+      } else if (tx.type === 'transfer') {
+        icon = 'send'; iconClass = 'transfer'; amountClass = 'out'; sign = '-R';
+      } else {
+        icon = 'shopping-bag'; iconClass = 'out'; amountClass = 'out'; sign = '-R';
+      }
+
+      return `
+        <div class="tx-item">
+          <div class="tx-icon ${iconClass}">
+            <i data-lucide="${icon}"></i>
+          </div>
+          <div class="tx-info">
+            <div class="tx-title">${tx.title}</div>
+            <div class="tx-date">${tx.date}</div>
+          </div>
+          <div class="tx-amount ${amountClass}">${sign}${tx.amount.toFixed(2)}</div>
+        </div>
+      `;
+    }).join('');
+
+    // Re-initialize icons for the newly injected HTML
+    lucide.createIcons();
+  });
+
+  // Action Handlers
+  function handleAction(action) {
+    if (action === 'topup') {
+      alert('Top Up modal would open here. Integration with Capitec/PayShap can go here.');
+    } else if (action === 'transfer') {
+      alert('Transfer funds to another 1BUSKET user.');
+    } else {
+      alert('Loading full transaction history...');
+    }
+  }
+</script>
+</body>
+</html>
