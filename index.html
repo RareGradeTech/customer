@@ -57,6 +57,59 @@ overflow: hidden;
 }
 @keyframes navPop { 0% { transform: scale(0.85); } 60% { transform: scale(1.15); } 100% { transform: scale(1); } }
 @keyframes iconBounce { 0%, 100% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-6px) scale(1.15); } }
+/* ── DELIVERY/PICKUP TOGGLE STYLES ── */
+.mode-toggle-container {
+  display: flex;
+  background: var(--surface2);
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border);
+  position: relative;
+  width: 180px;
+  height: 42px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+.mode-toggle-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--dim);
+  cursor: pointer;
+  z-index: 2;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.mode-toggle-btn.active {
+  color: white;
+}
+.mode-toggle-slider {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  height: calc(100% - 8px);
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+  box-shadow: 0 2px 8px rgba(255, 117, 31, 0.3);
+}
+.mode-toggle-container.pickup .mode-toggle-slider {
+  transform: translateX(100%);
+}
+@media (max-width: 767px) {
+  .mode-toggle-container { width: 150px; height: 38px; margin-right: 4px; }
+  .mode-toggle-btn { font-size: 0.72rem; gap: 4px; }
+  .mode-toggle-btn i { width: 14px; height: 14px; }
+}
+
 /* ── SHIMMER OVERLAY ───────────────────────────────────── */
 .shimmer-overlay { position:fixed;inset:0;background:var(--bg);z-index:5000;display:none;flex-direction:column;overflow-y:auto; }
 .shimmer-overlay.active { display:flex; }
@@ -729,14 +782,24 @@ pointer-events: none;visibility: hidden;
 <img src="https://i.postimg.cc/65pML87d/1BUSKET-LOGO.png" alt="1BUSKET" class="logo">
 </div>
 <div class="header-actions">
-<button id="desktopAccountBtn" class="action-btn-compact" onclick="handleProfileClick()" aria-label="My Account" title="My Account">
-<i data-lucide="user"></i>
-</button>
-<button class="action-btn-compact" onclick="toggleCart()" aria-label="Cart">
-<i data-lucide="shopping-bag"></i>
-<span class="cart-badge" id="cartCount">0</span>
-</button>
-</div>
+	<!-- Delivery/Pickup Toggle -->
+	<div class="mode-toggle-container" id="modeToggle">
+	  <div class="mode-toggle-slider"></div>
+	  <button class="mode-toggle-btn active" onclick="setOrderMode('delivery')">
+	    <i data-lucide="truck"></i> Delivery
+	  </button>
+	  <button class="mode-toggle-btn" onclick="setOrderMode('pickup')">
+	    <i data-lucide="package"></i> Pickup
+	  </button>
+	</div>
+	<button id="desktopAccountBtn" class="action-btn-compact" onclick="handleProfileClick()" aria-label="My Account" title="My Account">
+	<i data-lucide="user"></i>
+	</button>
+	<button class="action-btn-compact" onclick="toggleCart()" aria-label="Cart">
+	<i data-lucide="shopping-bag"></i>
+	<span class="cart-badge" id="cartCount">0</span>
+	</button>
+	</div>
 </div>
 <div class="header-pill-row">
 <div class="location-pill" onclick="openLocationModal()">
@@ -1052,6 +1115,7 @@ function renderPromos() {
 }
 // ── STATE ──────────────────────────────────────────────────
 let allVendors=[], cartGroups={}, expandedGroups=new Set();
+let orderMode = 'delivery'; // 'delivery' or 'pickup'
 let currentStoreType='restaurant', currentFilter='all', searchTerm="";
 let currentUser=null, currentUserId=null, userLikes=new Set();
 let vendorInfoCache={}, isConverting=false;
@@ -1063,6 +1127,32 @@ let expandedOrders=new Set();
 let allUserOrders = [];
 let ordersModalOpen = false;
 let appliedPromo = null;
+// ── MODE TOGGLE LOGIC ──
+window.setOrderMode = function(mode) {
+  if (orderMode === mode) return;
+  orderMode = mode;
+  const container = document.getElementById('modeToggle');
+  const btns = container.querySelectorAll('.mode-toggle-btn');
+  const locLabel = document.querySelector('.location-pill-label');
+  
+  if (mode === 'pickup') {
+    container.classList.add('pickup');
+    btns[0].classList.remove('active');
+    btns[1].classList.add('active');
+    if (locLabel) locLabel.textContent = 'Pickup near';
+    showToast("🛍️ Switched to Pickup mode");
+  } else {
+    container.classList.remove('pickup');
+    btns[0].classList.add('active');
+    btns[1].classList.remove('active');
+    if (locLabel) locLabel.textContent = 'Deliver to';
+    showToast("🚚 Switched to Delivery mode");
+  }
+  
+  updateCartUI();
+  applyFilters();
+};
+
 // ── TOAST ──────────────────────────────────────────────────
 let toastTimer;
 window.showToast = (msg) => {
@@ -1175,7 +1265,8 @@ function updateCartUI(){
   if(vendorCount>1)html+=`<div class="multi-restaurant-banner"><i data-lucide="alert-triangle"></i><span>You have items from <strong>${vendorCount} restaurants</strong>. Each will be placed as a separate order.</span></div>`;
   Object.entries(cartGroups).forEach(([vid,group])=>{
     const isExp=expandedGroups.has(vid),items=group.items||[];
-    const sub=items.reduce((s,i)=>s+i.price*i.quantity,0),fee=parseFloat(group.deliveryFee||0);
+    const sub=items.reduce((s,i)=>s+i.price*i.quantity,0);
+	    const fee = orderMode === 'pickup' ? 0 : parseFloat(group.deliveryFee||0);
     const total=sub+fee,cnt=items.reduce((s,i)=>s+i.quantity,0);
     const prevs=items.slice(0,4).map(item=>item.imageURL?`<img class="preview-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">`:`<div class="preview-img-placeholder"><i data-lucide="image"></i></div>`).join('');
     const more=items.length>4?`<div class="preview-more">+${items.length-4}</div>`:'';
@@ -1251,14 +1342,15 @@ function renderCoStep(){
   else renderCoSuccess(body,footer);
 }
 function renderCoReview(body,footer){
-  const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
-  const tf=Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
+const ts=Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
+	  const tf = orderMode === 'pickup' ? 0 : Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
   const total=ts+tf,totalItems=getTotalItems(),pt=calcPrepTime(),vc=Object.keys(cartGroups).length;
   let vbs='';
   Object.entries(cartGroups).forEach(([gVid,group])=>{
     const imgH=group.vendorImage?`<img src="${group.vendorImage}" style="width:18px;height:18px;border-radius:4px;object-fit:cover;">`:`<i data-lucide="store" style="width:14px;height:14px;"></i>`;
     const items=(group.items||[]).map(item=>{const img=item.imageURL?`<img class="co-order-img" src="${item.imageURL}" alt="${item.name}" loading="lazy">`:`<div class="co-order-no-img"><i data-lucide="image"></i></div>`;return`<div class="co-order-item">${img}<span class="co-order-name">${item.name}</span><span class="co-order-qty">×${item.quantity}</span><span class="co-order-price">R${(item.price*item.quantity).toFixed(2)}</span></div>`;}).join('');
-    const gs=(group.items||[]).reduce((s,i)=>s+i.price*i.quantity,0),fee=parseFloat(group.deliveryFee||0);
+    const gs=(group.items||[]).reduce((s,i)=>s+i.price*i.quantity,0);
+	    const fee = orderMode === 'pickup' ? 0 : parseFloat(group.deliveryFee||0);
     vbs+=`<div class="co-vendor-block"><div class="co-vendor-label">${imgH}<span>${group.vendorName||'Restaurant'}</span></div>${items}<div style="display:flex;justify-content:space-between;padding:6px 0 2px;font-size:0.72rem;color:var(--dim);"><span>Subtotal</span><span>R${gs.toFixed(2)}</span></div><div style="display:flex;justify-content:space-between;padding:2px 0;font-size:0.72rem;color:var(--dim);"><span>Delivery</span><span>${fee>0?`R${fee.toFixed(2)}`:'Free'}</span></div></div>`;
   });
   body.innerHTML=`
@@ -1275,14 +1367,14 @@ function renderCoReview(body,footer){
 // ─────────────────────────────────────────────────────────────────────────────
 window.preparePaymentAndRedirect = () => {
   const subtotal = Object.values(cartGroups).reduce((s,g)=>s+(g.items||[]).reduce((ss,i)=>ss+i.price*i.quantity,0),0);
-  const delivery = Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
+  const delivery = orderMode === 'pickup' ? 0 : Object.values(cartGroups).reduce((s,g)=>s+parseFloat(g.deliveryFee||0),0);
   // Build the full per-vendor groups array — each entry has vendorId, vendorName, vendorImage, deliveryFee, items
   const groups = Object.entries(cartGroups).map(([vid, group]) => ({
     vendorId: vid,
     vendorKey: vid,
     vendorName: group.vendorName || '',
     vendorImage: group.vendorImage || '',
-    deliveryFee: parseFloat(group.deliveryFee || 0),
+    deliveryFee: orderMode === 'pickup' ? 0 : parseFloat(group.deliveryFee || 0),
     items: (group.items || []).map(i => ({ ...i }))
   }));
   const data = {
