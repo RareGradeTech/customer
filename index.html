@@ -721,7 +721,6 @@ pointer-events: none;visibility: hidden;
 </style>
 </head>
 <body>
-<!-- SHIMMER OVERLAY -->
 <div class="shimmer-overlay" id="shimmerOverlay">
 <div class="shimmer-header">
 <div class="shimmer shimmer-menu-btn"></div>
@@ -755,7 +754,6 @@ pointer-events: none;visibility: hidden;
 <div id="toast">Message</div>
 <div class="app-container">
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
 <div class="sidebar-header"><img src="https://i.postimg.cc/65pML87d/1BUSKET-LOGO.png" alt="1BUSKET" class="logo"></div>
 <nav class="sidebar-nav">
@@ -765,6 +763,7 @@ pointer-events: none;visibility: hidden;
 <button class="nav-btn" onclick="setStoreType('health',this)"><i data-lucide="heart-pulse"></i> Health</button>
 <button class="nav-btn" onclick="setStoreType('pets',this)"><i data-lucide="dog"></i> Pets</button>
 <button class="nav-btn" onclick="setStoreType('electronics',this)"><i data-lucide="smartphone"></i> Electronics</button>
+<button class="nav-btn" onclick="window.location.href='https://raregradetech.github.io/ride/'"><i data-lucide="car"></i> Ride</button>
 </nav>
 <div class="sidebar-account-section">
 <div class="sidebar-account-title">Account</div>
@@ -774,7 +773,6 @@ pointer-events: none;visibility: hidden;
 </div>
 </aside>
 <div class="main-wrapper">
-<!-- HEADER -->
 <header class="header">
 <div class="header-topbar">
 <div class="header-topbar-left">
@@ -782,7 +780,6 @@ pointer-events: none;visibility: hidden;
 <img src="https://i.postimg.cc/65pML87d/1BUSKET-LOGO.png" alt="1BUSKET" class="logo">
 </div>
 <div class="header-actions">
-	<!-- Delivery/Pickup Toggle -->
 	<div class="mode-toggle-container" id="modeToggle">
 	  <div class="mode-toggle-slider"></div>
 	  <button class="mode-toggle-btn active" onclick="setOrderMode('delivery')">
@@ -862,7 +859,6 @@ pointer-events: none;visibility: hidden;
 </main>
 </div>
 </div>
-<!-- FLOATING CART BAR -->
 <div class="floating-cart-bar" id="floatingCartBar" onclick="toggleCart()">
 <div class="floating-cart-inner">
 <div class="floating-cart-left">
@@ -876,7 +872,6 @@ pointer-events: none;visibility: hidden;
 </div>
 </div>
 <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
-<!-- CART DRAWER -->
 <div class="cart-drawer" id="cartDrawer">
 <div class="cart-header">
 <h3>Your Order</h3>
@@ -907,7 +902,6 @@ pointer-events: none;visibility: hidden;
 <div class="co-footer" id="coFooter"></div>
 </div>
 </div>
-<!-- LOCATION MODAL -->
 <div class="modal-overlay" id="locationModalOverlay" onclick="closeLocationModal()"></div>
 <div class="modal location-fullwidth" id="locationModal">
 <div class="modal-header">
@@ -930,7 +924,6 @@ pointer-events: none;visibility: hidden;
 <div class="suggestions-list" id="locationSuggestions"></div>
 </div>
 </div>
-<!-- PROFILE MODAL -->
 <div class="modal-overlay" id="profileOverlay" onclick="closeProfileModal()"></div>
 <div id="profileModal">
 <div class="profile-modal-header">
@@ -988,7 +981,6 @@ pointer-events: none;visibility: hidden;
 </div>
 </div>
 </div>
-<!-- SIDEBAR DATA MODAL (ORDERS & FAVORITES) -->
 <div class="modal-overlay" id="sidebarDataModalOverlay" onclick="closeSidebarDataModal()"></div>
 <div id="sidebarDataModal">
 <div class="sidebar-data-modal-header">
@@ -1008,7 +1000,6 @@ pointer-events: none;visibility: hidden;
 </div>
 </div>
 </div>
-<!-- SIGN IN / OUT MODALS -->
 <div class="modal-overlay" id="signInOverlay" onclick="closeAuthModals()"></div>
 <div class="modal" id="signInModal">
 <div class="modal-header"><h3>Welcome back</h3><button class="close-btn" onclick="closeAuthModals()"><i data-lucide="x"></i></button></div>
@@ -1028,7 +1019,6 @@ pointer-events: none;visibility: hidden;
 </div>
 </div>
 </div>
-<!-- BOTTOM NAV (MOBILE ONLY) -->
 <nav class="bottom-nav" id="bottomNav">
 <button class="bottom-nav-item active" id="bnav0" onclick="bottomNavClick(0)"><i data-lucide="home"></i><span>Home</span></button>
 <button class="bottom-nav-item" id="bnav1" onclick="bottomNavClick(1)"><i data-lucide="receipt"></i><span>Orders</span></button>
